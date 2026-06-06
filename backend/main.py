@@ -19,6 +19,8 @@ from app.api.v1.orders import router as orders_router
 from app.api.v1.payments import admin_router as payments_admin_router
 from app.api.v1.payments import router as payments_router
 from app.api.v1.products import router as products_router
+from app.api.v1.reviews import admin_router as reviews_admin_router
+from app.api.v1.reviews import router as reviews_router
 from app.api.v1.search import router as search_router
 from app.api.v1.shipments import admin_router as shipments_admin_router
 from app.api.v1.shipments import router as shipments_router
@@ -184,6 +186,16 @@ def create_app() -> FastAPI:
         notifications_admin_router,
         prefix=f"{settings.API_V1_STR}/admin/notifications",
         tags=["Notification Admin Operations"]
+    )
+    app.include_router(
+        reviews_router,
+        prefix=f"{settings.API_V1_STR}/reviews",
+        tags=["Review Operations"]
+    )
+    app.include_router(
+        reviews_admin_router,
+        prefix=f"{settings.API_V1_STR}/admin/reviews",
+        tags=["Review Admin Operations"]
     )
 
     return app

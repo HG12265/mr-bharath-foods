@@ -44,6 +44,12 @@ class SEOMetadataSchema(BaseModel):
 class ProductRatingsSchema(BaseModel):
     average_rating: float
     review_count: int
+    total_reviews: int
+    star_1_count: int
+    star_2_count: int
+    star_3_count: int
+    star_4_count: int
+    star_5_count: int
 
 
 class ProductCreate(BaseModel):

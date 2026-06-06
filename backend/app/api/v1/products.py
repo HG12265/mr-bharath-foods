@@ -75,7 +75,13 @@ def map_product_response(prod: Product) -> ProductResponse:
         ),
         ratings=ProductRatingsSchema(
             average_rating=prod.ratings.average_rating,
-            review_count=prod.ratings.review_count
+            review_count=prod.ratings.review_count,
+            total_reviews=prod.ratings.total_reviews,
+            star_1_count=prod.ratings.star_1_count,
+            star_2_count=prod.ratings.star_2_count,
+            star_3_count=prod.ratings.star_3_count,
+            star_4_count=prod.ratings.star_4_count,
+            star_5_count=prod.ratings.star_5_count
         ),
         tags=prod.tags,
         search_keywords=prod.search_keywords,

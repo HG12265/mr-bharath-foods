@@ -10,3 +10,5 @@ class NotificationType(str, Enum):
     SHIPMENT_CREATED = "shipment_created"
     SHIPMENT_STATUS_UPDATED = "shipment_status_updated"
     LOW_STOCK_ALERT = "low_stock_alert"
+    REVIEW_SUBMITTED = "review_submitted"
+    REVIEW_APPROVED = "review_approved"

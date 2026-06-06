@@ -37,6 +37,12 @@ class SEOMetadata(BaseModel):
 class ProductRatings(BaseModel):
     average_rating: float = 0.0
     review_count: int = 0
+    total_reviews: int = 0
+    star_1_count: int = 0
+    star_2_count: int = 0
+    star_3_count: int = 0
+    star_4_count: int = 0
+    star_5_count: int = 0
 
 
 class Product(MongoBaseModel):
