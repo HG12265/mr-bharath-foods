@@ -1,0 +1,1 @@
+// Single recipe post detail pages with product card callouts

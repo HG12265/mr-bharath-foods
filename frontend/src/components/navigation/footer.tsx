@@ -1,0 +1,1 @@
+// Footer template with FSSAI licence labels

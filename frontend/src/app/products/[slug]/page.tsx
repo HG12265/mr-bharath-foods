@@ -1,0 +1,1 @@
+// Product Details PDP with traceability integrations

@@ -1,0 +1,105 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Brand Colors mapped to HSL */
+    --background: 45 29% 98%;      /* Warm Ivory #FAF9F6 */
+    --foreground: 168 11% 13%;     /* Indian Ink #1C2321 */
+
+    --card: 0 0% 100%;             /* Pure Slate White #FFFFFF */
+    --card-foreground: 168 11% 13%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 168 11% 13%;
+
+    --primary: 168 11% 13%;        /* Indian Ink */
+    --primary-foreground: 45 29% 98%;
+
+    --secondary: 164 28% 16%;      /* Deodhar Forest Green #1E352F */
+    --secondary-foreground: 45 29% 98%;
+
+    --muted: 45 10% 90%;
+    --muted-foreground: 168 5% 40%;
+
+    --accent: 17 63% 38%;          /* Kashmir Saffron #9E4624 */
+    --accent-foreground: 45 29% 98%;
+
+    --destructive: 358 66% 47%;    /* Error Crimson #C62828 */
+    --destructive-foreground: 45 29% 98%;
+
+    --border: 168 5% 90%;
+    --input: 168 5% 90%;
+    --ring: 40 52% 52%;            /* Burnished Gold #C49A45 */
+
+    --radius: 0.25rem;             /* 4px as per brand system guidelines */
+
+    /* System Status HSL */
+    --success: 122 46% 34%;        /* #2E7D32 */
+    --success-foreground: 45 29% 98%;
+    --warning: 40 52% 52%;         /* #C49A45 */
+    --warning-foreground: 168 11% 13%;
+    --info: 210 79% 42%;           /* #1565C0 */
+    --info-foreground: 45 29% 98%;
+  }
+
+  .dark {
+    --background: 168 11% 13%;     /* Indian Ink #1C2321 */
+    --foreground: 45 29% 98%;      /* Warm Ivory #FAF9F6 */
+
+    --card: 167 9% 16%;            /* Slightly lighter slate-green fill #252D2B */
+    --card-foreground: 45 29% 98%;
+
+    --popover: 167 9% 16%;
+    --popover-foreground: 45 29% 98%;
+
+    --primary: 45 29% 98%;
+    --primary-foreground: 168 11% 13%;
+
+    --secondary: 164 28% 25%;
+    --secondary-foreground: 45 29% 98%;
+
+    --muted: 167 9% 25%;
+    --muted-foreground: 45 10% 70%;
+
+    --accent: 40 52% 52%;          /* Gold Highlight in dark mode */
+    --accent-foreground: 168 11% 13%;
+
+    --destructive: 358 66% 47%;
+    --destructive-foreground: 45 29% 98%;
+
+    --border: 167 9% 25%;
+    --input: 167 9% 25%;
+    --ring: 40 52% 52%;
+
+    /* Dark Status overrides */
+    --success: 122 46% 40%;
+    --success-foreground: 45 29% 98%;
+    --warning: 40 52% 52%;
+    --warning-foreground: 168 11% 13%;
+    --info: 210 79% 50%;
+    --info-foreground: 45 29% 98%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11";
+  }
+
+  /* Editorial Headings pair with Cormorant Garamond Serif */
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-serif font-normal tracking-tight text-foreground;
+  }
+}
+
+@layer utilities {
+  .focus-ring {
+    @apply focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring focus-visible:ring-offset-1 focus-visible:ring-offset-background;
+  }
+}

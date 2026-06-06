@@ -1,0 +1,1 @@
+// Catalog fetching queries using React Query client instances

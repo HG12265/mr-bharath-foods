@@ -1,0 +1,28 @@
+# Collection Names
+COLLECTION_PRODUCTS = "products"
+COLLECTION_CATEGORIES = "categories"
+COLLECTION_CARTS = "carts"
+COLLECTION_ORDERS = "orders"
+COLLECTION_PAYMENTS = "payments"
+COLLECTION_SHIPMENTS = "shipments"
+COLLECTION_LOYALTY_WALLETS = "loyalty_wallets"
+COLLECTION_LOYALTY_TXNS = "loyalty_txns"
+COLLECTION_BATCHES = "batches"
+COLLECTION_LAB_CERTIFICATES = "lab_certificates"
+COLLECTION_CUSTOMERS = "customers"
+COLLECTION_REVIEWS = "reviews"
+COLLECTION_MEDIA_ASSETS = "media_assets"
+COLLECTION_BLOGS = "blogs"
+COLLECTION_FAQS = "faqs"
+COLLECTION_TICKETS = "support_tickets"
+COLLECTION_AUDIT_LOGS = "audit_logs"
+COLLECTION_SEARCH_ANALYTICS = "search_analytics"
+COLLECTION_WISHLISTS = "wishlists"
+COLLECTION_INVENTORIES = "inventories"
+COLLECTION_CHECKOUTS = "checkouts"
+
+# Header Mappings
+CORRELATION_ID_HEADER = "X-Correlation-ID"
+
+# Database Constraints
+MAX_DOCUMENT_SIZE = 16 * 1024 * 1024  # 16MB standard BSON limit

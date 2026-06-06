@@ -1,0 +1,1 @@
+// State manager hook for shopping cart updates

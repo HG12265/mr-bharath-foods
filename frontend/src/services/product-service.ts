@@ -1,0 +1,1 @@
+// Product catalog API routing client mappings

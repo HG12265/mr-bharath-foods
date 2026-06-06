@@ -1,0 +1,1 @@
+// Sticky bottom navbar container optimized for mobile users
