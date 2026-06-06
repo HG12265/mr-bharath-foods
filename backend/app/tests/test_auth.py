@@ -114,7 +114,8 @@ def test_login_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
     assert "access_token" in json_data["data"]
     assert json_data["data"]["role"] == "customer"
 
-def test_otp_request_flow(mock_redis: AsyncMock) -> None:
+def test_otp_request_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
+    app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_redis] = lambda: mock_redis
 
     payload = {

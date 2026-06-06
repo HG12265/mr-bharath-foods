@@ -16,10 +16,22 @@ client = TestClient(app)
 @pytest.fixture  # type: ignore[untyped-decorator]
 def mock_db() -> MagicMock:
     db = MagicMock()
-    db["products"] = MagicMock()
-    db["categories"] = MagicMock()
-    db["media_assets"] = MagicMock()
-    db["audit_logs"] = MagicMock()
+    collections = {
+        "products": MagicMock(),
+        "categories": MagicMock(),
+        "media_assets": MagicMock(),
+        "audit_logs": MagicMock(),
+    }
+    def get_mock_collection(key: str) -> MagicMock:
+        if key not in collections:
+            coll = MagicMock()
+            coll.insert_one = AsyncMock()
+            coll.find_one = AsyncMock(return_value=None)
+            coll.find_one_and_update = AsyncMock(return_value=None)
+            coll.update_many = AsyncMock()
+            collections[key] = coll
+        return collections[key]
+    db.__getitem__.side_effect = get_mock_collection
     return db
 
 
@@ -38,7 +50,7 @@ def test_create_product_success(
 ) -> None:
     # 1. Mock Category Lookup (Category must exist, be active, not deleted)
     category_doc = {
-        "_id": "category_id_123",
+        "_id": "60c72b2f9b1d8e2a3c4f5e7a",
         "name": "Organic Ghee",
         "slug": "organic-ghee",
         "is_active": True,
@@ -49,16 +61,22 @@ def test_create_product_success(
 
     # 2. Mock Media Assets (Media must exist, not deleted, and be completed)
     media_doc = {
-        "_id": "media_id_456",
+        "_id": "60c72b2f9b1d8e2a3c4f5e7b",
+        "original_filename": "image.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/uuid-image.png",
+        "public_url": "https://r2.com/image.png",
         "status": "completed",
         "is_deleted": False,
-        "uploaded_by": "admin_user_id_12345"
+        "uploaded_by": "admin_user_id_12345",
+        "asset_type": "product"
     }
     mock_db["media_assets"].find_one = AsyncMock(return_value=media_doc)
 
     # 3. Mock Slug & SKU Uniqueness (No duplicate slug or SKU in DB)
     mock_db["products"].find_one = AsyncMock(return_value=None)
-    mock_db["products"].insert_one = AsyncMock(return_value=MagicMock(inserted_id="prod_id_789"))
+    mock_db["products"].insert_one = AsyncMock(return_value=MagicMock(inserted_id="60c72b2f9b1d8e2a3c4f5e7c"))
     mock_db["audit_logs"].insert_one = AsyncMock()
 
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -68,8 +86,8 @@ def test_create_product_success(
         "name": "Premium Cow Ghee",
         "description": "Premium quality organic cow ghee directly sourced from local farms.",
         "short_description": "Pure premium organic cow ghee.",
-        "category_id": "category_id_123",
-        "media_ids": ["media_id_456"],
+        "category_id": "60c72b2f9b1d8e2a3c4f5e7a",
+        "media_ids": ["60c72b2f9b1d8e2a3c4f5e7b"],
         "sourcing": {
             "region": "Tamil Nadu",
             "story": "Sourced from native cows in clean pastures of Western Ghats."
@@ -100,7 +118,7 @@ def test_create_product_success(
     response = client.post("/api/v1/products", json=payload)
     app.dependency_overrides.clear()
 
-    assert response.status_code == 200
+    assert response.status_code == 200, response.json()
     json_data = response.json()
     assert json_data["success"] is True
     assert json_data["data"]["name"] == "Premium Cow Ghee"
@@ -112,16 +130,44 @@ def test_create_product_duplicate_sku(
     mock_admin_token_data: TokenData
 ) -> None:
     # Category exists and active
-    category_doc = {"_id": "cat_id", "is_active": True, "is_deleted": False}
+    category_doc = {
+        "_id": "60c72b2f9b1d8e2a3c4f5e7a",
+        "name": "Organic Ghee",
+        "slug": "organic-ghee",
+        "is_active": True,
+        "is_deleted": False,
+        "level": 0
+    }
     # Mock category find_one, and mock media lookup
     mock_db["categories"].find_one = AsyncMock(return_value=category_doc)
-    mock_db["media_assets"].find_one = AsyncMock(return_value={"_id": "m_id", "status": "completed", "is_deleted": False})
+
+    media_doc = {
+        "_id": "60c72b2f9b1d8e2a3c4f5e7b",
+        "original_filename": "image.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/uuid-image.png",
+        "public_url": "https://r2.com/image.png",
+        "status": "completed",
+        "is_deleted": False,
+        "uploaded_by": "admin_user_id_12345",
+        "asset_type": "product"
+    }
+    mock_db["media_assets"].find_one = AsyncMock(return_value=media_doc)
 
     # Return an existing product for the SKU check (meaning duplicate)
     existing_product_with_sku = {
-        "_id": "another_prod_id",
+        "_id": "60c72b2f9b1d8e2a3c4f5e7c",
         "name": "Different Ghee Product",
         "slug": "different-ghee",
+        "description": "Decent description of different ghee that is long enough.",
+        "short_description": "Pure organic different ghee.",
+        "category_id": "60c72b2f9b1d8e2a3c4f5e7a",
+        "variants": [],
+        "sourcing": {
+            "region": "West Bengal",
+            "story": "Sourced from native cows."
+        },
         "is_deleted": False
     }
     # First slug lookup returns None (slug unique), next SKU lookup returns existing product
@@ -134,7 +180,7 @@ def test_create_product_duplicate_sku(
         "name": "Cow Ghee",
         "description": "Decent description of cow ghee that is long enough.",
         "short_description": "Pure organic cow ghee.",
-        "category_id": "cat_id",
+        "category_id": "60c72b2f9b1d8e2a3c4f5e7a",
         "variants": [
             {
                 "sku": "COW-GHEE-500ML",
@@ -161,18 +207,18 @@ def test_public_list_visibility(
 ) -> None:
     # Public listing should query status="active" and is_deleted!=True
     product_doc = {
-        "_id": "active_prod_id",
+        "_id": "60c72b2f9b1d8e2a3c4f5e7c",
         "name": "Active Cow Ghee",
         "slug": "active-cow-ghee",
         "description": "Standard ghee description.",
         "short_description": "Short ghee description.",
-        "category_id": "cat_id",
+        "category_id": "60c72b2f9b1d8e2a3c4f5e7a",
         "media_ids": [],
         "sourcing": {"region": "Tami Nadu", "story": "Grass-fed cows."},
         "attributes": [],
         "variants": [
             {
-                "variant_id": "v_id",
+                "variant_id": "60c72b2f9b1d8e2a3c4f5e7b",
                 "sku": "COW-GHEE-500ML",
                 "title": "500ml",
                 "volume_weight": "500ml",
@@ -191,6 +237,9 @@ def test_public_list_visibility(
     }
 
     mock_cursor = MagicMock()
+    mock_cursor.skip = MagicMock(return_value=mock_cursor)
+    mock_cursor.limit = MagicMock(return_value=mock_cursor)
+    mock_cursor.sort = MagicMock(return_value=mock_cursor)
     mock_cursor.__aiter__.return_value = [product_doc]
     mock_db["products"].find = MagicMock(return_value=mock_cursor)
 

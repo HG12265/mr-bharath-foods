@@ -31,7 +31,15 @@ def get_order_service(
     audit_repo = AuditRepository(db)
     audit_service = AuditService(audit_repo)
     inventory_repo = InventoryRepository(db)
-    inventory_service = InventoryService(inventory_repo, product_repo, audit_service)
+
+    from app.repositories.notification_repository import NotificationRepository
+    from app.services.notification_service import NotificationService
+    notification_repo = NotificationRepository(db)
+    notification_service = NotificationService(notification_repo, audit_service)
+
+    inventory_service = InventoryService(
+        inventory_repo, product_repo, audit_service, notification_service
+    )
     return OrderService(
         repo,
         checkout_repo,
@@ -39,6 +47,7 @@ def get_order_service(
         product_repo,
         inventory_service,
         audit_service,
+        notification_service,
     )
 
 

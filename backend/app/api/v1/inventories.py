@@ -28,7 +28,18 @@ def get_inventory_service(
     product_repo = ProductRepository(db)
     audit_repo = AuditRepository(db)
     audit_service = AuditService(audit_repo)
-    return InventoryService(repo, product_repo, audit_service)
+
+    from app.repositories.notification_repository import NotificationRepository
+    from app.services.notification_service import NotificationService
+    notification_repo = NotificationRepository(db)
+    notification_service = NotificationService(notification_repo, audit_service)
+
+    return InventoryService(
+        repo,
+        product_repo,
+        audit_service,
+        notification_service,
+    )
 
 
 @router.get("/alerts/low-stock", response_model=Envelope[list[InventoryResponse]])

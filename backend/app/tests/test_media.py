@@ -16,8 +16,20 @@ client = TestClient(app)
 @pytest.fixture  # type: ignore[untyped-decorator]
 def mock_db() -> MagicMock:
     db = MagicMock()
-    db["media_assets"] = MagicMock()
-    db["audit_logs"] = MagicMock()
+    collections = {
+        "media_assets": MagicMock(),
+        "audit_logs": MagicMock(),
+    }
+    def get_mock_collection(key: str) -> MagicMock:
+        if key not in collections:
+            coll = MagicMock()
+            coll.insert_one = AsyncMock()
+            coll.find_one = AsyncMock(return_value=None)
+            coll.find_one_and_update = AsyncMock(return_value=None)
+            coll.update_many = AsyncMock()
+            collections[key] = coll
+        return collections[key]
+    db.__getitem__.side_effect = get_mock_collection
     return db
 
 
@@ -217,6 +229,11 @@ def test_complete_upload_permission_denied(
     # Asset uploaded by a different user
     asset_doc = {
         "_id": "507f1f77bcf86cd799439222",
+        "original_filename": "avatar.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/another_user_id_99999/uuid-avatar.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/avatar/uuid-avatar.png",
         "uploaded_by": "another_user_id_99999",
         "asset_type": "avatar",
         "status": "pending",
@@ -249,6 +266,10 @@ def test_delete_media_asset_by_owner(
     asset_doc = {
         "_id": "507f1f77bcf86cd799439222",
         "original_filename": "avatar.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/507f1f77bcf86cd799439011/uuid-avatar.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/avatar/uuid-avatar.png",
         "uploaded_by": "507f1f77bcf86cd799439011",
         "asset_type": "avatar",
         "status": "completed",

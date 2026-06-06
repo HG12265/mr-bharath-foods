@@ -27,7 +27,18 @@ def get_shipment_service(
     order_repo = OrderRepository(db)
     audit_repo = AuditRepository(db)
     audit_service = AuditService(audit_repo)
-    return ShipmentService(repo, order_repo, audit_service)
+
+    from app.repositories.notification_repository import NotificationRepository
+    from app.services.notification_service import NotificationService
+    notification_repo = NotificationRepository(db)
+    notification_service = NotificationService(notification_repo, audit_service)
+
+    return ShipmentService(
+        repo,
+        order_repo,
+        audit_service,
+        notification_service,
+    )
 
 
 @router.post("/order/{order_id}", response_model=Envelope[ShipmentResponse])

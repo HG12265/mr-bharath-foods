@@ -15,9 +15,21 @@ client = TestClient(app)
 @pytest.fixture  # type: ignore[untyped-decorator]
 def mock_db() -> MagicMock:
     db = MagicMock()
-    db["categories"] = MagicMock()
-    db["media_assets"] = MagicMock()
-    db["audit_logs"] = MagicMock()
+    collections = {
+        "categories": MagicMock(),
+        "media_assets": MagicMock(),
+        "audit_logs": MagicMock(),
+    }
+    def get_mock_collection(key: str) -> MagicMock:
+        if key not in collections:
+            coll = MagicMock()
+            coll.insert_one = AsyncMock()
+            coll.find_one = AsyncMock(return_value=None)
+            coll.find_one_and_update = AsyncMock(return_value=None)
+            coll.update_many = AsyncMock()
+            collections[key] = coll
+        return collections[key]
+    db.__getitem__.side_effect = get_mock_collection
     return db
 
 
@@ -104,48 +116,48 @@ def test_tree_generation(
     # Cow Ghee (id: cow_id, parent_id: root_id)
     # Buffalo Ghee (id: buffalo_id, parent_id: root_id)
     categories = [
-        MagicMock(
-            id="root_id",
-            name="Ghee",
-            slug="ghee",
-            description=None,
-            image_id=None,
-            parent_id=None,
-            level=0,
-            sort_order=1,
-            is_active=True,
-            is_deleted=False,
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC)
-        ),
-        MagicMock(
-            id="cow_id",
-            name="Cow Ghee",
-            slug="cow-ghee",
-            description=None,
-            image_id=None,
-            parent_id="root_id",
-            level=1,
-            sort_order=1,
-            is_active=True,
-            is_deleted=False,
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC)
-        ),
-        MagicMock(
-            id="buffalo_id",
-            name="Buffalo Ghee",
-            slug="buffalo-ghee",
-            description=None,
-            image_id=None,
-            parent_id="root_id",
-            level=1,
-            sort_order=2,
-            is_active=True,
-            is_deleted=False,
-            created_at=datetime.now(UTC),
-            updated_at=datetime.now(UTC)
-        ),
+        {
+            "_id": "root_id",
+            "name": "Ghee",
+            "slug": "ghee",
+            "description": None,
+            "image_id": None,
+            "parent_id": None,
+            "level": 0,
+            "sort_order": 1,
+            "is_active": True,
+            "is_deleted": False,
+            "created_at": datetime.now(UTC),
+            "updated_at": datetime.now(UTC)
+        },
+        {
+            "_id": "cow_id",
+            "name": "Cow Ghee",
+            "slug": "cow-ghee",
+            "description": None,
+            "image_id": None,
+            "parent_id": "root_id",
+            "level": 1,
+            "sort_order": 1,
+            "is_active": True,
+            "is_deleted": False,
+            "created_at": datetime.now(UTC),
+            "updated_at": datetime.now(UTC)
+        },
+        {
+            "_id": "buffalo_id",
+            "name": "Buffalo Ghee",
+            "slug": "buffalo-ghee",
+            "description": None,
+            "image_id": None,
+            "parent_id": "root_id",
+            "level": 1,
+            "sort_order": 2,
+            "is_active": True,
+            "is_deleted": False,
+            "created_at": datetime.now(UTC),
+            "updated_at": datetime.now(UTC)
+        },
     ]
 
     mock_cursor = MagicMock()

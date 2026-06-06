@@ -14,8 +14,20 @@ client = TestClient(app)
 @pytest.fixture  # type: ignore[untyped-decorator]
 def mock_db() -> MagicMock:
     db = MagicMock()
-    db["customers"] = MagicMock()
-    db["audit_logs"] = MagicMock()
+    collections = {
+        "customers": MagicMock(),
+        "audit_logs": MagicMock(),
+    }
+    def get_mock_collection(key: str) -> MagicMock:
+        if key not in collections:
+            coll = MagicMock()
+            coll.insert_one = AsyncMock()
+            coll.find_one = AsyncMock(return_value=None)
+            coll.find_one_and_update = AsyncMock(return_value=None)
+            coll.update_many = AsyncMock()
+            collections[key] = coll
+        return collections[key]
+    db.__getitem__.side_effect = get_mock_collection
     return db
 
 @pytest.fixture  # type: ignore[untyped-decorator]

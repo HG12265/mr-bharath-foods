@@ -22,11 +22,13 @@ class InventoryService(BaseService[Inventory]):
         repository: InventoryRepository,
         product_repository: ProductRepository,
         audit_service: AuditService,
+        notification_service: Any = None,
     ):
         super().__init__(repository)
         self.inventory_repository = repository
         self.product_repository = product_repository
         self.audit_service = audit_service
+        self.notification_service = notification_service
 
     async def create_inventory(
         self, data: InventoryCreate, ip_address: str | None = None
@@ -176,6 +178,8 @@ class InventoryService(BaseService[Inventory]):
             ip_address=ip_address,
         )
 
+        await self._check_and_notify_low_stock(updated, operator_id, ip_address)
+
         return updated
 
     async def reserve_stock(
@@ -232,6 +236,8 @@ class InventoryService(BaseService[Inventory]):
             ip_address=ip_address,
         )
 
+        await self._check_and_notify_low_stock(updated, operator_id, ip_address)
+
         return updated
 
     async def release_stock(
@@ -287,6 +293,8 @@ class InventoryService(BaseService[Inventory]):
             ip_address=ip_address,
         )
 
+        await self._check_and_notify_low_stock(updated, operator_id, ip_address)
+
         return updated
 
     def get_inventory_summary(self, inventory: Inventory) -> dict[str, Any]:
@@ -327,3 +335,19 @@ class InventoryService(BaseService[Inventory]):
         """
         alerts = await self.inventory_repository.get_low_stock_alerts()
         return [self.get_inventory_summary(item) for item in alerts]
+
+    async def _check_and_notify_low_stock(
+        self, inventory: Inventory, operator_id: str | None, ip_address: str | None
+    ) -> None:
+        if self.notification_service:
+            summary = self.get_inventory_summary(inventory)
+            if summary["is_low_stock"]:
+                await self.notification_service.create_notification(
+                    type="low_stock_alert",
+                    title="Low Stock Alert",
+                    message=f"SKU '{inventory.sku}' has fallen below safety stock level. Available: {summary['available_total']}.",
+                    role_target="warehouse",
+                    metadata={"inventory_id": inventory.id},
+                    operator_id=operator_id or "system",
+                    ip_address=ip_address,
+                )

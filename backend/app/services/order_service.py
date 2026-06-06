@@ -39,6 +39,7 @@ class OrderService(BaseService[Order]):
         product_repository: ProductRepository,
         inventory_service: InventoryService,
         audit_service: AuditService,
+        notification_service: Any = None,
     ):
         super().__init__(repository)
         self.order_repository = repository
@@ -47,6 +48,7 @@ class OrderService(BaseService[Order]):
         self.product_repository = product_repository
         self.inventory_service = inventory_service
         self.audit_service = audit_service
+        self.notification_service = notification_service
 
     async def create_order_from_checkout(
         self,
@@ -210,6 +212,29 @@ class OrderService(BaseService[Order]):
             target_id=inserted.id,
             ip_address=ip_address,
         )
+
+        # Notification hook
+        if self.notification_service:
+            # Notify customer
+            await self.notification_service.create_notification(
+                type="order_created",
+                title="New Order Created",
+                message=f"Order {inserted.order_number} has been created successfully.",
+                target_user_id=inserted.customer_id,
+                metadata={"order_id": inserted.id},
+                operator_id=operator,
+                ip_address=ip_address,
+            )
+            # Notify warehouse
+            await self.notification_service.create_notification(
+                type="order_created",
+                title="New Order Received",
+                message=f"Order {inserted.order_number} is pending payment verification.",
+                role_target="warehouse",
+                metadata={"order_id": inserted.id},
+                operator_id=operator,
+                ip_address=ip_address,
+            )
 
         return inserted
 

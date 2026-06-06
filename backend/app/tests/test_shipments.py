@@ -27,7 +27,16 @@ def mock_db() -> MagicMock:
         "shipments": MagicMock(),
         "audit_logs": MagicMock(),
     }
-    db.__getitem__.side_effect = lambda key: collections[key]
+    def get_mock_collection(key: str) -> MagicMock:
+        if key not in collections:
+            coll = MagicMock()
+            coll.insert_one = AsyncMock()
+            coll.find_one = AsyncMock(return_value=None)
+            coll.find_one_and_update = AsyncMock(return_value=None)
+            coll.update_many = AsyncMock()
+            collections[key] = coll
+        return collections[key]
+    db.__getitem__.side_effect = get_mock_collection
     return db
 
 

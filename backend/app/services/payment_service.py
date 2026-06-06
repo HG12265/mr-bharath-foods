@@ -25,12 +25,14 @@ class PaymentService(BaseService[Payment]):
         order_repository: OrderRepository,
         media_repository: MediaRepository,
         audit_service: AuditService,
+        notification_service: Any = None,
     ):
         super().__init__(repository)
         self.payment_repository = repository
         self.order_repository = order_repository
         self.media_repository = media_repository
         self.audit_service = audit_service
+        self.notification_service = notification_service
 
     async def initiate_upi_payment(
         self,
@@ -229,6 +231,18 @@ class PaymentService(BaseService[Payment]):
             ip_address=ip_address,
         )
 
+        # Notification hook
+        if self.notification_service:
+            await self.notification_service.create_notification(
+                type="payment_proof_submitted",
+                title="Payment Proof Submitted",
+                message=f"Payment proof submitted for order {order.order_number}.",
+                role_target="warehouse",
+                metadata={"order_id": order.id, "payment_id": updated.id},
+                operator_id=operator,
+                ip_address=ip_address,
+            )
+
         return updated
 
     async def verify_payment_proof_admin(
@@ -291,6 +305,27 @@ class PaymentService(BaseService[Payment]):
                 ip_address=ip_address,
             )
 
+            # Notification hooks
+            if self.notification_service:
+                await self.notification_service.create_notification(
+                    type="payment_approved",
+                    title="Payment Approved",
+                    message=f"Your payment for order {order.order_number} has been approved.",
+                    target_user_id=order.customer_id,
+                    metadata={"order_id": order.id, "payment_id": payment_id},
+                    operator_id=admin_user_id,
+                    ip_address=ip_address,
+                )
+                await self.notification_service.create_notification(
+                    type="order_confirmed",
+                    title="Order Confirmed",
+                    message=f"Your order {order.order_number} is now confirmed and paid.",
+                    target_user_id=order.customer_id,
+                    metadata={"order_id": order.id},
+                    operator_id=admin_user_id,
+                    ip_address=ip_address,
+                )
+
             return updated_payment
 
         elif action == "reject":
@@ -329,6 +364,18 @@ class PaymentService(BaseService[Payment]):
                 target_id=payment_id,
                 ip_address=ip_address,
             )
+
+            # Notification hook
+            if self.notification_service:
+                await self.notification_service.create_notification(
+                    type="payment_rejected",
+                    title="Payment Proof Rejected",
+                    message=f"Your payment proof for order {order.order_number} was rejected. Reason: {rejection_reason}",
+                    target_user_id=order.customer_id,
+                    metadata={"order_id": order.id, "payment_id": payment_id},
+                    operator_id=admin_user_id,
+                    ip_address=ip_address,
+                )
 
             return updated_payment
 

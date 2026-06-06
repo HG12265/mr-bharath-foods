@@ -20,11 +20,13 @@ class ShipmentService(BaseService[Shipment]):
         repository: ShipmentRepository,
         order_repository: OrderRepository,
         audit_service: AuditService,
+        notification_service: Any = None,
     ):
         super().__init__(repository)
         self.shipment_repository = repository
         self.order_repository = order_repository
         self.audit_service = audit_service
+        self.notification_service = notification_service
 
     async def create_shipment(
         self,
@@ -92,6 +94,18 @@ class ShipmentService(BaseService[Shipment]):
             target_id=shipment.id,
             ip_address=ip_address,
         )
+
+        # Notification hook
+        if self.notification_service:
+            await self.notification_service.create_notification(
+                type="shipment_created",
+                title="Shipment Created",
+                message=f"Shipment created for order {order.order_number} via {carrier_name}.",
+                target_user_id=order.customer_id,
+                metadata={"order_id": order.id, "shipment_id": shipment.id},
+                operator_id=current_user.user_id,
+                ip_address=ip_address,
+            )
 
         return shipment
 
@@ -176,6 +190,18 @@ class ShipmentService(BaseService[Shipment]):
             target_id=shipment_id,
             ip_address=ip_address,
         )
+
+        # Notification hook
+        if self.notification_service:
+            await self.notification_service.create_notification(
+                type="shipment_status_updated",
+                title=f"Shipment Status: {status.upper()}",
+                message=f"Your shipment for order {shipment.order_number} has been updated to {status}.",
+                target_user_id=shipment.customer_id,
+                metadata={"order_id": shipment.order_id, "shipment_id": shipment_id},
+                operator_id=current_user.user_id,
+                ip_address=ip_address,
+            )
 
         return updated
 
