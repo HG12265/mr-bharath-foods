@@ -1,6 +1,4 @@
 from decimal import Decimal
-
-from decimal import Decimal
 from typing import Any
 
 DEFAULT_SETTINGS: dict[str, Any] = {

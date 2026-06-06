@@ -19,6 +19,7 @@ from app.api.v1.orders import admin_router as orders_admin_router
 from app.api.v1.orders import router as orders_router
 from app.api.v1.payments import admin_router as payments_admin_router
 from app.api.v1.payments import router as payments_router
+from app.api.v1.production_hardening import router as production_hardening_router
 from app.api.v1.products import router as products_router
 from app.api.v1.reviews import admin_router as reviews_admin_router
 from app.api.v1.reviews import router as reviews_router
@@ -34,8 +35,10 @@ from app.core.exceptions import register_exception_handlers
 from app.core.logging import logger
 from app.core.openapi import configure_openapi
 from app.core.redis import redis_manager
+from app.middleware.api_version import APIVersionMiddleware
 from app.middleware.correlation import CorrelationIdMiddleware
 from app.middleware.request_logging import RequestLoggingMiddleware
+from app.middleware.request_size import RequestSizeLimitMiddleware
 from app.middleware.security_headers import SecurityHeadersMiddleware
 
 
@@ -47,15 +50,11 @@ async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
         await db_manager.connect_to_database()
         await redis_manager.connect_to_redis()
         if db_manager.db is not None:
-            from app.repositories.cart_repository import CartRepository
-            cart_repo = CartRepository(db_manager.db)
-            await cart_repo.create_ttl_index()
-            logger.info("Cart TTL index initialized successfully.")
+            from app.core.index_registry import initialize_indexes
+            await initialize_indexes(db_manager.db)
 
-            from app.repositories.inventory_repository import InventoryRepository
-            inv_repo = InventoryRepository(db_manager.db)
-            await inv_repo.create_sku_unique_index()
-            logger.info("Inventory SKU unique index initialized successfully.")
+        from app.core.startup_checks import run_startup_checks
+        run_startup_checks()
         logger.info("Application context startup completed successfully.")
     except Exception as exc:
         logger.critical(f"Context initialization failed: {exc!s}")
@@ -77,6 +76,8 @@ def create_app() -> FastAPI:
     )
 
     # Register middlewares (execution starts from the last added middleware upwards)
+    app.add_middleware(APIVersionMiddleware)
+    app.add_middleware(RequestSizeLimitMiddleware)
     app.add_middleware(SecurityHeadersMiddleware)
     app.add_middleware(RequestLoggingMiddleware)
     app.add_middleware(CorrelationIdMiddleware)
@@ -87,6 +88,16 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+
+    # Root route returning version metadata
+    @app.get("/", tags=["Metadata"])
+    async def root_metadata() -> dict[str, str]:
+        return {
+            "project_name": settings.PROJECT_NAME,
+            "version": settings.PROJECT_VERSION,
+            "environment": settings.ENVIRONMENT,
+            "status": "running",
+        }
 
     # Register customized exception response interceptors
     register_exception_handlers(app)
@@ -214,6 +225,11 @@ def create_app() -> FastAPI:
         settings_admin_router,
         prefix=f"{settings.API_V1_STR}/admin/settings",
         tags=["Settings Admin Operations"]
+    )
+    app.include_router(
+        production_hardening_router,
+        prefix=f"{settings.API_V1_STR}/admin",
+        tags=["Production Hardening Operations"]
     )
 
     return app

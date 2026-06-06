@@ -27,7 +27,9 @@ class NotificationRepository(BaseRepository[Notification]):
         if role:
             query["$or"].append({"role_target": role})
 
-        cursor = self.collection.find(query).sort("created_at", -1).skip(skip).limit(limit)
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
+        cursor = self.collection.find(query).sort("created_at", -1).skip(skip).limit(capped_limit)
         results = []
         async for doc in cursor:
             from app.core.money import convert_bson_to_decimals

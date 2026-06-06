@@ -1,4 +1,5 @@
 import time
+from typing import Any
 
 from fastapi import APIRouter
 
@@ -52,4 +53,56 @@ async def check_system_health() -> Envelope[SystemHealthResponse]:
         success=True,
         message="System status verified successfully.",
         data=health_data
+    )
+
+
+@router.get("/readiness", response_model=Envelope[dict[str, Any]])
+async def check_system_readiness() -> Any:
+    """
+    Readiness probe verifying MongoDB and Redis connections.
+    Returns 503 if any key dependency is unhealthy.
+    """
+
+    from fastapi import status
+    from fastapi.responses import JSONResponse
+
+    db_ok = False
+    redis_ok = False
+
+    # 1. MongoDB check
+    if db_manager.client:
+        try:
+            await db_manager.client.admin.command("ping")
+            db_ok = True
+        except Exception:
+            pass
+
+    # 2. Redis check
+    if redis_manager.client:
+        try:
+            await redis_manager.client.ping()
+            redis_ok = True
+        except Exception:
+            pass
+
+    if not db_ok or not redis_ok:
+        return JSONResponse(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            content={
+                "success": False,
+                "message": "Service is unhealthy.",
+                "data": {
+                    "database": "healthy" if db_ok else "unhealthy",
+                    "redis": "healthy" if redis_ok else "unhealthy",
+                },
+            },
+        )
+
+    return Envelope(
+        success=True,
+        message="Service is ready to accept traffic.",
+        data={
+            "database": "healthy",
+            "redis": "healthy",
+        },
     )

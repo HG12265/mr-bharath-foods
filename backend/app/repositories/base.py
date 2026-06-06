@@ -36,7 +36,9 @@ class BaseRepository(Generic[T]):
     async def find(self, filter_query: dict[str, Any], skip: int = 0, limit: int = 100) -> list[T]:
         # Enforce soft-delete checks by default across find queries
         full_query = {**filter_query, "is_deleted": {"$ne": True}}
-        cursor = self.collection.find(full_query).skip(skip).limit(limit)
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
+        cursor = self.collection.find(full_query).skip(skip).limit(capped_limit)
         results = []
         async for doc in cursor:
             from app.core.money import convert_bson_to_decimals

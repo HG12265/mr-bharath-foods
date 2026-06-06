@@ -46,9 +46,11 @@ class ReviewRepository(BaseRepository[Review]):
         """
         Retrieves all non-deleted reviews sorted by creation date descending for administrative view.
         """
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
         cursor = self.collection.find({
             "is_deleted": {"$ne": True}
-        }).sort("created_at", -1).skip(skip).limit(limit)
+        }).sort("created_at", -1).skip(skip).limit(capped_limit)
         results = []
         async for doc in cursor:
             from app.core.money import convert_bson_to_decimals

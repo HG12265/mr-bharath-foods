@@ -1,6 +1,5 @@
 import re
 from decimal import Decimal
-
 from typing import Any
 
 from app.core.exceptions import BaseAppException

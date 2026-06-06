@@ -21,6 +21,12 @@ class Settings(BaseSettings):
     REDIS_URL: str
     UPI_ID: str = "mrbharathfoods@upi"
 
+    # Production Hardening Configurations
+    ENVIRONMENT: str = "development"
+    MAX_PAGINATION_LIMIT: int = 250
+    MAX_REQUEST_SIZE_BYTES: int = 16777216  # 16MB
+    PROJECT_VERSION: str = "1.0.0"
+
     # Cloudflare R2 configurations
     R2_ENDPOINT_URL: str | None = None
     R2_ACCESS_KEY_ID: str | None = None

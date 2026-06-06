@@ -54,7 +54,9 @@ class ProductRepository(BaseRepository[Product]):
         if category_id:
             query["category_id"] = category_id
 
-        cursor = self.collection.find(query).skip(skip).limit(limit)
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
+        cursor = self.collection.find(query).skip(skip).limit(capped_limit)
         results = []
         async for doc in cursor:
             from app.core.money import convert_bson_to_decimals
@@ -79,7 +81,9 @@ class ProductRepository(BaseRepository[Product]):
         if category_id:
             query["category_id"] = category_id
 
-        cursor = self.collection.find(query).skip(skip).limit(limit)
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
+        cursor = self.collection.find(query).skip(skip).limit(capped_limit)
         results = []
         async for doc in cursor:
             from app.core.money import convert_bson_to_decimals
