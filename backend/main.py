@@ -18,6 +18,8 @@ from app.api.v1.payments import admin_router as payments_admin_router
 from app.api.v1.payments import router as payments_router
 from app.api.v1.products import router as products_router
 from app.api.v1.search import router as search_router
+from app.api.v1.shipments import admin_router as shipments_admin_router
+from app.api.v1.shipments import router as shipments_router
 from app.api.v1.wishlists import router as wishlists_router
 from app.core.config import settings
 from app.core.database import db_manager
@@ -160,6 +162,16 @@ def create_app() -> FastAPI:
         payments_admin_router,
         prefix=f"{settings.API_V1_STR}/admin/payments",
         tags=["Payment Admin Operations"]
+    )
+    app.include_router(
+        shipments_router,
+        prefix=f"{settings.API_V1_STR}/shipments",
+        tags=["Shipment Operations"]
+    )
+    app.include_router(
+        shipments_admin_router,
+        prefix=f"{settings.API_V1_STR}/admin/shipments",
+        tags=["Shipment Admin Operations"]
     )
 
     return app
