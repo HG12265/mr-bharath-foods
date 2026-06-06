@@ -9,6 +9,7 @@ from app.api.v1.carts import router as carts_router
 from app.api.v1.categories import router as categories_router
 from app.api.v1.checkouts import router as checkouts_router
 from app.api.v1.customers import router as customers_router
+from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.health import router as health_router
 from app.api.v1.inventories import router as inventories_router
 from app.api.v1.media import router as media_router
@@ -196,6 +197,11 @@ def create_app() -> FastAPI:
         reviews_admin_router,
         prefix=f"{settings.API_V1_STR}/admin/reviews",
         tags=["Review Admin Operations"]
+    )
+    app.include_router(
+        dashboard_router,
+        prefix=f"{settings.API_V1_STR}/admin/dashboard",
+        tags=["Dashboard Operations"]
     )
 
     return app
