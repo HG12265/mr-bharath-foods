@@ -12,6 +12,8 @@ from app.api.v1.customers import router as customers_router
 from app.api.v1.health import router as health_router
 from app.api.v1.inventories import router as inventories_router
 from app.api.v1.media import router as media_router
+from app.api.v1.orders import admin_router as orders_admin_router
+from app.api.v1.orders import router as orders_router
 from app.api.v1.products import router as products_router
 from app.api.v1.search import router as search_router
 from app.api.v1.wishlists import router as wishlists_router
@@ -136,6 +138,16 @@ def create_app() -> FastAPI:
         checkouts_router,
         prefix=f"{settings.API_V1_STR}/checkouts",
         tags=["Checkout Operations"]
+    )
+    app.include_router(
+        orders_router,
+        prefix=f"{settings.API_V1_STR}/orders",
+        tags=["Order Operations"]
+    )
+    app.include_router(
+        orders_admin_router,
+        prefix=f"{settings.API_V1_STR}/admin/orders",
+        tags=["Order Admin Operations"]
     )
 
     return app
