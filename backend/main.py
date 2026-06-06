@@ -23,6 +23,8 @@ from app.api.v1.products import router as products_router
 from app.api.v1.reviews import admin_router as reviews_admin_router
 from app.api.v1.reviews import router as reviews_router
 from app.api.v1.search import router as search_router
+from app.api.v1.settings import admin_router as settings_admin_router
+from app.api.v1.settings import router as settings_router
 from app.api.v1.shipments import admin_router as shipments_admin_router
 from app.api.v1.shipments import router as shipments_router
 from app.api.v1.wishlists import router as wishlists_router
@@ -202,6 +204,16 @@ def create_app() -> FastAPI:
         dashboard_router,
         prefix=f"{settings.API_V1_STR}/admin/dashboard",
         tags=["Dashboard Operations"]
+    )
+    app.include_router(
+        settings_router,
+        prefix=f"{settings.API_V1_STR}/settings",
+        tags=["Settings Operations"]
+    )
+    app.include_router(
+        settings_admin_router,
+        prefix=f"{settings.API_V1_STR}/admin/settings",
+        tags=["Settings Admin Operations"]
     )
 
     return app

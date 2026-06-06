@@ -90,7 +90,11 @@ class PaymentService(BaseService[Payment]):
                 return existing
 
         # 5. Generate link
+        settings_doc = await self.payment_repository.db["settings"].find_one({"is_deleted": {"$ne": True}})
         upi_id = settings.UPI_ID
+        if settings_doc and settings_doc.get("upi_id"):
+            upi_id = settings_doc["upi_id"]
+
         upi_link = generate_upi_link(upi_id, order.pricing.grand_total, order.order_number)
         transaction_note = f"Order {order.order_number}"
 

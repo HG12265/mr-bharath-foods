@@ -21,6 +21,7 @@ COLLECTION_SEARCH_ANALYTICS = "search_analytics"
 COLLECTION_WISHLISTS = "wishlists"
 COLLECTION_INVENTORIES = "inventories"
 COLLECTION_CHECKOUTS = "checkouts"
+COLLECTION_SETTINGS = "settings"
 
 # Header Mappings
 CORRELATION_ID_HEADER = "X-Correlation-ID"

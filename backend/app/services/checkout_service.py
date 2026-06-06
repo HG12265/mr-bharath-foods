@@ -193,8 +193,24 @@ class CheckoutService(BaseService[CheckoutSession]):
 
         # 5. Pricing calculations
         subtotal = sum((item.price * item.quantity for item in checkout_items), Decimal("0.00"))
-        tax_estimate = calculate_tax_estimate(subtotal)
-        shipping_fee = calculate_shipping_fee(subtotal)
+
+        # Load business settings
+        settings_doc = await self.checkout_repository.db["settings"].find_one({"is_deleted": {"$ne": True}})
+        tax_rate = None
+        flat_shipping = None
+        free_shipping = None
+        if settings_doc:
+            from app.core.money import convert_bson_to_decimals
+            decoded = convert_bson_to_decimals(settings_doc)
+            if decoded.get("tax_percentage") is not None:
+                tax_rate = decoded["tax_percentage"] / Decimal("100.0")
+            if decoded.get("shipping_fee") is not None:
+                flat_shipping = decoded["shipping_fee"]
+            if decoded.get("free_shipping_threshold") is not None:
+                free_shipping = decoded["free_shipping_threshold"]
+
+        tax_estimate = calculate_tax_estimate(subtotal, tax_rate)
+        shipping_fee = calculate_shipping_fee(subtotal, flat_shipping, free_shipping)
         grand_total = subtotal + tax_estimate + shipping_fee
 
         # 6. Expiration & Creation
@@ -292,8 +308,24 @@ class CheckoutService(BaseService[CheckoutSession]):
         # Apply flat 10% discount
         discount = (checkout.subtotal * Decimal("0.10")).quantize(Decimal("0.01"))
         net_subtotal = max(checkout.subtotal - discount, Decimal("0.00"))
-        tax_estimate = calculate_tax_estimate(net_subtotal)
-        shipping_fee = calculate_shipping_fee(net_subtotal)
+
+        # Load business settings
+        settings_doc = await self.checkout_repository.db["settings"].find_one({"is_deleted": {"$ne": True}})
+        tax_rate = None
+        flat_shipping = None
+        free_shipping = None
+        if settings_doc:
+            from app.core.money import convert_bson_to_decimals
+            decoded = convert_bson_to_decimals(settings_doc)
+            if decoded.get("tax_percentage") is not None:
+                tax_rate = decoded["tax_percentage"] / Decimal("100.0")
+            if decoded.get("shipping_fee") is not None:
+                flat_shipping = decoded["shipping_fee"]
+            if decoded.get("free_shipping_threshold") is not None:
+                free_shipping = decoded["free_shipping_threshold"]
+
+        tax_estimate = calculate_tax_estimate(net_subtotal, tax_rate)
+        shipping_fee = calculate_shipping_fee(net_subtotal, flat_shipping, free_shipping)
         grand_total = net_subtotal + tax_estimate + shipping_fee
 
         updated_payload = {
