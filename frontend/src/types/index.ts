@@ -1,1 +1,329 @@
-// TypeScript interfaces types exports definitions
+export type UserRole = "admin" | "warehouse" | "customer";
+
+export interface PersonalDetails {
+  first_name?: string;
+  last_name?: string;
+  avatar_url?: string;
+}
+
+export interface User {
+  id: string;
+  email?: string;
+  phone: string;
+  role: UserRole;
+  personal_details: PersonalDetails;
+}
+
+export interface Token {
+  access_token: string;
+  token_type: string;
+  role: UserRole;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  slug: string;
+  description?: string;
+  image_id?: string;
+  parent_id?: string;
+  level: number;
+  sort_order: number;
+  is_active: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ProductVariant {
+  variant_id: string;
+  sku: string;
+  title: string;
+  volume_weight: string;
+  price: number;
+  compare_at_price?: number;
+  stock_status: "in_stock" | "out_of_stock";
+  is_active: boolean;
+}
+
+export interface SourcingDetails {
+  region: string;
+  story: string;
+  manufacturer_id?: string;
+}
+
+export interface ProductAttribute {
+  name: string;
+  value: string;
+}
+
+export interface SEOMetadata {
+  meta_title?: string;
+  meta_description?: string;
+  meta_keywords: string[];
+}
+
+export interface ProductRatings {
+  average_rating: number;
+  review_count: number;
+  total_reviews: number;
+  star_1_count: number;
+  star_2_count: number;
+  star_3_count: number;
+  star_4_count: number;
+  star_5_count: number;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  slug: string;
+  description: string;
+  short_description: string;
+  category_id: string;
+  media_ids: string[];
+  sourcing: SourcingDetails;
+  attributes: ProductAttribute[];
+  variants: ProductVariant[];
+  seo: SEOMetadata;
+  ratings: ProductRatings;
+  tags: string[];
+  is_featured: boolean;
+  status: "draft" | "active" | "archived";
+  created_at: string;
+  updated_at: string;
+}
+
+export interface CartProductSummary {
+  name: string;
+  slug: string;
+  media_ids: string[];
+  price: number;
+  sku: string;
+  stock_status: string;
+}
+
+export interface CartItem {
+  product_id: string;
+  variant_id: string;
+  sku: string;
+  quantity: number;
+  unit_price_snapshot: number;
+  added_at: string;
+  updated_at: string;
+  product_summary?: CartProductSummary;
+}
+
+export interface CartSummary {
+  subtotal: number;
+  item_count: number;
+  quantity_total: number;
+}
+
+export interface Cart {
+  id: string;
+  customer_id?: string;
+  guest_token?: string;
+  items: CartItem[];
+  summary: CartSummary;
+  status: "active" | "converted" | "abandoned";
+  expires_at?: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface ShippingAddress {
+  full_name: string;
+  phone: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+}
+
+export interface CheckoutItem {
+  product_id: string;
+  variant_id: string;
+  sku: string;
+  quantity: number;
+  price: number;
+  reserved_warehouse_id: string;
+}
+
+export interface CheckoutPricing {
+  subtotal: number;
+  tax_estimate: number;
+  shipping_fee: number;
+  coupon_code?: string;
+  discount: number;
+  grand_total: number;
+}
+
+export interface CheckoutSession {
+  id: string;
+  cart_id: string;
+  customer_id?: string;
+  guest_token?: string;
+  email: string;
+  items: CheckoutItem[];
+  shipping_address: ShippingAddress;
+  pricing: CheckoutPricing;
+  status: string;
+  idempotency_key: string;
+  expires_at: string;
+  created_at: string;
+  updated_at: string;
+}
+
+export type PaymentStatus = "pending" | "paid" | "failed" | "refunded";
+export type FulfillmentStatus = "pending" | "packed" | "shipped" | "delivered" | "cancelled";
+export type OrderStatus = "pending_payment" | "confirmed" | "cancelled" | "closed";
+
+export interface OrderCustomerSnapshot {
+  customer_id?: string;
+  first_name?: string;
+  last_name?: string;
+  email: string;
+  phone?: string;
+}
+
+export interface OrderAddressSnapshot {
+  full_name: string;
+  phone: string;
+  address_line1: string;
+  address_line2?: string;
+  city: string;
+  state: string;
+  pincode: string;
+  country: string;
+}
+
+export interface OrderItem {
+  product_id: string;
+  variant_id: string;
+  sku: string;
+  product_name: string;
+  variant_title: string;
+  quantity: number;
+  unit_price: number;
+  line_total: number;
+  reserved_warehouse_id: string;
+}
+
+export interface OrderPricing {
+  subtotal: number;
+  discount: number;
+  tax_total: number;
+  shipping_fee: number;
+  grand_total: number;
+}
+
+export interface Order {
+  id: string;
+  order_number: string;
+  checkout_id: string;
+  customer_id?: string;
+  guest_token?: string;
+  customer_snapshot: OrderCustomerSnapshot;
+  shipping_address_snapshot: OrderAddressSnapshot;
+  items: OrderItem[];
+  pricing: OrderPricing;
+  payment_status: PaymentStatus;
+  fulfillment_status: FulfillmentStatus;
+  order_status: OrderStatus;
+  created_at: string;
+  updated_at: string;
+}
+
+export type UpiPaymentStatus = "pending" | "approved" | "rejected";
+
+export interface Payment {
+  id: string;
+  order_id: string;
+  customer_id: string;
+  upi_id: string;
+  amount: number;
+  upi_link: string;
+  payment_proof_id?: string;
+  status: UpiPaymentStatus;
+  rejection_reason?: string;
+  verified_by?: string;
+  verified_at?: string;
+  created_at: string;
+}
+
+export interface TimelineEvent {
+  event_name: string;
+  timestamp: string;
+  description: string;
+  updated_by?: string;
+}
+
+export interface Shipment {
+  id: string;
+  order_id: string;
+  order_number: string;
+  customer_id?: string;
+  carrier_name: string;
+  tracking_number: string;
+  status: "pending" | "packed" | "shipped" | "out_for_delivery" | "delivered" | "failed" | "returned";
+  timeline: TimelineEvent[];
+  created_at: string;
+}
+
+export type ReviewModerationStatus = "pending" | "approved" | "rejected";
+
+export interface Review {
+  id: string;
+  product_id: string;
+  customer_id: string;
+  order_id: string;
+  rating: number;
+  title: string;
+  comment: string;
+  is_verified_purchase: boolean;
+  moderation_status: ReviewModerationStatus;
+  is_approved: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface Notification {
+  id: string;
+  title: string;
+  message: string;
+  type: string;
+  target_user_id?: string;
+  role_target?: string;
+  is_read: boolean;
+  read_at?: string;
+  metadata?: Record<string, string>;
+  created_at: string;
+}
+
+export interface SettingsPublic {
+  tax_percentage: number;
+  shipping_fee: number;
+  free_shipping_threshold: number;
+  support_contact: string;
+  fssai_number?: string;
+  gst_number?: string;
+}
+
+export interface SettingsAdmin extends SettingsPublic {
+  id: string;
+  upi_id: string;
+}
+
+export interface Envelope<T> {
+  success: boolean;
+  message: string;
+  data: T;
+}
+
+export interface APIError {
+  success: boolean;
+  message: string;
+  details?: Record<string, any>;
+}
