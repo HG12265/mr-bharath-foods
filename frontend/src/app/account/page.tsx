@@ -21,15 +21,15 @@ export default function AccountPage() {
 
   return (
     <AuthGuard requireAuth={true}>
-      <main className="min-h-screen bg-background flex flex-col justify-center items-center px-4 py-12">
+      <main className="min-h-screen bg-warmIvory flex flex-col justify-center items-center px-4 py-12">
         <div className="w-full max-w-[560px] bg-white border border-indianInk/5 rounded-lg shadow-[0_4px_16px_rgba(28,35,33,0.04)] overflow-hidden">
           {/* Header */}
           <div className="bg-trustNavy text-warmIvory px-8 py-8 border-b border-indianInk/5 flex justify-between items-center">
             <div>
-              <span className="text-xs uppercase tracking-widest text-warmIvory/65 font-sans block mb-1">
+              <span className="text-xs uppercase tracking-widest text-warmIvory/80 font-sans block mb-1">
                 Customer Profile Portal
               </span>
-              <h1 className="font-serif text-3xl font-medium tracking-tight">
+              <h1 className="text-warmIvory font-serif text-3xl font-medium tracking-tight">
                 Welcome, {user?.personal_details?.first_name || "Valued Member"}
               </h1>
             </div>
