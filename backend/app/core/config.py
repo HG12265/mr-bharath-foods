@@ -19,6 +19,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "mr_bharath_foods"
 
     REDIS_URL: str
+    UPI_ID: str = "mrbharathfoods@upi"
 
     # Cloudflare R2 configurations
     R2_ENDPOINT_URL: str | None = None
