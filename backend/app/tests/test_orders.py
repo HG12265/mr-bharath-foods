@@ -232,7 +232,8 @@ async def test_create_order_success(mock_db: MagicMock) -> None:
     assert response.status_code == 200, response.json()
     res_data = response.json()
     assert res_data["success"] is True
-    assert res_data["data"]["order_number"] == "MBF-20260606-000042"
+    today_str = datetime.now().strftime("%Y%m%d")
+    assert res_data["data"]["order_number"] == f"MBF-{today_str}-000042"
     assert res_data["data"]["customer_snapshot"]["first_name"] == "Gowtham"
     assert res_data["data"]["items"][0]["product_name"] == "Organic Almond Ghee"
     assert res_data["data"]["items"][0]["variant_title"] == "250ml"

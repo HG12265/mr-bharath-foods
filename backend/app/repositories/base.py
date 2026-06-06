@@ -49,6 +49,8 @@ class BaseRepository(Generic[T]):
 
     async def insert(self, data: BaseModel) -> T:
         doc = data.model_dump(by_alias=True)
+        doc.pop("_id", None)
+        doc.pop("id", None)
         doc["is_deleted"] = False
         from app.core.money import convert_decimals_to_bson
         doc = convert_decimals_to_bson(doc)
