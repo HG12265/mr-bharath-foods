@@ -91,6 +91,11 @@ export const mediaService = {
       throw error;
     }
   },
+
+  async getMediaAssetMetadata(id: string): Promise<Envelope<MediaAssetResponse>> {
+    const response = await apiClient.get<Envelope<MediaAssetResponse>>(`/api/v1/media/${id}`);
+    return response.data;
+  },
 };
 
 export default mediaService;

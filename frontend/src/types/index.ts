@@ -267,6 +267,7 @@ export interface Shipment {
   customer_id?: string;
   carrier_name: string;
   tracking_number: string;
+  awb_number?: string;
   status: "pending" | "packed" | "shipped" | "out_for_delivery" | "delivered" | "failed" | "returned";
   timeline: TimelineEvent[];
   created_at: string;
@@ -327,3 +328,52 @@ export interface APIError {
   message: string;
   details?: Record<string, any>;
 }
+
+export interface WarehouseStock {
+  warehouse_id: string;
+  on_hand: number;
+  reserved: number;
+  location_code?: string;
+}
+
+export interface Inventory {
+  id: string;
+  sku: string;
+  variant_id: string;
+  product_id: string;
+  warehouse_stock: WarehouseStock[];
+  safety_stock_level: number;
+  on_hand_total: number;
+  reserved_total: number;
+  available_total: number;
+  is_low_stock: boolean;
+  created_at: string;
+  updated_at: string;
+}
+
+export interface DashboardPaymentProof {
+  id: string;
+  order_id: string;
+  order_number: string;
+  amount: number;
+  status: string;
+  screenshot_media_id?: string;
+  created_at: string;
+}
+
+export interface DashboardData {
+  total_orders?: number;
+  total_revenue?: number;
+  pending_payments?: number;
+  confirmed_orders?: number;
+  shipped_orders?: number;
+  delivered_orders?: number;
+  low_stock_count?: number;
+  pending_review_count?: number;
+  total_customers?: number;
+  total_products?: number;
+  recent_orders?: Order[];
+  low_stock_alerts?: Inventory[];
+  pending_payment_proofs?: DashboardPaymentProof[];
+  pending_reviews?: Review[];
+}

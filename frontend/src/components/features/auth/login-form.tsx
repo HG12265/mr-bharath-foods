@@ -48,7 +48,12 @@ export const LoginForm: React.FC = () => {
         onSuccess: (res) => {
           if (res.success) {
             setSuccess(true);
-            router.push("/");
+            const role = res.data?.role;
+            if (role === "admin" || role === "warehouse") {
+              router.push("/admin");
+            } else {
+              router.push("/");
+            }
           } else {
             setApiError(res.message || "Invalid credentials. Please try again.");
           }

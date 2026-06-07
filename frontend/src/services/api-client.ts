@@ -95,8 +95,14 @@ apiClient.interceptors.response.use(
     // Only auto-refresh on 401 (Unauthorized) credentials expiry
     // Do not attempt to refresh on 403 (Forbidden) or other codes
     if (error.response?.status === 401 && !originalRequest.headers.get("X-Retry-Flag")) {
-      // Avoid infinite loop if the refresh endpoint itself returns 401
-      if (originalRequest.url?.includes("/auth/refresh")) {
+      // Avoid refresh loop or running refresh for login/auth setup requests
+      const isAuthSetupUrl = 
+        originalRequest.url?.includes("/auth/login") ||
+        originalRequest.url?.includes("/auth/register") ||
+        originalRequest.url?.includes("/auth/refresh") ||
+        originalRequest.url?.includes("/auth/otp");
+
+      if (isAuthSetupUrl) {
         setAccessToken(null);
         return Promise.reject(error);
       }

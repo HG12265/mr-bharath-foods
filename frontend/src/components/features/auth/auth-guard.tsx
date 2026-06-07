@@ -21,10 +21,15 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireAuth = tr
       if (requireAuth && (!isAuthenticated || isError)) {
         router.push("/login");
       } else if (!requireAuth && isAuthenticated) {
-        router.push("/");
+        const role = data?.data?.role;
+        if (role === "admin" || role === "warehouse") {
+          router.push("/admin");
+        } else {
+          router.push("/");
+        }
       }
     }
-  }, [isAuthenticated, isPending, isError, requireAuth, router]);
+  }, [isAuthenticated, isPending, isError, requireAuth, router, data]);
 
   if (isPending) {
     return (
