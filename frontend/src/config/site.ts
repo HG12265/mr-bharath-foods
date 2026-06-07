@@ -16,7 +16,6 @@ export const siteConfig = {
     main: [
       { title: "Home", href: "/" },
       { title: "Shop", href: "/shop" },
-      { title: "Quality", href: "/trust" },
       { title: "About", href: "/about" },
       { title: "Contact", href: "/contact" },
     ],
