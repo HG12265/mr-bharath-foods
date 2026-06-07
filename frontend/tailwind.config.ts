@@ -29,11 +29,15 @@ const config: Config = {
         indianInk: "#1C2321",
         warmIvory: "#FAF9F6",
         kashmirSaffron: "#9E4624",
-        deodharForest: "#1E352F",
+        deodharForest: "#0F3D2E", // Deep Forest Green
         trustNavy: "#18324B",
         burnishedGold: "#C49A45",
         mutedSage: "#E2EAE5",
         terracottaBlush: "#F7EFE9",
+        richCream: "#FFF7E8",     // Premium luxury brand cream background
+        gheeGold: "#D9A441",      // Warm ghee-yellow highlights
+        warmSaffron: "#B85C2E",   // Cozy Saffron
+        cocoaBrown: "#5C3A21",    // Warm Cocoa
 
         // Shadcn Compatible CSS HSL Mappings
         border: "hsl(var(--border))",
@@ -90,6 +94,20 @@ const config: Config = {
       fontFamily: {
         serif: ["var(--font-serif)", "Georgia", "serif"],
         sans: ["var(--font-sans)", "system-ui", "sans-serif"],
+      },
+      keyframes: {
+        float: {
+          "0%, 100%": { transform: "translateY(0)" },
+          "50%": { transform: "translateY(-10px)" },
+        },
+        fadeUp: {
+          "0%": { opacity: "0", transform: "translateY(20px)" },
+          "100%": { opacity: "1", transform: "translateY(0)" },
+        },
+      },
+      animation: {
+        float: "float 6s ease-in-out infinite",
+        "fade-up": "fadeUp 0.8s ease-out forwards",
       },
     },
   },

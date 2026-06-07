@@ -21,7 +21,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireAuth = tr
       if (requireAuth && (!isAuthenticated || isError)) {
         router.push("/login");
       } else if (!requireAuth && isAuthenticated) {
-        router.push("/account");
+        router.push("/");
       }
     }
   }, [isAuthenticated, isPending, isError, requireAuth, router]);

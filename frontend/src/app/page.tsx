@@ -1,132 +1,249 @@
 "use client";
 
-import { useTheme } from "next-themes";
-import React, { useEffect, useState } from "react";
-import { siteConfig } from "@/config/site";
+import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import Image from "next/image";
+import PublicLayout from "@/components/layout/public-layout";
+import { useProducts } from "@/hooks/use-products";
 import { formatINR } from "@/lib/utils";
+import { 
+  ShieldCheck, 
+  ArrowRight, 
+  Compass, 
+  Check,
+  ChevronRight,
+  Flame,
+  Globe
+} from "lucide-react";
 
-/**
- * Interactive foundation page displaying brand design tokens and layout settings.
- */
+// Clean static fallback products (Only Rasipuram & Uthukuli Ghee, no mock ratings)
+const GHEE_PRODUCTS = [
+  {
+    id: "mock-rasipuram",
+    name: "Rasipuram Pure Ghee",
+    slug: "rasipuram-ghee",
+    description: "Prepared through traditional slow-simmering methods. Celebrated for its deep aroma, nuttiness, and rich golden color.",
+    volume: "250ml",
+    price: 390.00,
+    region: "Rasipuram, Tamil Nadu",
+    texture: "Golden & Deeply Simmered"
+  },
+  {
+    id: "mock-uthukuli",
+    name: "Uthukuli A2 Cow Ghee",
+    slug: "uthukuli-ghee",
+    description: "Traditionally churned from milk of historical grass-fed herds. Notable for its delicate, natural white-to-yellow granules.",
+    volume: "250ml",
+    price: 420.00,
+    region: "Uthukuli, Tamil Nadu",
+    texture: "Naturally Granular & Fragrant"
+  }
+];
+
 export default function HomePage() {
-  const { theme, setTheme } = useTheme();
-  const [mounted, setMounted] = useState(false);
+  const { data: productsData } = useProducts({ limit: 4 });
+  const dbProducts = productsData?.data || [];
+
+  // Display only two ghee selections
+  const displayProducts = dbProducts.length > 0 
+    ? dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2)
+    : GHEE_PRODUCTS;
+
+  const [scrollY, setScrollY] = useState(0);
+  const [useParallax, setUseParallax] = useState(false);
 
   useEffect(() => {
-    setMounted(true);
+    const motionQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+    const handleScroll = () => {
+      setScrollY(window.scrollY);
+    };
+
+    const checkParallax = () => {
+      const isLarge = window.innerWidth >= 1024;
+      const prefersReduced = motionQuery.matches;
+      setUseParallax(isLarge && !prefersReduced);
+    };
+
+    checkParallax();
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    window.addEventListener("resize", checkParallax);
+    motionQuery.addEventListener("change", checkParallax);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", checkParallax);
+      motionQuery.removeEventListener("change", checkParallax);
+    };
   }, []);
 
-  if (!mounted) {
-    return (
-      <div className="flex min-h-screen items-center justify-center bg-background text-foreground">
-        <p className="font-serif text-lg tracking-wide animate-pulse">
-          MR. BHARATH FOODS
-        </p>
-      </div>
-    );
-  }
-
-  const brandColors = [
-    { name: "Indian Ink", hex: "#1C2321", bgClass: "bg-indianInk text-white" },
-    { name: "Warm Ivory", hex: "#FAF9F6", bgClass: "bg-warmIvory text-black border border-gray-200" },
-    { name: "Kashmir Saffron", hex: "#9E4624", bgClass: "bg-kashmirSaffron text-white" },
-    { name: "Deodhar Forest", hex: "#1E352F", bgClass: "bg-deodharForest text-white" },
-    { name: "Trust Navy", hex: "#18324B", bgClass: "bg-trustNavy text-white" },
-    { name: "Burnished Gold", hex: "#C49A45", bgClass: "bg-burnishedGold text-black" },
-    { name: "Muted Sage", hex: "#E2EAE5", bgClass: "bg-mutedSage text-black" },
-    { name: "Terracotta Blush", hex: "#F7EFE9", bgClass: "bg-terracottaBlush text-black" },
-  ];
+  const parallaxStyle = useParallax
+    ? { transform: `translateY(${scrollY * 0.12}px) scale(1.05)`, transformOrigin: "center" }
+    : {};
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-12 space-y-12 bg-background transition-colors duration-300">
-      {/* Header */}
-      <header className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-6 gap-4">
-        <div>
-          <h1 className="font-serif text-4xl font-semibold uppercase tracking-tight text-foreground">
-            {siteConfig.name}
-          </h1>
-          <p className="font-sans text-xs tracking-widest uppercase text-muted-foreground mt-1">
-            {siteConfig.tagline}
-          </p>
-        </div>
-        <button
-          onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
-          className="rounded border border-primary px-4 py-2 font-sans text-xs font-semibold uppercase tracking-wider text-foreground hover:bg-muted/40 transition-colors focus:outline-none focus:ring-1 focus:ring-ring"
-        >
-          Toggle Theme (Current: {theme})
-        </button>
-      </header>
-
-      {/* Typography Section */}
-      <section className="space-y-6">
-        <h2 className="font-serif text-2xl border-b pb-2">Typography & Editorial Grid</h2>
-        <div className="grid md:grid-cols-2 gap-8">
-          <div className="space-y-4">
-            <h3 className="font-serif text-4xl">Display Heading 1</h3>
-            <h4 className="font-serif text-3xl">Sub Heading H2</h4>
-            <h5 className="font-serif text-xl">Section Title H3</h5>
+    <PublicLayout>
+      <div className="bg-richCream text-indianInk min-h-screen selection:bg-deodharForest/10">
+        
+        {/* SECTION 1: HERO SECTION */}
+        <section className="relative overflow-hidden w-full flex items-center min-h-[calc(100vh-var(--header-height))] h-[calc(100vh-var(--header-height))] border-b border-burnishedGold/25">
+          {/* Background Image Container */}
+          <div className="absolute inset-0 z-0 overflow-hidden">
+            <Image
+              src="/images/hero-bg.jpg"
+              alt="Selecting the Best to Serve the Best"
+              fill
+              priority
+              unoptimized
+              className="object-cover object-center max-lg:object-[60%_50%] max-md:object-[68%_50%] transition-transform duration-100 ease-out select-none pointer-events-none"
+              style={parallaxStyle}
+            />
+            {/* Left side dark gradient overlay for text readability */}
+            <div 
+              className="absolute inset-0 z-10 pointer-events-none select-none"
+              style={{
+                background: 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 30%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0) 100%)'
+              }}
+            />
           </div>
-          <div className="space-y-4 font-sans">
-            <p className="text-lg font-light text-foreground leading-relaxed">
-              Body Large: Used for intro summaries and editorial openings. Elegant and spacious spacing details.
-            </p>
-            <p className="text-sm text-muted-foreground leading-relaxed">
-              Body Small: Used for metadata annotations. For example, verifying co-packer FSSAI license codes: {siteConfig.fssaiLicenseNumber}.
-            </p>
-            <span className="inline-block text-xs font-semibold uppercase tracking-widest bg-muted px-2.5 py-1 rounded">
-              Button / Badge uppercase label tracking
-            </span>
-          </div>
-        </div>
-      </section>
 
-      {/* Design System Colors */}
-      <section className="space-y-4">
-        <h2 className="font-serif text-2xl border-b pb-2">Digital Design Tokens</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {brandColors.map((color) => (
-            <div
-              key={color.name}
-              className={`p-4 rounded shadow-sm flex flex-col justify-between aspect-square ${color.bgClass}`}
-            >
-              <span className="font-serif text-sm font-semibold">{color.name}</span>
-              <span className="font-sans text-xs tracking-wider opacity-90">{color.hex}</span>
+          {/* Text Overlay Content */}
+          <div className="relative z-20 w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="max-w-[290px] sm:max-w-xl lg:max-w-2xl text-left md:-translate-y-8 min-[1440px]:translate-y-0 flex flex-col justify-center select-text">
+              
+              {/* Eyebrow with motion-safe fade-up */}
+              <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-[#D9A441] mb-4 motion-safe:animate-fade-up block font-sans">
+                HERITAGE FOOD SELECTIONS
+              </span>
+
+              {/* Heading with motion-safe fade-up */}
+              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-[1.1] tracking-tight mb-6 motion-safe:animate-fade-up">
+                Selecting the <span className="text-[#D9A441]">Best</span><br />
+                to Serve the <span className="text-[#D9A441]">Best</span>
+              </h1>
+
+              {/* Description with motion-safe fade-up */}
+              <p className="font-sans text-sm sm:text-base md:text-lg mb-8 max-w-md md:max-w-lg leading-relaxed text-[#FAF9F6]/90 motion-safe:animate-fade-up">
+                Mr. Bharath Foods brings carefully selected Indian food products to families with a focus on quality, responsibility, and trust.
+              </p>
+
+              {/* Stacking Buttons with motion-safe fade-up */}
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 pt-2 w-full sm:w-auto motion-safe:animate-fade-up">
+                <Link
+                  href="/shop"
+                  className="relative overflow-hidden group px-8 py-4 bg-deodharForest text-warmIvory border border-gheeGold/40 hover:border-gheeGold rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(217,164,65,0.25)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+                >
+                  <span className="relative z-10">SHOP CATALOG</span>
+                  <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                </Link>
+
+                <Link
+                  href="/trust"
+                  className="px-8 py-4 border border-[rgba(255,255,255,0.45)] bg-[rgba(255,255,255,0.16)] text-white hover:border-[#D9A441] hover:text-[#D9A441] hover:bg-[rgba(255,255,255,0.25)] rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+                >
+                  LEARN OUR SELECTION PROCESS
+                </Link>
+              </div>
+
             </div>
-          ))}
-        </div>
-      </section>
+          </div>
+        </section>
 
-      {/* Status Indicators & Helpers */}
-      <section className="space-y-4">
-        <h2 className="font-serif text-2xl border-b pb-2">Functional Status Badges</h2>
-        <div className="flex flex-wrap gap-4 font-sans text-xs">
-          <span className="rounded bg-success/15 text-success border border-success/20 px-3 py-1.5 font-medium">
-            ✓ QA Approved
-          </span>
-          <span className="rounded bg-warning/15 text-warning border border-warning/20 px-3 py-1.5 font-medium">
-            ⚠ Audit Pending
-          </span>
-          <span className="rounded bg-destructive/15 text-destructive border border-destructive/20 px-3 py-1.5 font-medium">
-            ✗ Verification Failed
-          </span>
-          <span className="rounded bg-info/15 text-info border border-info/20 px-3 py-1.5 font-medium">
-            ℹ In Transit
-          </span>
-        </div>
-      </section>
+        {/* SECTION 2: FEATURED PRODUCTS SECTION */}
+        <section 
+          className="py-20 border-b border-burnishedGold/15"
+          style={{ background: "radial-gradient(circle at center, #FFFDF0 0%, #FAF9F6 70%, #FFF7E8 100%)" }}
+        >
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            
+            <div className="text-center max-w-xl mx-auto mb-12 animate-fade-up">
+              <span className="text-[10px] uppercase tracking-[0.25em] text-burnishedGold font-bold font-sans">
+                Heritage Sourced
+              </span>
+              <h2 className="font-serif text-3xl font-bold text-deodharForest mt-1">
+                Featured Products
+              </h2>
+              <p className="font-sans text-xs text-indianInk/70 mt-2">
+                Our first carefully selected ghee products.
+              </p>
+              <div className="w-12 h-0.5 bg-burnishedGold mx-auto mt-4" />
+            </div>
 
-      {/* INR Formatting utility demo */}
-      <section className="space-y-4 font-sans">
-        <h2 className="font-serif text-2xl border-b pb-2">Utility Functions Test</h2>
-        <p className="text-sm">
-          Currency Utility Output for 599: <strong className="text-base text-kashmirSaffron">{formatINR(599)}</strong>
-        </p>
-      </section>
+            {/* Showcase only two product cards */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-items-center">
+              {displayProducts.map((product: any, index: number) => {
+                const isFallback = !product.id || typeof product.id === "string" && product.id.startsWith("mock-");
+                const priceValue = isFallback ? product.price : (product.variants?.[0]?.price || 0);
+                const volumeText = isFallback ? product.volume : (product.variants?.[0]?.volume_weight || "250ml");
+                const regionName = isFallback ? product.region : (product.sourcing?.region || "Tamil Nadu");
+                const shortDesc = isFallback ? product.description : product.short_description;
 
-      {/* Footer */}
-      <footer className="border-t pt-6 text-center font-sans text-xs text-muted-foreground">
-        <p>© 2026 {siteConfig.name}. FSSAI License No: {siteConfig.fssaiLicenseNumber}</p>
-      </footer>
-    </div>
+                const isRasipuram = product.slug.toLowerCase().includes("rasipuram");
+                const imageSrc = isRasipuram ? "/images/rasipuram-ghee.jpg" : "/images/uthukuli-ghee.jpg";
+
+                return (
+                  <div 
+                    key={product.id || product.slug}
+                    className="flex flex-col w-full max-w-[520px] bg-white border border-burnishedGold/20 rounded-lg overflow-hidden hover:border-gheeGold/40 hover:shadow-[0_12px_30px_rgba(25,25,25,0.08)] hover:-translate-y-2 transition-all duration-300 ease-out group shadow-[0_4px_20px_rgba(0,0,0,0.03)] motion-safe:animate-fade-up"
+                    style={{ animationDelay: `${index * 100}ms`, animationFillMode: "both" }}
+                  >
+                    
+                    {/* Product Image Container */}
+                    <div className="w-full h-[260px] md:h-[300px] border-b border-burnishedGold/15 relative overflow-hidden select-none bg-gradient-to-br from-gheeGold/5 to-richCream/10">
+                      <Image
+                        src={imageSrc}
+                        alt={product.name}
+                        fill
+                        className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
+                      />
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-6 flex-grow flex flex-col justify-between gap-4">
+                      <div className="space-y-3">
+                        <div className="flex justify-between items-center">
+                          <span className="px-2.5 py-1 bg-deodharForest text-richCream text-[9px] uppercase tracking-widest font-semibold rounded-[2px] shadow-sm border border-burnishedGold/25">
+                            {regionName}
+                          </span>
+                          <span className="text-[10px] text-indianInk/60 font-sans tracking-widest uppercase font-semibold bg-warmIvory/60 px-2 py-0.5 rounded border border-burnishedGold/10">
+                            {volumeText}
+                          </span>
+                        </div>
+
+                        <h3 className="font-serif text-xl font-bold text-deodharForest leading-tight">
+                          {product.name}
+                        </h3>
+                        <p className="font-sans text-xs text-indianInk/70 leading-relaxed">
+                          {shortDesc}
+                        </p>
+                      </div>
+
+                      <div className="flex items-center justify-between pt-4 border-t border-burnishedGold/10">
+                        <div className="flex flex-col font-sans">
+                          <span className="text-[9px] uppercase tracking-wider text-indianInk/45">Starting from</span>
+                          <span className="font-sans text-sm font-bold text-indianInk">
+                            {formatINR(priceValue)}
+                          </span>
+                        </div>
+                        
+                        <Link 
+                          href={`/products/${product.slug}`}
+                          className="relative overflow-hidden group/btn px-5 py-2.5 bg-deodharForest text-richCream rounded-[4px] font-sans text-[10px] font-semibold tracking-widest uppercase transition-all duration-300 ease-out border border-transparent hover:border-gheeGold hover:shadow-[0_4px_12px_rgba(15,61,46,0.15)] hover:-translate-y-0.5 text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+                        >
+                          <span className="relative z-10">View Product</span>
+                          <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gheeGold/25 to-transparent -translate-x-full group-hover/btn:translate-x-full transition-transform duration-1000 ease-out" />
+                        </Link>
+                      </div>
+                    </div>
+
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </section>
+
+      </div>
+    </PublicLayout>
   );
 }

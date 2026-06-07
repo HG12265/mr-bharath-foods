@@ -3,6 +3,7 @@
 import React from "react";
 import { ThemeProvider } from "./theme-provider";
 import { QueryProvider } from "./query-provider";
+import { CartDrawerProvider } from "./cart-drawer-provider";
 
 /**
  * Global App Provider wrapper combining Theme and API Query client providers.
@@ -15,7 +16,9 @@ export function AppProvider({ children }: { children: React.ReactNode }) {
       enableSystem
       disableTransitionOnChange
     >
-      <QueryProvider>{children}</QueryProvider>
+      <QueryProvider>
+        <CartDrawerProvider>{children}</CartDrawerProvider>
+      </QueryProvider>
     </ThemeProvider>
   );
 }

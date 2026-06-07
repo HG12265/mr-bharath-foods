@@ -9,16 +9,16 @@ export const siteConfig = {
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
   fssaiLicenseNumber: "12424999000123", // Example compliance registration
   links: {
-    supportEmail: "support@mrbharathfoods.in",
+    supportEmail: "mrbharathfoods@gmail.com",
     partnerPortal: "/b2b",
   },
   nav: {
     main: [
       { title: "Home", href: "/" },
-      { title: "Shop Catalog", href: "/shop" },
-      { title: "Trust Center", href: "/trust" },
-      { title: "Compare", href: "/compare" },
-      { title: "Recipes & Blog", href: "/blog" },
+      { title: "Shop", href: "/shop" },
+      { title: "Quality", href: "/trust" },
+      { title: "About", href: "/about" },
+      { title: "Contact", href: "/contact" },
     ],
     footer: [
       {

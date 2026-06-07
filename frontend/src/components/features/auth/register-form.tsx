@@ -107,7 +107,7 @@ export const RegisterForm: React.FC = () => {
               {
                 onSuccess: (loginRes) => {
                   if (loginRes.success) {
-                    router.push("/account");
+                    router.push("/");
                   } else {
                     setApiError("Account created successfully, but automatic login failed. Please sign in manually.");
                   }

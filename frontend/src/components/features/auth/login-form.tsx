@@ -48,7 +48,7 @@ export const LoginForm: React.FC = () => {
         onSuccess: (res) => {
           if (res.success) {
             setSuccess(true);
-            router.push("/account");
+            router.push("/");
           } else {
             setApiError(res.message || "Invalid credentials. Please try again.");
           }

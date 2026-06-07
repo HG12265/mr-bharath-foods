@@ -47,7 +47,7 @@ export const useLogout = () => {
   });
 };
 
-export const useMe = (options?: { enabled?: boolean }) => {
+export const useMe = (options?: { enabled?: boolean; staleTime?: number }) => {
   return useQuery({
     queryKey: ["me"],
     queryFn: () => authService.getMe(),

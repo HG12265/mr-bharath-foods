@@ -21,8 +21,8 @@ export const AuthCard: React.FC<AuthCardProps> = ({
   return (
     <div className="w-full max-w-[480px] bg-white border border-indianInk/5 rounded-lg shadow-[0_4px_16px_rgba(28,35,33,0.04)] overflow-hidden">
       {/* Brand Header */}
-      <div className="bg-trustNavy text-warmIvory px-8 py-6 text-center border-b border-indianInk/5">
-        <h2 className="font-serif text-3xl font-medium tracking-tight mb-1">
+      <div className="bg-deodharForest text-richCream px-8 py-6 text-center border-b border-indianInk/5">
+        <h2 className="font-serif text-3xl text-white font-medium tracking-tight mb-1">
           MR. BHARATH FOODS
         </h2>
         <p className="text-xs uppercase tracking-[0.12em] font-sans text-warmIvory/70">
