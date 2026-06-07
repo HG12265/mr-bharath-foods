@@ -18,11 +18,11 @@ export const useCreateShipment = () => {
   });
 };
 
-export const useShipmentByOrder = (orderId: string) => {
+export const useShipmentByOrder = (orderId: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["shipment", "order", orderId],
     queryFn: () => shipmentService.getShipmentByOrder(orderId),
-    enabled: !!orderId,
+    enabled: options?.enabled !== undefined ? options.enabled && !!orderId : !!orderId,
   });
 };
 

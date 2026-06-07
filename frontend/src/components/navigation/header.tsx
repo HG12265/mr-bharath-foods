@@ -79,6 +79,18 @@ export const Header: React.FC = () => {
                 </Link>
               );
             })}
+            {user && (
+              <Link
+                href="/account"
+                className={`text-xs uppercase font-sans font-semibold tracking-widest transition-all duration-150 ${
+                  pathname.startsWith("/account")
+                    ? "text-[#0F3D2E] border-b-2 border-[#D9A441] pb-0.5" 
+                    : "text-[#0F3D2E]/75 hover:text-[#0F3D2E]"
+                }`}
+              >
+                My Account
+              </Link>
+            )}
           </nav>
 
           {/* Actions Portal (Right) */}
@@ -114,7 +126,14 @@ export const Header: React.FC = () => {
                       className="fixed inset-0 z-30" 
                       onClick={() => setDropdownOpen(false)}
                     />
-                    <div className="absolute right-0 mt-2 w-48 bg-white border border-burnishedGold/30 rounded-[4px] shadow-md py-1 z-40">
+                    <div className="absolute right-0 mt-2 w-48 bg-white border border-burnishedGold/30 rounded-[4px] shadow-md py-1 z-40 overflow-hidden">
+                      <Link
+                        href="/account"
+                        onClick={() => setDropdownOpen(false)}
+                        className="block w-full px-4 py-2.5 text-left font-sans text-xs font-semibold tracking-widest uppercase text-deodharForest hover:bg-richCream transition-colors duration-150 border-b border-burnishedGold/10"
+                      >
+                        My Account
+                      </Link>
                       <button
                         onClick={() => {
                           setDropdownOpen(false);

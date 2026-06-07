@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/hooks/use-auth";
 import { siteConfig } from "@/config/site";
-import { X, User, LogIn, ChevronRight } from "lucide-react";
+import { X, User, LogIn, ChevronRight, LogOut } from "lucide-react";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -65,6 +65,17 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
             ))}
 
             {/* Cart Link */}
+            {user && (
+              <Link
+                href="/account"
+                onClick={onClose}
+                className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2.5 border-b border-burnishedGold/10 transition-colors duration-150"
+              >
+                <span>My Account</span>
+                <ChevronRight className="w-4 h-4 text-burnishedGold" />
+              </Link>
+            )}
+
             <Link
               href="/cart"
               onClick={onClose}
@@ -79,17 +90,27 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
         {/* Footer Area */}
         <div className="mt-auto pt-6 border-t border-burnishedGold/15 flex flex-col gap-4">
           {user ? (
-            <button
-              onClick={() => {
-                onClose();
-                handleLogout();
-              }}
-              disabled={logoutMutation.isPending}
-              className="flex items-center justify-center gap-2 w-full py-3 bg-deodharForest/5 border border-deodharForest/15 hover:border-burnishedGold rounded-[4px] font-sans text-xs font-semibold tracking-widest text-deodharForest hover:text-burnishedGold uppercase transition-all duration-200 disabled:opacity-50"
-            >
-              <User className="w-4 h-4" />
-              <span>{logoutMutation.isPending ? "Signing Out..." : `Sign Out (${user.personal_details?.first_name})`}</span>
-            </button>
+            <div className="flex flex-col gap-2 w-full">
+              <Link
+                href="/account"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-3 bg-deodharForest text-richCream border border-transparent rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm text-center"
+              >
+                <User className="w-4 h-4 text-gheeGold" />
+                <span>My Account</span>
+              </Link>
+              <button
+                onClick={() => {
+                  onClose();
+                  handleLogout();
+                }}
+                disabled={logoutMutation.isPending}
+                className="flex items-center justify-center gap-2 w-full py-3 bg-warmSaffron/5 border border-warmSaffron/15 hover:border-warmSaffron rounded-[4px] font-sans text-xs font-semibold tracking-widest text-warmSaffron uppercase transition-all duration-200 disabled:opacity-50"
+              >
+                <LogOut className="w-4 h-4 text-warmSaffron" />
+                <span>{logoutMutation.isPending ? "Signing Out..." : `Sign Out`}</span>
+              </button>
+            </div>
           ) : (
             <Link
               href="/login"
