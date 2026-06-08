@@ -1,5 +1,5 @@
 import { apiClient } from "./api-client";
-import { Envelope, Review } from "../types";
+import { Envelope, Review, ReviewModerationDetail, ReviewsSummary } from "../types";
 
 export interface ReviewCreatePayload {
   product_id: string;
@@ -33,6 +33,8 @@ export interface ProductPageReviewsResponse {
 export interface ListReviewsParams {
   skip?: number;
   limit?: number;
+  status?: string;
+  search?: string;
 }
 
 export const reviewService = {
@@ -56,8 +58,8 @@ export const reviewService = {
     return response.data;
   },
 
-  async adminListReviews(params?: ListReviewsParams): Promise<Envelope<Review[]>> {
-    const response = await apiClient.get<Envelope<Review[]>>("/api/v1/admin/reviews", { params });
+  async adminListReviews(params?: ListReviewsParams): Promise<Envelope<ReviewModerationDetail[]>> {
+    const response = await apiClient.get<Envelope<ReviewModerationDetail[]>>("/api/v1/admin/reviews", { params });
     return response.data;
   },
 
@@ -68,6 +70,16 @@ export const reviewService = {
 
   async adminRejectReview(id: string): Promise<Envelope<Review>> {
     const response = await apiClient.patch<Envelope<Review>>(`/api/v1/admin/reviews/${id}/reject`);
+    return response.data;
+  },
+
+  async adminReopenReview(id: string): Promise<Envelope<Review>> {
+    const response = await apiClient.patch<Envelope<Review>>(`/api/v1/admin/reviews/${id}/reopen`);
+    return response.data;
+  },
+
+  async adminGetReviewsSummary(): Promise<Envelope<ReviewsSummary>> {
+    const response = await apiClient.get<Envelope<ReviewsSummary>>("/api/v1/admin/reviews/summary");
     return response.data;
   },
 };

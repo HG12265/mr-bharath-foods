@@ -4,6 +4,7 @@ from pymongo.asynchronous.database import AsyncDatabase
 from app.core.dependencies import get_current_user, get_db, require_role
 from app.core.roles import UserRole
 from app.repositories.audit_repository import AuditRepository
+from app.repositories.customer_repository import CustomerRepository
 from app.repositories.order_repository import OrderRepository
 from app.repositories.product_repository import ProductRepository
 from app.repositories.review_repository import ReviewRepository
@@ -12,7 +13,9 @@ from app.schemas.common import Envelope
 from app.schemas.review import (
     ProductPageResponse,
     ReviewCreate,
+    ReviewModerationResponse,
     ReviewResponse,
+    ReviewsSummaryResponse,
     ReviewUpdate,
 )
 from app.services.audit_service import AuditService
@@ -30,6 +33,7 @@ def get_review_service(
     order_repo = OrderRepository(db)
     audit_repo = AuditRepository(db)
     audit_service = AuditService(audit_repo)
+    customer_repo = CustomerRepository(db)
 
     from app.repositories.notification_repository import NotificationRepository
     from app.services.notification_service import NotificationService
@@ -42,6 +46,7 @@ def get_review_service(
         order_repo,
         audit_service,
         notification_service,
+        customer_repository=customer_repo,
     )
 
 
@@ -124,22 +129,43 @@ async def delete_product_review(
 
 # --- Admin Moderation Endpoints ---
 
-@admin_router.get("", response_model=Envelope[list[ReviewResponse]])
+# Summary endpoint MUST be registered before /{id} routes to avoid path conflict
+@admin_router.get("/summary", response_model=Envelope[ReviewsSummaryResponse])
+async def get_reviews_summary_admin(
+    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
+    service: ReviewService = Depends(get_review_service),
+) -> Envelope[ReviewsSummaryResponse]:
+    """
+    Returns aggregate review counts (total, pending, approved, rejected).
+    Accessible by WAREHOUSE and ADMIN roles.
+    """
+    summary = await service.get_reviews_summary()
+    return Envelope(
+        success=True,
+        message="Review summary retrieved successfully.",
+        data=summary,
+    )
+
+
+@admin_router.get("", response_model=Envelope[list[ReviewModerationResponse]])
 async def list_all_reviews_admin(
+    status: str | None = None,
+    search: str | None = None,
     skip: int = 0,
     limit: int = 100,
-    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
     service: ReviewService = Depends(get_review_service),
-) -> Envelope[list[ReviewResponse]]:
+) -> Envelope[list[ReviewModerationResponse]]:
     """
-    Lists all non-deleted reviews in the system. Requires Admin role.
+    Lists all non-deleted reviews enriched with product name and customer details.
+    Supports optional status filter and text search.
+    Accessible by WAREHOUSE (read-only) and ADMIN roles.
     """
-    reviews = await service.review_repository.list_all_reviews(skip, limit)
-    res = [ReviewResponse(**r.model_dump()) for r in reviews]
+    results = await service.list_reviews_moderation(status, search, skip, limit)
     return Envelope(
         success=True,
         message="All reviews retrieved successfully for moderation.",
-        data=res,
+        data=results,
     )
 
 
@@ -177,5 +203,24 @@ async def reject_review_admin(
     return Envelope(
         success=True,
         message="Review rejected/unapproved successfully.",
+        data=ReviewResponse(**review.model_dump()),
+    )
+
+
+@admin_router.patch("/{id}/reopen", response_model=Envelope[ReviewResponse])
+async def reopen_review_admin(
+    id: str,
+    request: Request,
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    service: ReviewService = Depends(get_review_service),
+) -> Envelope[ReviewResponse]:
+    """
+    Re-opens a rejected review back to pending status. Requires Admin role.
+    """
+    ip = request.client.host if request.client else None
+    review = await service.reopen_review(id, current_user.user_id, ip)
+    return Envelope(
+        success=True,
+        message="Review re-opened successfully.",
         data=ReviewResponse(**review.model_dump()),
     )

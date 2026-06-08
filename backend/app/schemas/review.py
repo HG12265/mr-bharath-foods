@@ -32,6 +32,19 @@ class ReviewResponse(BaseModel):
     updated_at: datetime
 
 
+class ReviewModerationResponse(ReviewResponse):
+    product_name: str = ""
+    customer_name: str = ""
+    customer_email: str = ""
+
+
+class ReviewsSummaryResponse(BaseModel):
+    total: int = 0
+    pending: int = 0
+    approved: int = 0
+    rejected: int = 0
+
+
 class ProductPageProductDetails(BaseModel):
     name: str
 

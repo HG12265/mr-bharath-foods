@@ -295,6 +295,19 @@ export interface Review {
   updated_at: string;
 }
 
+export interface ReviewModerationDetail extends Review {
+  product_name: string;
+  customer_name: string;
+  customer_email: string;
+}
+
+export interface ReviewsSummary {
+  total: number;
+  pending: number;
+  approved: number;
+  rejected: number;
+}
+
 export interface Notification {
   id: string;
   title: string;

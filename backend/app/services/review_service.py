@@ -1,3 +1,4 @@
+import re
 from datetime import UTC, datetime
 from typing import Any
 
@@ -20,7 +21,9 @@ from app.schemas.review import (
     ProductPageRatingsDetails,
     ProductPageResponse,
     ReviewCreate,
+    ReviewModerationResponse,
     ReviewResponse,
+    ReviewsSummaryResponse,
     ReviewUpdate,
 )
 from app.services.audit_service import AuditService
@@ -35,6 +38,7 @@ class ReviewService(BaseService[Review]):
         order_repository: OrderRepository,
         audit_service: AuditService,
         notification_service: Any = None,
+        customer_repository: Any = None,
     ):
         super().__init__(repository)
         self.review_repository = repository
@@ -42,6 +46,7 @@ class ReviewService(BaseService[Review]):
         self.order_repository = order_repository
         self.audit_service = audit_service
         self.notification_service = notification_service
+        self.customer_repository = customer_repository
 
     async def submit_review(
         self,
@@ -358,4 +363,179 @@ class ReviewService(BaseService[Review]):
         await self.product_repository.collection.update_one(
             {"_id": obj_id},
             {"$set": {"ratings": ratings_payload}}
+        )
+
+    # ─────────────────────────────────────────────
+    # Enterprise Moderation Methods
+    # ─────────────────────────────────────────────
+
+    async def reopen_review(
+        self,
+        review_id: str,
+        operator_id: str,
+        ip_address: str | None = None,
+    ) -> Review:
+        """
+        Re-opens a rejected review by setting moderation_status back to 'pending'.
+        Recalculates product ratings if the review was previously approved.
+        """
+        review = await self.review_repository.get_by_id(review_id)
+        if not review:
+            raise NotFoundException(f"Review '{review_id}' not found.")
+
+        if review.moderation_status == ReviewModerationStatus.PENDING.value:
+            return review  # Already pending, no-op
+
+        was_approved = review.is_approved
+
+        update_payload = {
+            "moderation_status": ReviewModerationStatus.PENDING.value,
+            "is_approved": False,
+            "updated_at": datetime.now(UTC),
+        }
+
+        updated = await self.review_repository.update(review_id, update_payload)
+        if not updated:
+            raise BaseAppException("Failed to reopen review.")
+
+        # Recalculate product ratings if it was previously approved
+        if was_approved:
+            await self.recalculate_ratings(updated.product_id)
+
+        # Audit reopen action
+        await self.audit_service.log_action(
+            action="REOPEN_REVIEW",
+            target_collection="reviews",
+            user_id=operator_id,
+            target_id=review_id,
+            ip_address=ip_address,
+        )
+
+        return updated
+
+    async def list_reviews_moderation(
+        self,
+        status: str | None = None,
+        search: str | None = None,
+        skip: int = 0,
+        limit: int = 100,
+    ) -> list[ReviewModerationResponse]:
+        """
+        Returns all non-deleted reviews enriched with product name and customer details.
+        Supports optional status filter (pending/approved/rejected) and text search.
+        """
+        from app.core.pagination import cap_pagination_limit
+        capped_limit = cap_pagination_limit(limit)
+
+        # Build filter
+        query: dict[str, Any] = {"is_deleted": {"$ne": True}}
+        if status and status in ("pending", "approved", "rejected"):
+            query["moderation_status"] = status
+
+        # Fetch all matching reviews
+        cursor = self.review_repository.collection.find(query).sort(
+            "created_at", -1
+        ).skip(skip).limit(capped_limit)
+
+        reviews_raw: list[dict[str, Any]] = []
+        async for doc in cursor:
+            from app.core.money import convert_bson_to_decimals
+            doc = convert_bson_to_decimals(doc)
+            doc["id"] = str(doc["_id"])
+            reviews_raw.append(doc)
+
+        if not reviews_raw:
+            return []
+
+        # Batch-collect unique product_ids and customer_ids
+        product_ids = list({r["product_id"] for r in reviews_raw})
+        customer_ids = list({r["customer_id"] for r in reviews_raw})
+
+        # Batch-fetch products
+        product_map: dict[str, str] = {}
+        for pid in product_ids:
+            try:
+                product = await self.product_repository.get_by_id(pid)
+                if product:
+                    product_map[pid] = product.name
+            except Exception:
+                pass
+
+        # Batch-fetch customers
+        customer_map: dict[str, dict[str, str]] = {}
+        if self.customer_repository:
+            for cid in customer_ids:
+                try:
+                    customer = await self.customer_repository.get_by_id(cid)
+                    if customer:
+                        first = customer.personal_details.first_name if customer.personal_details else ""
+                        last = customer.personal_details.last_name if customer.personal_details else ""
+                        email = customer.auth.email if customer.auth else ""
+                        customer_map[cid] = {
+                            "name": f"{first} {last}".strip(),
+                            "email": email,
+                        }
+                except Exception:
+                    pass
+
+        # Build enriched responses
+        results: list[ReviewModerationResponse] = []
+        for r in reviews_raw:
+            product_name = product_map.get(r["product_id"], r.get("product_id", ""))
+            cust_info = customer_map.get(r["customer_id"], {})
+            customer_name = cust_info.get("name", r.get("customer_id", ""))
+            customer_email = cust_info.get("email", "")
+
+            # Apply text search filter (post-fetch for flexibility)
+            if search:
+                q = search.lower()
+                searchable = " ".join([
+                    product_name.lower(),
+                    customer_name.lower(),
+                    customer_email.lower(),
+                    r.get("title", "").lower(),
+                    r.get("comment", "").lower(),
+                ])
+                if q not in searchable:
+                    continue
+
+            results.append(
+                ReviewModerationResponse(
+                    id=r["id"],
+                    product_id=r["product_id"],
+                    customer_id=r["customer_id"],
+                    order_id=r["order_id"],
+                    rating=r["rating"],
+                    title=r["title"],
+                    comment=r["comment"],
+                    is_verified_purchase=r.get("is_verified_purchase", False),
+                    moderation_status=r["moderation_status"],
+                    is_approved=r.get("is_approved", False),
+                    created_at=r["created_at"],
+                    updated_at=r["updated_at"],
+                    product_name=product_name,
+                    customer_name=customer_name,
+                    customer_email=customer_email,
+                )
+            )
+
+        return results
+
+    async def get_reviews_summary(self) -> ReviewsSummaryResponse:
+        """
+        Returns aggregated counts of all non-deleted reviews grouped by moderation_status.
+        """
+        collection = self.review_repository.collection
+        base_filter = {"is_deleted": {"$ne": True}}
+
+        total = await collection.count_documents(base_filter)
+        pending = await collection.count_documents({**base_filter, "moderation_status": "pending"})
+        approved = await collection.count_documents({**base_filter, "moderation_status": "approved"})
+        rejected = await collection.count_documents({**base_filter, "moderation_status": "rejected"})
+
+        return ReviewsSummaryResponse(
+            total=total,
+            pending=pending,
+            approved=approved,
+            rejected=rejected,
         )

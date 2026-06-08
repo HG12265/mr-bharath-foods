@@ -65,6 +65,7 @@ export const useAdminApproveReview = () => {
         queryClient.invalidateQueries({ queryKey: ["reviews", "product", data.data.product_id] });
       }
       queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "reviews-summary"] });
       // Clear product cache to recalculate cached product ratings structure
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["product"] });
@@ -81,9 +82,33 @@ export const useAdminRejectReview = () => {
         queryClient.invalidateQueries({ queryKey: ["reviews", "product", data.data.product_id] });
       }
       queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "reviews-summary"] });
       // Clear product cache to recalculate cached product ratings structure
       queryClient.invalidateQueries({ queryKey: ["products"] });
       queryClient.invalidateQueries({ queryKey: ["product"] });
     },
+  });
+};
+
+export const useAdminReopenReview = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => reviewService.adminReopenReview(id),
+    onSuccess: (data) => {
+      if (data.data?.product_id) {
+        queryClient.invalidateQueries({ queryKey: ["reviews", "product", data.data.product_id] });
+      }
+      queryClient.invalidateQueries({ queryKey: ["admin", "reviews"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "reviews-summary"] });
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
+  });
+};
+
+export const useAdminReviewsSummary = () => {
+  return useQuery({
+    queryKey: ["admin", "reviews-summary"],
+    queryFn: () => reviewService.adminGetReviewsSummary(),
   });
 };
