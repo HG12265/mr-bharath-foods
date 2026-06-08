@@ -74,3 +74,17 @@ def validate_settings_update(data: dict[str, Any]) -> None:
                 code="INVALID_GST_NUMBER",
                 status_code=400,
             )
+
+    # 7. support_phone and public_support_phone check
+    for field in ["support_phone", "public_support_phone"]:
+        val = data.get(field)
+        if val is not None and val != "":
+            # Allow optional +91, space, hyphen, and 10 digits
+            cleaned = val.replace(" ", "").replace("-", "")
+            if not re.match(r"^(?:\+91)?\d{10}$", cleaned):
+                raise BaseAppException(
+                    message=f"Invalid {field.replace('_', ' ')} format. Must be a 10-digit Indian number optionally prefixed with +91.",
+                    code=f"INVALID_{field.upper()}",
+                    status_code=400,
+                )
+

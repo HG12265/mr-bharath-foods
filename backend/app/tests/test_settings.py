@@ -399,7 +399,6 @@ async def test_admin_settings_clear_nullable_fields(mock_db: MagicMock) -> None:
     assert update_op["$set"]["fssai_number"] is None
     assert update_op["$set"]["gst_number"] is None
 
-    # 2. Assert non-nullable setting like tax_percentage rejects null
     bad_payload = {
         "tax_percentage": None
     }
@@ -408,4 +407,65 @@ async def test_admin_settings_clear_nullable_fields(mock_db: MagicMock) -> None:
     assert "cannot be null" in response_bad.json()["message"]
 
     app.dependency_overrides.clear()
+
+
+@pytest.mark.anyio
+async def test_admin_settings_structured_fields(mock_db: MagicMock) -> None:
+    mock_settings = create_mock_settings_doc()
+    # Add initial fields
+    mock_settings["brand_name"] = "Mr. Bharath Foods"
+    mock_settings["support_email"] = "support@mrbharathfoods.in"
+    mock_settings["support_phone"] = "+91 98765 43210"
+    mock_settings["business_address"] = "123, Main Street"
+    mock_settings["payment_display_name"] = "Mr. Bharath Foods"
+    mock_settings["upi_instructions"] = "Please pay"
+    mock_settings["public_support_email"] = "info@mrbharathfoods.in"
+    mock_settings["public_support_phone"] = "+91 98765 43210"
+    mock_settings["working_hours"] = "9 AM - 9 PM"
+
+    mock_db["settings"].find_one = AsyncMock(return_value=mock_settings)
+    mock_db["audit_logs"].insert_one = AsyncMock()
+
+    mock_admin = TokenData(
+        user_id="admin_123",
+        email="admin@mrbharathfoods.in",
+        role=UserRole.ADMIN
+    )
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_admin
+
+    updated_doc = mock_settings.copy()
+    updated_doc["brand_name"] = "New Brand Name"
+    updated_doc["support_phone"] = "+919999999999"
+    mock_db["settings"].find_one_and_update = AsyncMock(return_value=updated_doc)
+
+    payload = {
+        "brand_name": "New Brand Name",
+        "support_phone": "+919999999999",
+        "public_support_phone": "9876543210"
+    }
+
+    response = client.patch("/api/v1/admin/settings", json=payload)
+    assert response.status_code == 200, response.json()
+    assert response.json()["data"]["brand_name"] == "New Brand Name"
+    assert response.json()["data"]["support_phone"] == "+919999999999"
+
+    # Verify update payload in mongo
+    called_args = mock_db["settings"].find_one_and_update.call_args[0]
+    called_kwargs = mock_db["settings"].find_one_and_update.call_args[1]
+    update_op = called_args[1] if len(called_args) > 1 else called_kwargs.get("update")
+    assert update_op["$set"]["brand_name"] == "New Brand Name"
+    assert update_op["$set"]["support_phone"] == "+919999999999"
+    assert update_op["$set"]["public_support_phone"] == "9876543210"
+
+    # Test phone validation invalid format
+    bad_payload = {
+        "support_phone": "12345"
+    }
+    response_bad = client.patch("/api/v1/admin/settings", json=bad_payload)
+    assert response_bad.status_code == 400
+    assert "Invalid support phone format" in response_bad.json()["message"]
+
+    app.dependency_overrides.clear()
+
 

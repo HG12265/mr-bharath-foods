@@ -91,6 +91,15 @@ async def update_admin_settings(
         support_contact=updated.support_contact,
         fssai_number=updated.fssai_number,
         gst_number=updated.gst_number,
+        brand_name=updated.brand_name,
+        support_email=updated.support_email,
+        support_phone=updated.support_phone,
+        business_address=updated.business_address,
+        payment_display_name=updated.payment_display_name,
+        upi_instructions=updated.upi_instructions,
+        public_support_email=updated.public_support_email,
+        public_support_phone=updated.public_support_phone,
+        working_hours=updated.working_hours,
     )
 
     return Envelope(

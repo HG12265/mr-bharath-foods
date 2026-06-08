@@ -328,11 +328,20 @@ export interface SettingsPublic {
   support_contact: string;
   fssai_number?: string;
   gst_number?: string;
+  brand_name?: string;
+  public_support_email?: string;
+  public_support_phone?: string;
+  working_hours?: string;
 }
 
 export interface SettingsAdmin extends SettingsPublic {
   id: string;
   upi_id: string;
+  support_email?: string;
+  support_phone?: string;
+  business_address?: string;
+  payment_display_name?: string;
+  upi_instructions?: string;
 }
 
 export interface Envelope<T> {

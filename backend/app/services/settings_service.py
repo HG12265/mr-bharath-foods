@@ -47,6 +47,10 @@ class SettingsService(BaseService[Settings]):
             support_contact=settings.support_contact,
             fssai_number=settings.fssai_number,
             gst_number=settings.gst_number,
+            brand_name=settings.brand_name,
+            public_support_email=settings.public_support_email,
+            public_support_phone=settings.public_support_phone,
+            working_hours=settings.working_hours,
         )
 
     async def get_admin_settings(self) -> SettingsAdminResponse:
@@ -63,6 +67,15 @@ class SettingsService(BaseService[Settings]):
             support_contact=settings.support_contact,
             fssai_number=settings.fssai_number,
             gst_number=settings.gst_number,
+            brand_name=settings.brand_name,
+            support_email=settings.support_email,
+            support_phone=settings.support_phone,
+            business_address=settings.business_address,
+            payment_display_name=settings.payment_display_name,
+            upi_instructions=settings.upi_instructions,
+            public_support_email=settings.public_support_email,
+            public_support_phone=settings.public_support_phone,
+            working_hours=settings.working_hours,
         )
 
     async def update_settings(
@@ -80,8 +93,15 @@ class SettingsService(BaseService[Settings]):
         update_data: dict[str, Any] = {}
         dumped = payload.model_dump(exclude_unset=True)
 
+        nullable_fields = [
+            "fssai_number", "gst_number", "brand_name", "support_email",
+            "support_phone", "business_address", "payment_display_name",
+            "upi_instructions", "public_support_email", "public_support_phone",
+            "working_hours"
+        ]
+
         for k, v in dumped.items():
-            if k in ["fssai_number", "gst_number"]:
+            if k in nullable_fields:
                 update_data[k] = v
             elif v is not None:
                 update_data[k] = v
@@ -111,3 +131,4 @@ class SettingsService(BaseService[Settings]):
         )
 
         return updated
+

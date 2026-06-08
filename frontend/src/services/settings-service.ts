@@ -7,8 +7,17 @@ export interface SettingsUpdatePayload {
   shipping_fee?: number;
   free_shipping_threshold?: number;
   support_contact?: string;
-  fssai_number?: string;
-  gst_number?: string;
+  fssai_number?: string | null;
+  gst_number?: string | null;
+  brand_name?: string | null;
+  support_email?: string | null;
+  support_phone?: string | null;
+  business_address?: string | null;
+  payment_display_name?: string | null;
+  upi_instructions?: string | null;
+  public_support_email?: string | null;
+  public_support_phone?: string | null;
+  working_hours?: string | null;
 }
 
 export const settingsService = {
