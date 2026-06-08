@@ -33,14 +33,37 @@ class InventoryResponse(BaseModel):
     reserved_total: int
     available_total: int
     is_low_stock: bool
+    # Centralized status: healthy | low_stock | out_of_stock
+    inventory_status: str
     created_at: datetime
     updated_at: datetime
+
+
+class InventoryDetailsResponse(InventoryResponse):
+    """Extended response that joins product and variant metadata."""
+    product_name: str = ""
+    variant_name: str = ""
+    product_image: str | None = None
+
+
+class InventoryMovementResponse(BaseModel):
+    """A single entry in the inventory movement history log."""
+    id: str
+    timestamp: datetime
+    action: str
+    movement_type: str
+    quantity: int
+    before: int
+    after: int
+    performed_by: str
+    reason: str | None = None
 
 
 class StockAdjustmentRequest(BaseModel):
     warehouse_id: str = Field(..., description="Warehouse identifier")
     quantity: int = Field(..., description="Quantity delta adjustment (positive/negative)")
     location_code: str | None = Field(default=None, description="Updated layout placement code")
+    reason: str | None = Field(default=None, description="Reason for this adjustment (e.g. Purchase Received, Damage, Warehouse Correction)")
 
 
 class StockReservationRequest(BaseModel):

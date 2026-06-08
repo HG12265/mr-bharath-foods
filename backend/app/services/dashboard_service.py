@@ -91,6 +91,14 @@ class DashboardService:
                     reserved_total=reserved_total,
                     available_total=available_total,
                     is_low_stock=is_low,
+                    # Centralized status matching backend inventory_service logic
+                    inventory_status=(
+                        "out_of_stock"
+                        if available_total <= 0
+                        else "low_stock"
+                        if available_total <= inv.safety_stock_level
+                        else "healthy"
+                    ),
                     created_at=inv.created_at,
                     updated_at=inv.updated_at,
                 )

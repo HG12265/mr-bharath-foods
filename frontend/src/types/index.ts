@@ -352,8 +352,38 @@ export interface Inventory {
   reserved_total: number;
   available_total: number;
   is_low_stock: boolean;
+  /** Centralized status from backend: healthy | low_stock | out_of_stock */
+  inventory_status: "healthy" | "low_stock" | "out_of_stock";
   created_at: string;
   updated_at: string;
+}
+
+/** Inventory enriched with product/variant metadata — from GET /api/v1/inventories */
+export interface InventoryDetails extends Inventory {
+  product_name: string;
+  variant_name: string;
+  product_image?: string;
+}
+
+/** A single inventory movement history entry — from GET /api/v1/inventories/{sku}/history */
+export interface InventoryMovement {
+  id: string;
+  timestamp: string;
+  action: string;
+  movement_type: string;
+  quantity: number;
+  before: number;
+  after: number;
+  performed_by: string;
+  reason?: string;
+}
+
+/** Payload for PATCH /api/v1/inventories/{sku}/adjust */
+export interface StockAdjustmentPayload {
+  warehouse_id: string;
+  quantity: number;
+  location_code?: string;
+  reason?: string;
 }
 
 export interface DashboardPaymentProof {

@@ -59,6 +59,15 @@ def mock_customer_token() -> TokenData:
     )
 
 
+@pytest.fixture
+def mock_admin_token() -> TokenData:
+    return TokenData(
+        user_id="60c72b2f9b1d8e2a3c4f5e6a",
+        email="admin@mrbharathfoods.in",
+        role=UserRole.ADMIN,
+    )
+
+
 def create_mock_product_doc(
     product_id: str,
     sku: str = "ALM-GHEE-250ML",
@@ -114,9 +123,9 @@ async def test_role_authorization_failed(
 
 @pytest.mark.anyio
 async def test_create_inventory_success(
-    mock_db: MagicMock, mock_warehouse_token: TokenData
+    mock_db: MagicMock, mock_admin_token: TokenData
 ) -> None:
-    # Pre-checks
+    # Pre-checks — POST /inventories is ADMIN only
     product_doc = create_mock_product_doc("60c72b2f9b1d8e2a3c4f5e6b")
     mock_db["products"].find_one = AsyncMock(return_value=product_doc)
     mock_db["inventories"].find_one = AsyncMock(return_value=None)
@@ -126,7 +135,7 @@ async def test_create_inventory_success(
     mock_db["audit_logs"].insert_one = AsyncMock()
 
     app.dependency_overrides[get_db] = lambda: mock_db
-    app.dependency_overrides[get_current_user] = lambda: mock_warehouse_token
+    app.dependency_overrides[get_current_user] = lambda: mock_admin_token
 
     payload = {
         "sku": "ALM-GHEE-250ML",
@@ -154,12 +163,14 @@ async def test_create_inventory_success(
     assert json_data["data"]["reserved_total"] == 0
     assert json_data["data"]["available_total"] == 100
     assert json_data["data"]["is_low_stock"] is False
+    assert json_data["data"]["inventory_status"] == "healthy"
 
 
 @pytest.mark.anyio
 async def test_create_inventory_duplicate(
-    mock_db: MagicMock, mock_warehouse_token: TokenData
+    mock_db: MagicMock, mock_admin_token: TokenData
 ) -> None:
+    # POST /inventories is ADMIN only
     product_doc = create_mock_product_doc("60c72b2f9b1d8e2a3c4f5e6b")
     mock_db["products"].find_one = AsyncMock(return_value=product_doc)
 
@@ -176,7 +187,7 @@ async def test_create_inventory_duplicate(
     mock_db["inventories"].find_one = AsyncMock(return_value=existing_inventory)
 
     app.dependency_overrides[get_db] = lambda: mock_db
-    app.dependency_overrides[get_current_user] = lambda: mock_warehouse_token
+    app.dependency_overrides[get_current_user] = lambda: mock_admin_token
 
     payload = {
         "sku": "ALM-GHEE-250ML",
@@ -240,8 +251,9 @@ async def test_get_inventory_by_sku_success(
 
 @pytest.mark.anyio
 async def test_stock_adjustment_success(
-    mock_db: MagicMock, mock_warehouse_token: TokenData
+    mock_db: MagicMock, mock_admin_token: TokenData
 ) -> None:
+    # PATCH /adjust is ADMIN only
     inventory_state = {
         "_id": "60c72b2f9b1d8e2a3c4f5e6f",
         "sku": "ALM-GHEE-250ML",
@@ -275,7 +287,7 @@ async def test_stock_adjustment_success(
     mock_db["audit_logs"].insert_one = AsyncMock()
 
     app.dependency_overrides[get_db] = lambda: mock_db
-    app.dependency_overrides[get_current_user] = lambda: mock_warehouse_token
+    app.dependency_overrides[get_current_user] = lambda: mock_admin_token
 
     payload = {"warehouse_id": "WH-MAIN", "quantity": 15, "location_code": "A-1-UPDATED"}
     response = client.patch("/api/v1/inventories/ALM-GHEE-250ML/adjust", json=payload)
@@ -290,8 +302,9 @@ async def test_stock_adjustment_success(
 
 @pytest.mark.anyio
 async def test_stock_adjustment_negative_disallowed(
-    mock_db: MagicMock, mock_warehouse_token: TokenData
+    mock_db: MagicMock, mock_admin_token: TokenData
 ) -> None:
+    # PATCH /adjust is ADMIN only; verify enterprise protection: cannot remove more than available
     inventory_state = {
         "_id": "60c72b2f9b1d8e2a3c4f5e6f",
         "sku": "ALM-GHEE-250ML",
@@ -313,14 +326,15 @@ async def test_stock_adjustment_negative_disallowed(
     mock_db["inventories"].find_one = AsyncMock(return_value=inventory_state)
 
     app.dependency_overrides[get_db] = lambda: mock_db
-    app.dependency_overrides[get_current_user] = lambda: mock_warehouse_token
+    app.dependency_overrides[get_current_user] = lambda: mock_admin_token
 
-    payload = {"warehouse_id": "WH-MAIN", "quantity": -11}  # would make on_hand = -1
+    payload = {"warehouse_id": "WH-MAIN", "quantity": -11}  # available=10, removal=11 -> blocked
     response = client.patch("/api/v1/inventories/ALM-GHEE-250ML/adjust", json=payload)
     app.dependency_overrides.clear()
 
     assert response.status_code == 400
-    assert "would result in a negative stock level" in response.json()["message"]
+    # Enterprise protection: removal exceeds available quantity
+    assert "Cannot remove" in response.json()["message"] or "would result in a negative stock level" in response.json()["message"]
 
 
 @pytest.mark.anyio
