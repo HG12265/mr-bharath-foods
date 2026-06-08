@@ -103,7 +103,7 @@ export const Header: React.FC = () => {
             >
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#D9A441] text-[#0F3D2E] text-[10px] font-bold rounded-full w-4.5 h-4.5 flex items-center justify-center border border-white">
+                <span className="absolute -top-1.5 -right-1.5 bg-gheeGold text-deodharForest text-[9px] font-sans font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center border border-white shadow-sm">
                   {cartItemCount}
                 </span>
               )}
@@ -169,7 +169,7 @@ export const Header: React.FC = () => {
             >
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-[#D9A441] text-[#0F3D2E] text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center border border-white">
+                <span className="absolute -top-1.5 -right-1.5 bg-gheeGold text-deodharForest text-[9px] font-sans font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center border border-white shadow-sm">
                   {cartItemCount}
                 </span>
               )}
