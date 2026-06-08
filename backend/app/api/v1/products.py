@@ -116,6 +116,29 @@ async def list_products(
     )
 
 
+@router.get("/admin/all", response_model=Envelope[list[ProductResponse]])
+async def list_all_products_admin(
+    category_id: str | None = None,
+    skip: int = 0,
+    limit: int = 100,
+    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
+    service: ProductService = Depends(get_product_service)
+) -> Envelope[list[ProductResponse]]:
+    """
+    Retrieves all products (active, draft, archived) for administration. Requires admin or warehouse role.
+    """
+    products = await service.list_all_products(
+        category_id=category_id,
+        skip=skip,
+        limit=limit
+    )
+    return Envelope(
+        success=True,
+        message="All products retrieved successfully for admin/warehouse.",
+        data=[map_product_response(p) for p in products]
+    )
+
+
 @router.get("/{slug}", response_model=Envelope[ProductResponse])
 async def get_product_by_slug(
     slug: str,

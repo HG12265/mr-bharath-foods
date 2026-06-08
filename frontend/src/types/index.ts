@@ -87,6 +87,7 @@ export interface Product {
   seo: SEOMetadata;
   ratings: ProductRatings;
   tags: string[];
+  search_keywords: string[];
   is_featured: boolean;
   status: "draft" | "active" | "archived";
   created_at: string;
@@ -254,9 +255,12 @@ export interface Payment {
 }
 
 export interface TimelineEvent {
-  event_name: string;
+  event_name?: string;
+  status?: string;
+  message?: string;
+  location?: string | null;
   timestamp: string;
-  description: string;
+  description?: string;
   updated_by?: string;
 }
 
@@ -268,8 +272,9 @@ export interface Shipment {
   carrier_name: string;
   tracking_number: string;
   awb_number?: string;
-  status: "pending" | "packed" | "shipped" | "out_for_delivery" | "delivered" | "failed" | "returned";
+  status: "pending" | "packed" | "shipped" | "reached_hub" | "out_for_delivery" | "delivered" | "failed" | "returned" | "cancelled";
   timeline: TimelineEvent[];
+  estimated_delivery_date?: string;
   created_at: string;
 }
 

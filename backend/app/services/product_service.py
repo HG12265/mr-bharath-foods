@@ -63,6 +63,21 @@ class ProductService(BaseService[Product]):
             limit=limit
         )
 
+    async def list_all_products(
+        self,
+        category_id: str | None = None,
+        skip: int = 0,
+        limit: int = 100
+    ) -> list[Product]:
+        """
+        Retrieves all non-deleted products (including drafts and archived).
+        """
+        return await self.product_repository.get_all_products(
+            category_id=category_id,
+            skip=skip,
+            limit=limit
+        )
+
     async def create_product(
         self,
         user_id: str,

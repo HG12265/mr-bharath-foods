@@ -30,11 +30,15 @@ class CustomerService:
         customer = await self.get_profile(user_id)
 
         update_data: dict[str, Any] = {}
-        if request.first_name is not None:
+        if "first_name" in request.model_fields_set:
+            if request.first_name is None:
+                raise BaseAppException("First name cannot be null.", status_code=400)
             update_data["personal_details.first_name"] = request.first_name
-        if request.last_name is not None:
+        if "last_name" in request.model_fields_set:
+            if request.last_name is None:
+                raise BaseAppException("Last name cannot be null.", status_code=400)
             update_data["personal_details.last_name"] = request.last_name
-        if request.avatar_url is not None:
+        if "avatar_url" in request.model_fields_set:
             update_data["personal_details.avatar_url"] = request.avatar_url
 
         if update_data:
@@ -130,30 +134,46 @@ class CustomerService:
         addr_to_update = addresses[target_index]
 
         # Merge values
-        if request.name is not None:
+        if "name" in request.model_fields_set:
+            if request.name is None:
+                raise BaseAppException("Address name cannot be null.", status_code=400)
             addr_to_update.name = request.name
-        if request.phone is not None:
+        if "phone" in request.model_fields_set:
+            if request.phone is None:
+                raise BaseAppException("Phone number cannot be null.", status_code=400)
             validate_phone_number(request.phone)
             addr_to_update.phone = request.phone
-        if request.street is not None:
+        if "street" in request.model_fields_set:
+            if request.street is None:
+                raise BaseAppException("Street cannot be null.", status_code=400)
             addr_to_update.street = request.street
-        if request.landmark is not None:
+        if "landmark" in request.model_fields_set:
             addr_to_update.landmark = request.landmark
-        if request.pincode is not None:
+        if "pincode" in request.model_fields_set:
+            if request.pincode is None:
+                raise BaseAppException("Pincode cannot be null.", status_code=400)
             validate_pincode(request.pincode)
             addr_to_update.pincode = request.pincode
-        if request.city is not None:
+        if "city" in request.model_fields_set:
+            if request.city is None:
+                raise BaseAppException("City cannot be null.", status_code=400)
             addr_to_update.city = request.city
-        if request.state is not None:
+        if "state" in request.model_fields_set:
+            if request.state is None:
+                raise BaseAppException("State cannot be null.", status_code=400)
             addr_to_update.state = request.state
 
-        if request.is_default_shipping is not None:
+        if "is_default_shipping" in request.model_fields_set:
+            if request.is_default_shipping is None:
+                raise BaseAppException("is_default_shipping cannot be null.", status_code=400)
             if request.is_default_shipping:
                 for addr in addresses:
                     addr.is_default_shipping = False
             addr_to_update.is_default_shipping = request.is_default_shipping
 
-        if request.is_default_billing is not None:
+        if "is_default_billing" in request.model_fields_set:
+            if request.is_default_billing is None:
+                raise BaseAppException("is_default_billing cannot be null.", status_code=400)
             if request.is_default_billing:
                 for addr in addresses:
                     addr.is_default_billing = False

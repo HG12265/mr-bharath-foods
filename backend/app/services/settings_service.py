@@ -81,8 +81,12 @@ class SettingsService(BaseService[Settings]):
         dumped = payload.model_dump(exclude_unset=True)
 
         for k, v in dumped.items():
-            if v is not None:
+            if k in ["fssai_number", "gst_number"]:
                 update_data[k] = v
+            elif v is not None:
+                update_data[k] = v
+            else:
+                raise BaseAppException(f"Setting '{k}' cannot be null.", status_code=400)
 
         if not update_data:
             return current

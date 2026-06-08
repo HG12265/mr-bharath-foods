@@ -89,6 +89,13 @@ def create_app() -> FastAPI:
         allow_headers=["*"],
     )
 
+    # Mount local static files directory for serving uploaded media
+    import os
+
+    from fastapi.staticfiles import StaticFiles
+    os.makedirs("static", exist_ok=True)
+    app.mount("/static", StaticFiles(directory="static"), name="static")
+
     # Root route returning version metadata
     @app.get("/", tags=["Metadata"])
     async def root_metadata() -> dict[str, str]:

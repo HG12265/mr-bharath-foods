@@ -139,3 +139,74 @@ def test_deactivate_profile(mock_db: MagicMock, mock_redis: AsyncMock, mock_toke
     json_data = response.json()
     assert json_data["success"] is True
     assert "deactivated" in json_data["message"]
+
+
+def test_update_profile_and_address_clear_nullable(mock_db: MagicMock, mock_token_data: TokenData) -> None:
+    customer_doc = {
+        "_id": "507f1f77bcf86cd799439011",
+        "auth": {
+            "email": "test@mrbharathfoods.in",
+            "phone": "+919876543210",
+            "status": "active",
+            "role": "customer"
+        },
+        "personal_details": {
+            "first_name": "Gowtham",
+            "last_name": "Kumar",
+            "avatar_url": "https://avatar.png"
+        },
+        "addresses": [
+            {
+                "address_id": "addr-111",
+                "name": "Home Address",
+                "phone": "+919876543210",
+                "street": "123 Saffron Street",
+                "landmark": "Near Temple",
+                "pincode": "600001",
+                "city": "Chennai",
+                "state": "Tamil Nadu",
+                "is_default_shipping": True,
+                "is_default_billing": True
+            }
+        ],
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["customers"].find_one = AsyncMock(return_value=customer_doc)
+    mock_db["customers"].find_one_and_update = AsyncMock(return_value=customer_doc)
+    mock_db["audit_logs"].insert_one = AsyncMock(return_value=MagicMock())
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_token_data
+
+    # 1. Update profile - set avatar_url to null
+    payload_profile = {
+        "avatar_url": None
+    }
+    response_profile = client.patch("/api/v1/customers/me", json=payload_profile)
+    assert response_profile.status_code == 200
+
+    called_args = mock_db["customers"].find_one_and_update.call_args[0]
+    called_kwargs = mock_db["customers"].find_one_and_update.call_args[1]
+    update_op = called_args[1] if len(called_args) > 1 else called_kwargs.get("update")
+    assert update_op["$set"]["personal_details.avatar_url"] is None
+
+    # Reset call args mock
+    mock_db["customers"].find_one_and_update.reset_mock()
+
+    # 2. Update address - set landmark to null
+    payload_addr = {
+        "landmark": None
+    }
+    response_addr = client.put("/api/v1/customers/me/addresses/addr-111", json=payload_addr)
+    assert response_addr.status_code == 200
+
+    called_args = mock_db["customers"].find_one_and_update.call_args[0]
+    called_kwargs = mock_db["customers"].find_one_and_update.call_args[1]
+    update_op = called_args[1] if len(called_args) > 1 else called_kwargs.get("update")
+    assert update_op["$set"]["addresses"][0]["landmark"] is None
+
+    app.dependency_overrides.clear()
+

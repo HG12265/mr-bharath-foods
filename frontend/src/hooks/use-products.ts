@@ -47,3 +47,23 @@ export const useDeleteProduct = () => {
     },
   });
 };
+
+export const useAdminProducts = (params?: ListProductsParams) => {
+  return useQuery({
+    queryKey: ["admin", "products", params],
+    queryFn: () => productService.listAllProductsAdmin(params),
+  });
+};
+
+export const useUpdateProductStatus = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, status }: { id: string; status: "draft" | "active" | "archived" }) =>
+      productService.updateProductStatus(id, status),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["products"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "products"] });
+      queryClient.invalidateQueries({ queryKey: ["product"] });
+    },
+  });
+};

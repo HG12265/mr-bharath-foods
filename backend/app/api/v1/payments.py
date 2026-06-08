@@ -11,6 +11,7 @@ from app.repositories.payment_repository import PaymentRepository
 from app.schemas.auth import TokenData
 from app.schemas.common import Envelope
 from app.schemas.payment import (
+    AdminPaymentResponse,
     PaymentInitiateResponse,
     PaymentProofSubmitRequest,
     PaymentProofSubmitResponse,
@@ -121,11 +122,11 @@ async def verify_payment_proof_admin(
     payment_id: str,
     payload: PaymentVerifyRequest,
     request: Request,
-    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
     service: PaymentService = Depends(get_payment_service),
 ) -> Envelope[PaymentVerifyResponse]:
     """
-    Approves or rejects the submitted payment proof. Restricted to ADMIN or WAREHOUSE roles.
+    Approves or rejects the submitted payment proof. Restricted to ADMIN role only.
     """
     ip = request.client.host if request.client else None
     payment = await service.verify_payment_proof_admin(
@@ -152,3 +153,38 @@ async def verify_payment_proof_admin(
             payment_status=order_payment_status,
         ),
     )
+
+
+@admin_router.get("/order/{order_id}", response_model=Envelope[AdminPaymentResponse | None])
+async def get_payment_by_order_id_admin(
+    order_id: str,
+    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
+    service: PaymentService = Depends(get_payment_service),
+) -> Envelope[AdminPaymentResponse | None]:
+    """
+    Retrieves payment details for a given order ID. Restricted to ADMIN or WAREHOUSE roles.
+    """
+    payment = await service.payment_repository.get_by_order_id(order_id)
+    if not payment:
+        return Envelope(
+            success=True,
+            message="No payment record exists for this order.",
+            data=None
+        )
+    res = service.map_to_response(payment)
+    return Envelope(
+        success=True,
+        message="Payment record retrieved successfully.",
+        data=AdminPaymentResponse(
+            payment_id=res["id"],
+            order_id=res["order_id"],
+            order_number=res["order_number"],
+            amount=res["amount"],
+            upi_id=res["upi_id"],
+            upi_link=res["upi_link"],
+            status=res["status"],
+            screenshot_media_id=res.get("screenshot_media_id"),
+            rejection_reason=res.get("rejection_reason")
+        )
+    )
+

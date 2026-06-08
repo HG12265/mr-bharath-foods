@@ -8,6 +8,13 @@ export const useCategories = () => {
   });
 };
 
+export const useAdminCategories = () => {
+  return useQuery({
+    queryKey: ["admin", "categories"],
+    queryFn: () => categoryService.listAllCategoriesAdmin(),
+  });
+};
+
 export const useCategoryTree = () => {
   return useQuery({
     queryKey: ["categories", "tree"],

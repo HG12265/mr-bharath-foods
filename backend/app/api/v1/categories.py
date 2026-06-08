@@ -79,6 +79,23 @@ async def get_categories_tree(
     )
 
 
+@router.get("/admin/all", response_model=Envelope[list[CategoryResponse]])
+async def list_all_categories_admin(
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    service: CategoryService = Depends(get_category_service)
+) -> Envelope[list[CategoryResponse]]:
+    """
+    Retrieves all categories (active, inactive) for administration. Requires admin role.
+    """
+    categories = await service.list_all_categories()
+    categories.sort(key=lambda x: (x.level, x.sort_order))
+    return Envelope(
+        success=True,
+        message="All categories retrieved successfully for admin.",
+        data=[map_category_response(cat) for cat in categories]
+    )
+
+
 @router.get("/{slug}", response_model=Envelope[CategoryResponse])
 async def get_category_by_slug(
     slug: str,

@@ -50,6 +50,12 @@ class CategoryService(BaseService[Category]):
             raise NotFoundException("Category not found.")
         return cat
 
+    async def list_all_categories(self) -> list[Category]:
+        """
+        Retrieves all non-deleted categories (including inactive ones).
+        """
+        return await self.category_repository.get_all_categories()
+
     async def create_category(
         self,
         user_id: str,
@@ -137,11 +143,15 @@ class CategoryService(BaseService[Category]):
 
         update_data: dict[str, Any] = {"updated_at": datetime.now(UTC)}
 
-        if request.name is not None:
+        if "name" in request.model_fields_set:
+            if request.name is None:
+                raise BaseAppException("Category name cannot be null.", status_code=400)
             update_data["name"] = request.name.strip()
 
         # Update slug if specified
-        if request.slug is not None:
+        if "slug" in request.model_fields_set:
+            if request.slug is None:
+                raise BaseAppException("Category slug cannot be null.", status_code=400)
             slug = request.slug.strip()
             if not slug:
                 raise BaseAppException("Category slug cannot be empty.", code="INVALID_SLUG", status_code=400)
@@ -154,11 +164,11 @@ class CategoryService(BaseService[Category]):
                 )
             update_data["slug"] = slug
 
-        if request.description is not None:
+        if "description" in request.model_fields_set:
             update_data["description"] = request.description.strip() if request.description else None
 
         # Validate media asset
-        if request.image_id is not None:
+        if "image_id" in request.model_fields_set:
             if request.image_id:
                 media = await self.media_repository.get_by_id(request.image_id)
                 if not media or media.is_deleted:
@@ -167,14 +177,18 @@ class CategoryService(BaseService[Category]):
                     raise PermissionDeniedException("Associated media asset access forbidden.")
             update_data["image_id"] = request.image_id or None
 
-        if request.sort_order is not None:
+        if "sort_order" in request.model_fields_set:
+            if request.sort_order is None:
+                raise BaseAppException("Sort order cannot be null.", status_code=400)
             update_data["sort_order"] = request.sort_order
 
-        if request.is_active is not None:
+        if "is_active" in request.model_fields_set:
+            if request.is_active is None:
+                raise BaseAppException("Activation status cannot be null.", status_code=400)
             update_data["is_active"] = request.is_active
 
         # Process parent changes and calculate level recalculations
-        if request.parent_id is not None:
+        if "parent_id" in request.model_fields_set:
             if request.parent_id:
                 await self._check_circular_dependency(category_id, request.parent_id)
                 parent = await self.category_repository.get_by_id(request.parent_id)

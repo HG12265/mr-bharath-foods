@@ -33,6 +33,18 @@ export interface VerifyPaymentResponse {
   payment_status: string;
 }
 
+export interface AdminPaymentResponse {
+  payment_id: string;
+  order_id: string;
+  order_number: string;
+  amount: number;
+  upi_id: string;
+  upi_link: string;
+  status: "pending" | "proof_submitted" | "approved" | "rejected";
+  screenshot_media_id: string | null;
+  rejection_reason: string | null;
+}
+
 export const paymentService = {
   async initiateUpiPayment(orderId: string): Promise<Envelope<InitiatePaymentResponse>> {
     const response = await apiClient.post<Envelope<InitiatePaymentResponse>>(`/api/v1/payments/order/${orderId}/initiate`);
@@ -52,6 +64,11 @@ export const paymentService = {
       `/api/v1/admin/payments/${paymentId}/verify`,
       payload
     );
+    return response.data;
+  },
+
+  async adminGetPaymentByOrder(orderId: string): Promise<Envelope<AdminPaymentResponse | null>> {
+    const response = await apiClient.get<Envelope<AdminPaymentResponse | null>>(`/api/v1/admin/payments/order/${orderId}`);
     return response.data;
   },
 };

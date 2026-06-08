@@ -361,3 +361,51 @@ async def test_checkout_tax_and_shipping_override(mock_db: MagicMock) -> None:
     assert session.tax_estimate == Decimal("50.00")
     assert session.shipping_fee == Decimal("100.00")
     assert session.grand_total == Decimal("650.00")
+
+
+@pytest.mark.anyio
+async def test_admin_settings_clear_nullable_fields(mock_db: MagicMock) -> None:
+    mock_settings = create_mock_settings_doc()
+    mock_db["settings"].find_one = AsyncMock(return_value=mock_settings)
+    mock_db["audit_logs"].insert_one = AsyncMock()
+
+    mock_admin = TokenData(
+        user_id="admin_123",
+        email="admin@mrbharathfoods.in",
+        role=UserRole.ADMIN
+    )
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_admin
+
+    # 1. Clear FSSAI and GST numbers (which are nullable)
+    updated_doc = mock_settings.copy()
+    updated_doc["fssai_number"] = None
+    updated_doc["gst_number"] = None
+    mock_db["settings"].find_one_and_update = AsyncMock(return_value=updated_doc)
+
+    payload = {
+        "fssai_number": None,
+        "gst_number": None
+    }
+    response = client.patch("/api/v1/admin/settings", json=payload)
+    assert response.status_code == 200, response.json()
+    assert response.json()["data"]["fssai_number"] is None
+    assert response.json()["data"]["gst_number"] is None
+
+    # Check update operation in MongoDB
+    called_args = mock_db["settings"].find_one_and_update.call_args[0]
+    called_kwargs = mock_db["settings"].find_one_and_update.call_args[1]
+    update_op = called_args[1] if len(called_args) > 1 else called_kwargs.get("update")
+    assert update_op["$set"]["fssai_number"] is None
+    assert update_op["$set"]["gst_number"] is None
+
+    # 2. Assert non-nullable setting like tax_percentage rejects null
+    bad_payload = {
+        "tax_percentage": None
+    }
+    response_bad = client.patch("/api/v1/admin/settings", json=bad_payload)
+    assert response_bad.status_code == 400
+    assert "cannot be null" in response_bad.json()["message"]
+
+    app.dependency_overrides.clear()
+

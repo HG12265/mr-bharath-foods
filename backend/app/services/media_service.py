@@ -30,7 +30,8 @@ class MediaService(BaseService[MediaAsset]):
         content_type: str,
         size: int,
         asset_type: str,
-        ip_address: str | None = None
+        ip_address: str | None = None,
+        base_url: str = "http://localhost:8000"
     ) -> tuple[MediaAsset, str]:
         """
         Validates file metadata, registers a pending asset record in DB,
@@ -49,17 +50,22 @@ class MediaService(BaseService[MediaAsset]):
 
         storage_key = f"media/{asset_type}/{user_id}/{unique_id}-{safe_filename}"
 
-        # Construct public URL based on endpoint and bucket name
-        base_endpoint = settings.R2_ENDPOINT_URL or ""
-        endpoint_clean = base_endpoint.rstrip("/")
-        public_url = f"{endpoint_clean}/{settings.R2_BUCKET_NAME}/{storage_key}"
+        if storage_manager.use_local_storage:
+            base_url_clean = base_url.rstrip("/")
+            public_url = f"{base_url_clean}/static/{storage_key}"
+            upload_url = f"{base_url_clean}/api/v1/media/upload/mock/{storage_key}"
+        else:
+            # Construct public URL based on endpoint and bucket name
+            base_endpoint = settings.R2_ENDPOINT_URL or ""
+            endpoint_clean = base_endpoint.rstrip("/")
+            public_url = f"{endpoint_clean}/{settings.R2_BUCKET_NAME}/{storage_key}"
 
-        # Generate the presigned URL via the storage manager
-        upload_url = storage_manager.generate_presigned_put_url(
-            key=storage_key,
-            content_type=content_type,
-            expires_in=3600  # 1 hour expiration
-        )
+            # Generate the presigned URL via the storage manager
+            upload_url = storage_manager.generate_presigned_put_url(
+                key=storage_key,
+                content_type=content_type,
+                expires_in=3600  # 1 hour expiration
+            )
 
         media_asset = MediaAsset(
             original_filename=filename,
@@ -116,8 +122,8 @@ class MediaService(BaseService[MediaAsset]):
         }
 
         if status == "completed":
-            # Verify file exists in R2 storage bucket
-            exists = storage_manager.verify_object_exists(asset.storage_key)
+            # Verify file exists in storage bucket
+            exists = await storage_manager.verify_object_exists(asset.storage_key)
             if not exists:
                 raise BaseAppException(
                     message="File could not be found in storage. Complete upload before confirmation.",

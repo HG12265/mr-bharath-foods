@@ -33,9 +33,10 @@ class ShipmentService(BaseService[Shipment]):
         order_id: str,
         carrier_name: str,
         tracking_number: str,
-        awb_number: str,
+        awb_number: str | None,
         current_user: TokenData,
         ip_address: str | None = None,
+        estimated_delivery_date: datetime | None = None,
     ) -> Shipment:
         """
         Creates a new manual shipment for a confirmed paid order.
@@ -82,6 +83,7 @@ class ShipmentService(BaseService[Shipment]):
             awb_number=awb_number,
             status="pending",
             timeline=[initial_event],
+            estimated_delivery_date=estimated_delivery_date,
         )
 
         shipment = await self.shipment_repository.insert(new_shipment)
@@ -255,6 +257,119 @@ class ShipmentService(BaseService[Shipment]):
         """
         return await self.shipment_repository.find({}, skip=skip, limit=limit)
 
+    async def edit_shipment(
+        self,
+        shipment_id: str,
+        update_data: dict[str, Any],
+        current_user: TokenData,
+        ip_address: str | None = None,
+    ) -> Shipment:
+        """
+        Edits core carrier, tracking, AWB, or estimated delivery date of a shipment.
+        Restricted to ADMIN.
+        """
+        shipment = await self.shipment_repository.get_by_id(shipment_id)
+        if not shipment:
+            raise NotFoundException(f"Shipment '{shipment_id}' not found.")
+
+        now = datetime.now(UTC)
+        update_payload: dict[str, Any] = {
+            **update_data,
+            "updated_at": now
+        }
+
+        updated = await self.shipment_repository.update(shipment_id, update_payload)
+        if not updated:
+            raise BaseAppException("Failed to update shipment details.")
+
+        await self.audit_service.log_action(
+            action="EDIT_SHIPMENT",
+            target_collection="shipments",
+            user_id=current_user.user_id,
+            target_id=shipment_id,
+            ip_address=ip_address,
+        )
+        return updated
+
+    async def cancel_shipment(
+        self,
+        shipment_id: str,
+        current_user: TokenData,
+        ip_address: str | None = None,
+    ) -> Shipment:
+        """
+        Cancels a shipment, updates status to cancelled, appends a timeline event, and updates order's fulfillment_status to cancelled.
+        """
+        shipment = await self.shipment_repository.get_by_id(shipment_id)
+        if not shipment:
+            raise NotFoundException(f"Shipment '{shipment_id}' not found.")
+
+        now = datetime.now(UTC)
+        new_event = TimelineEvent(
+            status="cancelled",
+            message="Shipment cancelled administratively.",
+            timestamp=now,
+            location=None,
+        )
+
+        current_timeline = list(shipment.timeline)
+        current_timeline.append(new_event)
+
+        update_payload = {
+            "status": "cancelled",
+            "updated_at": now,
+            "timeline": [e.model_dump() for e in current_timeline]
+        }
+
+        updated = await self.shipment_repository.update(shipment_id, update_payload)
+        if not updated:
+            raise BaseAppException("Failed to cancel shipment status.")
+
+        # Sync order fulfillment_status
+        await self.order_repository.update(shipment.order_id, {
+            "fulfillment_status": "cancelled",
+            "updated_at": now
+        })
+
+        await self.audit_service.log_action(
+            action="CANCEL_SHIPMENT",
+            target_collection="shipments",
+            user_id=current_user.user_id,
+            target_id=shipment_id,
+            ip_address=ip_address,
+        )
+        return updated
+
+    async def delete_shipment(
+        self,
+        shipment_id: str,
+        current_user: TokenData,
+        ip_address: str | None = None,
+    ) -> bool:
+        """
+        Soft deletes shipment by setting is_deleted = True.
+        """
+        shipment = await self.shipment_repository.get_by_id(shipment_id)
+        if not shipment:
+            raise NotFoundException(f"Shipment '{shipment_id}' not found.")
+
+        now = datetime.now(UTC)
+        updated = await self.shipment_repository.update(shipment_id, {
+            "is_deleted": True,
+            "updated_at": now
+        })
+        if not updated:
+            raise BaseAppException("Failed to delete shipment.")
+
+        await self.audit_service.log_action(
+            action="DELETE_SHIPMENT",
+            target_collection="shipments",
+            user_id=current_user.user_id,
+            target_id=shipment_id,
+            ip_address=ip_address,
+        )
+        return True
+
     def map_to_response(self, shipment: Shipment) -> dict[str, Any]:
         """
         Converts a Shipment instance attributes to a standard response dictionary.
@@ -279,6 +394,7 @@ class ShipmentService(BaseService[Shipment]):
             ],
             "shipped_at": shipment.shipped_at,
             "delivered_at": shipment.delivered_at,
+            "estimated_delivery_date": shipment.estimated_delivery_date,
             "created_at": shipment.created_at,
             "updated_at": shipment.updated_at,
         }

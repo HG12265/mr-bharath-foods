@@ -1,4 +1,4 @@
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import paymentService, { SubmitProofPayload, VerifyPaymentPayload } from "../services/payment-service";
 
 export const useInitiateUpiPayment = () => {
@@ -29,6 +29,15 @@ export const useAdminVerifyPayment = () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
       queryClient.invalidateQueries({ queryKey: ["orders"] });
       queryClient.invalidateQueries({ queryKey: ["order"] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "payment"] });
     },
+  });
+};
+
+export const useAdminPaymentByOrder = (orderId: string, options?: { enabled?: boolean }) => {
+  return useQuery({
+    queryKey: ["admin", "payment", "order", orderId],
+    queryFn: () => paymentService.adminGetPaymentByOrder(orderId),
+    enabled: options?.enabled !== undefined ? options.enabled && !!orderId : !!orderId,
   });
 };

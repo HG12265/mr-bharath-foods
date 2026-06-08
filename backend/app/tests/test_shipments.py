@@ -319,3 +319,70 @@ async def test_admin_listing_checks(mock_db: MagicMock) -> None:
 
     app.dependency_overrides.clear()
 
+
+@pytest.mark.anyio
+async def test_admin_edit_cancel_delete_shipment(mock_db: MagicMock) -> None:
+    order_id = "60c72b2f9b1d8e2a3c4f5e7a"
+    shipment_id = "60c72b2f9b1d8e2a3c4f5e7d"
+    shipment_doc = create_mock_shipment_doc(shipment_id, order_id)
+    order_doc = create_mock_order_doc(order_id, order_status="confirmed", payment_status="paid")
+
+    mock_db["shipments"].find_one = AsyncMock(return_value=shipment_doc)
+    mock_db["orders"].find_one = AsyncMock(return_value=order_doc)
+    mock_db["audit_logs"].insert_one = AsyncMock()
+
+    async def mock_update_shipment(sid: str, update_payload: dict[str, Any], *args: Any, **kwargs: Any) -> Any:
+        if "$set" in update_payload:
+            shipment_doc.update(update_payload["$set"])
+        return shipment_doc
+
+    async def mock_update_order(oid: str, update_payload: dict[str, Any], *args: Any, **kwargs: Any) -> Any:
+        if "$set" in update_payload:
+            order_doc.update(update_payload["$set"])
+        return order_doc
+
+    mock_db["shipments"].find_one_and_update = AsyncMock(side_effect=mock_update_shipment)
+    mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update_order)
+
+    # 1. Non-admin fails to edit
+    mock_warehouse = TokenData(
+        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+    )
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_warehouse
+
+    payload_edit = {
+        "carrier_name": "DHL Express",
+        "tracking_number": "TRK99999",
+        "awb_number": None,
+        "estimated_delivery_date": "2026-06-15T12:00:00Z"
+    }
+    response_edit_warehouse = client.patch(f"/api/v1/admin/shipments/{shipment_id}", json=payload_edit)
+    assert response_edit_warehouse.status_code == 403
+
+    # 2. Admin edits successfully
+    mock_admin = TokenData(
+        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+    )
+    app.dependency_overrides[get_current_user] = lambda: mock_admin
+    response_edit_admin = client.patch(f"/api/v1/admin/shipments/{shipment_id}", json=payload_edit)
+    assert response_edit_admin.status_code == 200, response_edit_admin.json()
+    assert response_edit_admin.json()["data"]["carrier_name"] == "DHL Express"
+    assert response_edit_admin.json()["data"]["tracking_number"] == "TRK99999"
+    assert response_edit_admin.json()["data"]["awb_number"] is None
+    assert response_edit_admin.json()["data"]["estimated_delivery_date"] is not None
+
+    # 3. Admin cancels shipment successfully
+    response_cancel = client.post(f"/api/v1/admin/shipments/{shipment_id}/cancel")
+    assert response_cancel.status_code == 200
+    assert response_cancel.json()["data"]["status"] == "cancelled"
+    assert order_doc["fulfillment_status"] == "cancelled"
+
+    # 4. Admin deletes shipment successfully
+    response_delete = client.delete(f"/api/v1/admin/shipments/{shipment_id}")
+    assert response_delete.status_code == 200
+    assert response_delete.json()["success"] is True
+    assert shipment_doc["is_deleted"] is True
+
+    app.dependency_overrides.clear()
+

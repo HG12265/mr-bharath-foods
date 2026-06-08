@@ -5,10 +5,18 @@ export interface CreateShipmentPayload {
   carrier_name: string;
   tracking_number: string;
   awb_number?: string;
+  estimated_delivery_date?: string;
+}
+
+export interface EditShipmentPayload {
+  carrier_name?: string;
+  tracking_number?: string;
+  awb_number?: string | null;
+  estimated_delivery_date?: string | null;
 }
 
 export interface UpdateShipmentStatusPayload {
-  status: "pending" | "packed" | "shipped" | "out_for_delivery" | "delivered" | "failed" | "returned";
+  status: "pending" | "packed" | "shipped" | "reached_hub" | "out_for_delivery" | "delivered" | "failed" | "returned" | "cancelled";
   message: string;
   location?: string;
 }
@@ -41,6 +49,21 @@ export const shipmentService = {
 
   async adminUpdateShipmentStatus(id: string, payload: UpdateShipmentStatusPayload): Promise<Envelope<Shipment>> {
     const response = await apiClient.patch<Envelope<Shipment>>(`/api/v1/admin/shipments/${id}/status`, payload);
+    return response.data;
+  },
+
+  async adminEditShipment(id: string, payload: EditShipmentPayload): Promise<Envelope<Shipment>> {
+    const response = await apiClient.patch<Envelope<Shipment>>(`/api/v1/admin/shipments/${id}`, payload);
+    return response.data;
+  },
+
+  async adminCancelShipment(id: string): Promise<Envelope<Shipment>> {
+    const response = await apiClient.post<Envelope<Shipment>>(`/api/v1/admin/shipments/${id}/cancel`);
+    return response.data;
+  },
+
+  async adminDeleteShipment(id: string): Promise<Envelope<boolean>> {
+    const response = await apiClient.delete<Envelope<boolean>>(`/api/v1/admin/shipments/${id}`);
     return response.data;
   },
 };

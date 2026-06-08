@@ -356,3 +356,66 @@ async def test_admin_payment_rejection(mock_db: MagicMock) -> None:
     assert response2.json()["data"]["order_status"] == "pending_payment"
     assert response2.json()["data"]["payment_status"] == "pending"
     assert payment_doc["rejection_reason"] == "Receipt blurry."
+
+
+@pytest.mark.anyio
+async def test_warehouse_payment_verification_denied(mock_db: MagicMock) -> None:
+    payment_id = "60c72b2f9b1d8e2a3c4f5e7d"
+    payment_doc = create_mock_payment_doc(payment_id, status="proof_submitted")
+
+    mock_db["payments"].find_one = AsyncMock(return_value=payment_doc)
+
+    mock_warehouse = TokenData(
+        user_id="warehouse_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+    )
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_warehouse
+
+    payload = {"action": "approve"}
+    response = client.post(f"/api/v1/admin/payments/{payment_id}/verify", json=payload)
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 403
+
+
+@pytest.mark.anyio
+async def test_admin_and_warehouse_get_payment_by_order(mock_db: MagicMock) -> None:
+    order_id = "60c72b2f9b1d8e2a3c4f5e7a"
+    payment_id = "60c72b2f9b1d8e2a3c4f5e7d"
+    payment_doc = create_mock_payment_doc(payment_id, status="proof_submitted")
+    payment_doc["screenshot_media_id"] = "media_proof_123"
+
+    mock_db["payments"].find_one = AsyncMock(return_value=payment_doc)
+
+    # Test Warehouse Access
+    mock_warehouse = TokenData(
+        user_id="warehouse_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+    )
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_warehouse
+
+    response1 = client.get(f"/api/v1/admin/payments/order/{order_id}")
+    assert response1.status_code == 200, response1.json()
+    assert response1.json()["data"]["payment_id"] == payment_id
+    assert response1.json()["data"]["screenshot_media_id"] == "media_proof_123"
+
+    # Test Admin Access
+    mock_admin = TokenData(
+        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+    )
+    app.dependency_overrides[get_current_user] = lambda: mock_admin
+
+    response2 = client.get(f"/api/v1/admin/payments/order/{order_id}")
+    assert response2.status_code == 200, response2.json()
+
+    # Test Customer Access Denied
+    mock_customer = TokenData(
+        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+    )
+    app.dependency_overrides[get_current_user] = lambda: mock_customer
+
+    response3 = client.get(f"/api/v1/admin/payments/order/{order_id}")
+    assert response3.status_code == 403
+
+    app.dependency_overrides.clear()
+

@@ -36,3 +36,16 @@ class PaymentVerifyResponse(BaseModel):
     status: PaymentStatus
     order_status: str
     payment_status: str
+
+
+class AdminPaymentResponse(BaseModel):
+    payment_id: str
+    order_id: str
+    order_number: str
+    amount: Decimal
+    upi_id: str
+    upi_link: str
+    status: PaymentStatus
+    screenshot_media_id: str | None = None
+    rejection_reason: str | None = None
+

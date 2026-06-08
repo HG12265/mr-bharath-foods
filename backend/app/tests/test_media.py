@@ -291,3 +291,132 @@ def test_delete_media_asset_by_owner(
 
     assert response.status_code == 200
     assert response.json()["success"] is True
+
+
+def test_storage_provider_selection() -> None:
+    from app.core.config import settings
+    from app.core.storage import StorageManager
+
+    manager = StorageManager()
+
+    # Save original values
+    orig_r2_endpoint = manager.endpoint_url
+    orig_r2_access = manager.access_key_id
+    orig_r2_secret = manager.secret_access_key
+    orig_r2_bucket = manager.bucket_name
+    orig_cloud_name = settings.CLOUDINARY_CLOUD_NAME
+    orig_cloud_key = settings.CLOUDINARY_API_KEY
+    orig_cloud_secret = settings.CLOUDINARY_API_SECRET
+
+    try:
+        # Case 1: All settings are placeholders -> fallback to local
+        manager.endpoint_url = "https://account_id.r2.cloudflarestorage.com"
+        manager.access_key_id = "r2_access_key"
+        manager.secret_access_key = "r2_secret_key"
+        manager.bucket_name = "mbf-media-bucket"
+
+        settings.CLOUDINARY_CLOUD_NAME = "cloudinary_cloud_name"
+        settings.CLOUDINARY_API_KEY = "cloudinary_api_key"
+        settings.CLOUDINARY_API_SECRET = "cloudinary_api_secret"
+
+        assert manager.storage_provider == "local"
+        assert manager.use_local_storage is False
+
+        # Case 2: Valid Cloudinary settings and placeholder R2 -> selects cloudinary
+        settings.CLOUDINARY_CLOUD_NAME = "mycloud"
+        settings.CLOUDINARY_API_KEY = "mykey"
+        settings.CLOUDINARY_API_SECRET = "mysecret"
+
+        assert manager.storage_provider == "cloudinary"
+        assert manager.use_local_storage is True
+
+        # Case 3: Valid R2 settings -> selects r2 (retaining priority over cloudinary)
+        manager.endpoint_url = "https://real-account-id.r2.cloudflarestorage.com"
+        manager.access_key_id = "real_access_key"
+        manager.secret_access_key = "real_secret_key"
+        manager.bucket_name = "real-bucket"
+
+        assert manager.storage_provider == "r2"
+        assert manager.use_local_storage is False
+
+    finally:
+        # Restore settings
+        manager.endpoint_url = orig_r2_endpoint
+        manager.access_key_id = orig_r2_access
+        manager.secret_access_key = orig_r2_secret
+        manager.bucket_name = orig_r2_bucket
+        settings.CLOUDINARY_CLOUD_NAME = orig_cloud_name
+        settings.CLOUDINARY_API_KEY = orig_cloud_key
+        settings.CLOUDINARY_API_SECRET = orig_cloud_secret
+
+
+def test_cloudinary_upload_mock_put(
+    mock_db: MagicMock,
+    mock_token_data: TokenData
+) -> None:
+    import unittest.mock as mock
+
+    from app.core.config import settings
+
+    # Configure mock cloudinary provider
+    orig_cloud_name = settings.CLOUDINARY_CLOUD_NAME
+    orig_cloud_key = settings.CLOUDINARY_API_KEY
+    orig_cloud_secret = settings.CLOUDINARY_API_SECRET
+
+    settings.CLOUDINARY_CLOUD_NAME = "real_cloud"
+    settings.CLOUDINARY_API_KEY = "real_key"
+    settings.CLOUDINARY_API_SECRET = "real_secret"
+
+    # Mock database documents
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439222",
+        "original_filename": "avatar.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/507f1f77bcf86cd799439011/uuid-avatar.png",
+        "public_url": "http://localhost/static/media/avatar/507f1f77bcf86cd799439011/uuid-avatar.png",
+        "uploaded_by": "507f1f77bcf86cd799439011",
+        "asset_type": "avatar",
+        "status": "pending",
+        "is_deleted": False
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+    mock_db["media_assets"].update_one = AsyncMock(return_value=MagicMock(modified_count=1))
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_token_data
+
+    # Mock cloudinary upload call
+    mock_cloudinary_res = {"secure_url": "https://res.cloudinary.com/real_cloud/image/upload/v1234/uuid-avatar.png"}
+
+    with mock.patch("cloudinary.uploader.upload", return_value=mock_cloudinary_res) as mock_upload:
+        # PUT request to mock endpoint
+        response = client.put(
+            "/api/v1/media/upload/mock/media/avatar/507f1f77bcf86cd799439011/uuid-avatar.png",
+            content=b"dummy-image-bytes",
+            headers={"Content-Type": "image/png"}
+        )
+
+        # Verify response
+        assert response.status_code == 200
+        json_res = response.json()
+        assert json_res["success"] is True
+        assert json_res["data"]["public_url"] == "https://res.cloudinary.com/real_cloud/image/upload/v1234/uuid-avatar.png"
+
+        # Verify cloudinary upload call parameters
+        mock_upload.assert_called_once()
+        _, kwargs = mock_upload.call_args
+        assert kwargs["folder"] == "mr-bharath-foods/avatar/507f1f77bcf86cd799439011"
+        assert kwargs["public_id"] == "uuid-avatar"
+
+        # Verify db update call
+        mock_db["media_assets"].update_one.assert_called_once()
+        db_args, _ = mock_db["media_assets"].update_one.call_args
+        assert db_args[1]["$set"]["public_url"] == "https://res.cloudinary.com/real_cloud/image/upload/v1234/uuid-avatar.png"
+
+    # Restore settings
+    settings.CLOUDINARY_CLOUD_NAME = orig_cloud_name
+    settings.CLOUDINARY_API_KEY = orig_cloud_key
+    settings.CLOUDINARY_API_SECRET = orig_cloud_secret
+    app.dependency_overrides.clear()

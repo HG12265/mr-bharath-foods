@@ -10,6 +10,7 @@ from app.schemas.auth import TokenData
 from app.schemas.common import Envelope
 from app.schemas.shipment import (
     ShipmentCreateRequest,
+    ShipmentEditRequest,
     ShipmentResponse,
     ShipmentStatusUpdateRequest,
 )
@@ -61,6 +62,7 @@ async def create_shipment(
         awb_number=payload.awb_number,
         current_user=current_user,
         ip_address=ip,
+        estimated_delivery_date=payload.estimated_delivery_date,
     )
     res = service.map_to_response(shipment)
     return Envelope(
@@ -151,4 +153,81 @@ async def list_all_shipments_admin(
         success=True,
         message="Shipments listed successfully.",
         data=res,
+    )
+
+
+@admin_router.patch("/{id}", response_model=Envelope[ShipmentResponse])
+async def edit_shipment(
+    id: str,
+    payload: ShipmentEditRequest,
+    request: Request,
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    service: ShipmentService = Depends(get_shipment_service),
+) -> Envelope[ShipmentResponse]:
+    """
+    Edits shipment carrier details (carrier, tracking, AWB, estimated delivery date).
+    Restricted to ADMIN role only.
+    """
+    ip = request.client.host if request.client else None
+    update_data = payload.model_dump(exclude_unset=True)
+    shipment = await service.edit_shipment(
+        shipment_id=id,
+        update_data=update_data,
+        current_user=current_user,
+        ip_address=ip,
+    )
+    res = service.map_to_response(shipment)
+    return Envelope(
+        success=True,
+        message="Shipment edited successfully.",
+        data=ShipmentResponse(**res),
+    )
+
+
+@admin_router.post("/{id}/cancel", response_model=Envelope[ShipmentResponse])
+async def cancel_shipment(
+    id: str,
+    request: Request,
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    service: ShipmentService = Depends(get_shipment_service),
+) -> Envelope[ShipmentResponse]:
+    """
+    Cancels a shipment administratively.
+    Restricted to ADMIN role only.
+    """
+    ip = request.client.host if request.client else None
+    shipment = await service.cancel_shipment(
+        shipment_id=id,
+        current_user=current_user,
+        ip_address=ip,
+    )
+    res = service.map_to_response(shipment)
+    return Envelope(
+        success=True,
+        message="Shipment cancelled successfully.",
+        data=ShipmentResponse(**res),
+    )
+
+
+@admin_router.delete("/{id}", response_model=Envelope[bool])
+async def delete_shipment(
+    id: str,
+    request: Request,
+    current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
+    service: ShipmentService = Depends(get_shipment_service),
+) -> Envelope[bool]:
+    """
+    Soft deletes a shipment by ID.
+    Restricted to ADMIN role only.
+    """
+    ip = request.client.host if request.client else None
+    success = await service.delete_shipment(
+        shipment_id=id,
+        current_user=current_user,
+        ip_address=ip,
+    )
+    return Envelope(
+        success=success,
+        message="Shipment deleted successfully.",
+        data=success,
     )

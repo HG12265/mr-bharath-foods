@@ -43,6 +43,7 @@ export default function ProductDetailPage({ params }: PageProps) {
   const dbProduct = dbProductData?.data;
 
   const [quantity, setQuantity] = useState(1);
+  const [selectedVariantIndex, setSelectedVariantIndex] = useState(0);
   const [successMessage, setSuccessMessage] = useState("");
   const addToCartMutation = useAddToCart();
 
@@ -54,8 +55,11 @@ export default function ProductDetailPage({ params }: PageProps) {
   const product = dbProduct || fallbackProduct;
   const isDbAvailable = !!dbProduct;
 
-  const priceValue = isDbAvailable ? (product.variants?.[0]?.price || 0) : product.price;
-  const volumeText = isDbAvailable ? (product.variants?.[0]?.volume_weight || "250ml") : product.volume;
+  const variants = isDbAvailable ? (product.variants || []) : [];
+  const selectedVariant = variants[selectedVariantIndex] || null;
+
+  const priceValue = isDbAvailable ? (selectedVariant?.price || 0) : product.price;
+  const volumeText = isDbAvailable ? (selectedVariant?.volume_weight || "250ml") : product.volume;
   const regionName = isDbAvailable ? (product.sourcing?.region || "Tamil Nadu") : product.region;
   const descriptionText = isDbAvailable ? product.description : product.description;
 
@@ -63,7 +67,7 @@ export default function ProductDetailPage({ params }: PageProps) {
 
   // Check if we can interact with real DB cart additions
   const productId = isDbAvailable ? product.id : null;
-  const variantId = isDbAvailable ? (product.variants?.[0]?.id || null) : null;
+  const variantId = isDbAvailable ? (selectedVariant?.variant_id || null) : null;
   const isCartDisabled = !productId || !variantId;
 
   const handleAddToCart = () => {
@@ -165,9 +169,33 @@ export default function ProductDetailPage({ params }: PageProps) {
                   <span className="text-[10px] uppercase tracking-wider text-indianInk/60 font-semibold block font-sans">
                     Available Volume
                   </span>
-                  <button className="px-5 py-2.5 border-2 border-gheeGold bg-[#FFFDF0] text-[#0F3D2E] rounded-[4px] font-sans text-xs font-bold tracking-widest uppercase shadow-sm select-none cursor-default">
-                    {volumeText}
-                  </button>
+                  <div className="flex flex-wrap gap-2">
+                    {isDbAvailable && variants.length > 0 ? (
+                      variants.map((v: any, idx: number) => {
+                        const isSelected = idx === selectedVariantIndex;
+                        return (
+                          <button
+                            key={v.variant_id}
+                            onClick={() => {
+                              setSelectedVariantIndex(idx);
+                              setQuantity(1); // Reset quantity to 1 when changing size
+                            }}
+                            className={`px-4 py-2.5 rounded-[4px] font-sans text-xs font-bold uppercase tracking-wider border-2 transition-all ${
+                              isSelected
+                                ? "border-gheeGold bg-[#FFFDF0] text-deodharForest shadow-sm font-black"
+                                : "border-burnishedGold/15 hover:border-gheeGold/40 text-indianInk/70 bg-white"
+                            }`}
+                          >
+                            {v.volume_weight}
+                          </button>
+                        );
+                      })
+                    ) : (
+                      <button className="px-5 py-2.5 border-2 border-gheeGold bg-[#FFFDF0] text-deodharForest rounded-[4px] font-sans text-xs font-bold tracking-widest uppercase shadow-sm select-none cursor-default">
+                        {volumeText}
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Quantity Selector */}

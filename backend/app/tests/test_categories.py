@@ -181,3 +181,66 @@ def test_tree_generation(
     assert len(root_node["children"]) == 2
     assert root_node["children"][0]["name"] == "Cow Ghee"
     assert root_node["children"][1]["name"] == "Buffalo Ghee"
+
+
+def test_update_category_clear_fields(
+    mock_db: MagicMock,
+    mock_admin_token_data: TokenData
+) -> None:
+    category_doc = {
+        "_id": "507f1f77bcf86cd799439111",
+        "name": "Test Category",
+        "slug": "test-cat",
+        "description": "Some description",
+        "image_id": "507f1f77bcf86cd799439222",
+        "parent_id": "507f1f77bcf86cd799439333",
+        "level": 1,
+        "is_active": True,
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["categories"].find_one = AsyncMock(return_value=category_doc)
+
+    updated_doc = {
+        **category_doc,
+        "description": None,
+        "image_id": None,
+        "parent_id": None,
+        "level": 0
+    }
+    mock_db["categories"].find_one_and_update = AsyncMock(return_value=updated_doc)
+    mock_db["audit_logs"].insert_one = AsyncMock()
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_current_user] = lambda: mock_admin_token_data
+
+    payload = {
+        "description": None,
+        "image_id": None,
+        "parent_id": None
+    }
+
+    response = client.patch("/api/v1/categories/507f1f77bcf86cd799439111", json=payload)
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    json_data = response.json()
+    assert json_data["success"] is True
+    assert json_data["data"]["description"] is None
+    assert json_data["data"]["image_id"] is None
+    assert json_data["data"]["parent_id"] is None
+    assert json_data["data"]["level"] == 0
+
+    # Verify that find_one_and_update was called with the cleared fields set to None
+    called_args = mock_db["categories"].find_one_and_update.call_args[0]
+    called_kwargs = mock_db["categories"].find_one_and_update.call_args[1]
+
+    update_op = called_args[1] if len(called_args) > 1 else called_kwargs.get("update")
+    assert update_op is not None
+    assert "$set" in update_op
+    assert update_op["$set"]["description"] is None
+    assert update_op["$set"]["image_id"] is None
+    assert update_op["$set"]["parent_id"] is None
+

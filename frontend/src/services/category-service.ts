@@ -20,6 +20,11 @@ export const categoryService = {
     return response.data;
   },
 
+  async listAllCategoriesAdmin(): Promise<Envelope<Category[]>> {
+    const response = await apiClient.get<Envelope<Category[]>>("/api/v1/categories/admin/all");
+    return response.data;
+  },
+
   async getCategoryTree(): Promise<Envelope<CategoryTreeNode[]>> {
     const response = await apiClient.get<Envelope<CategoryTreeNode[]>>("/api/v1/categories/tree");
     return response.data;

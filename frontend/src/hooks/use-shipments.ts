@@ -56,3 +56,44 @@ export const useAdminUpdateShipmentStatus = () => {
     },
   });
 };
+
+export const useAdminEditShipment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: any }) =>
+      shipmentService.adminEditShipment(id, payload),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["shipment", variables.id] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "shipments"] });
+      if (data.data?.order_id) {
+        queryClient.invalidateQueries({ queryKey: ["shipment", "order", data.data.order_id] });
+        queryClient.invalidateQueries({ queryKey: ["order", data.data.order_id] });
+      }
+    },
+  });
+};
+
+export const useAdminCancelShipment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => shipmentService.adminCancelShipment(id),
+    onSuccess: (data, variables) => {
+      queryClient.invalidateQueries({ queryKey: ["shipment", variables] });
+      queryClient.invalidateQueries({ queryKey: ["admin", "shipments"] });
+      if (data.data?.order_id) {
+        queryClient.invalidateQueries({ queryKey: ["shipment", "order", data.data.order_id] });
+        queryClient.invalidateQueries({ queryKey: ["order", data.data.order_id] });
+      }
+    },
+  });
+};
+
+export const useAdminDeleteShipment = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (id: string) => shipmentService.adminDeleteShipment(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "shipments"] });
+    },
+  });
+};
