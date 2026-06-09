@@ -152,7 +152,6 @@ class ProductService(BaseService[Product]):
                     title=variant.title.strip(),
                     volume_weight=variant.volume_weight.strip(),
                     price=variant.price,
-                    compare_at_price=variant.compare_at_price,
                     stock_status=variant.stock_status,
                     is_active=variant.is_active
                 )
@@ -325,7 +324,6 @@ class ProductService(BaseService[Product]):
                         "title": variant.title.strip(),
                         "volume_weight": variant.volume_weight.strip(),
                         "price": variant.price,
-                        "compare_at_price": variant.compare_at_price,
                         "stock_status": variant.stock_status,
                         "is_active": variant.is_active
                     }

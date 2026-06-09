@@ -102,7 +102,6 @@ def test_create_product_success(
                 "title": "500ml Glass Jar",
                 "volume_weight": "500ml",
                 "price": "499.00",
-                "compare_at_price": "550.00",
                 "stock_status": "in_stock",
                 "is_active": True
             }
@@ -223,7 +222,6 @@ def test_public_list_visibility(
                 "title": "500ml",
                 "volume_weight": "500ml",
                 "price": Decimal("499.00"),
-                "compare_at_price": None,
                 "stock_status": "in_stock",
                 "is_active": True
             }

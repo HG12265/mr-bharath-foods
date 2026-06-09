@@ -19,7 +19,6 @@ class ProductVariantCreate(BaseModel):
     title: str = Field(..., min_length=1, max_length=100)
     volume_weight: str = Field(..., description="E.g., 500ml, 1 Liter, 1kg")
     price: Decimal = Field(..., gt=Decimal("0.0"), description="Selling price")
-    compare_at_price: Decimal | None = Field(None, gt=Decimal("0.0"), description="Original compare-at price")
     stock_status: str = Field("in_stock", description="in_stock or out_of_stock")
     is_active: bool = Field(True, description="Variant status")
 
@@ -30,7 +29,6 @@ class ProductVariantResponse(BaseModel):
     title: str
     volume_weight: str
     price: Decimal
-    compare_at_price: Decimal | None
     stock_status: str
     is_active: bool
 

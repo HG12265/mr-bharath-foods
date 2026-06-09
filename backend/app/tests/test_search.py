@@ -85,7 +85,6 @@ async def test_search_products_success(mock_db: MagicMock) -> None:
                 "title": "1 Liter",
                 "volume_weight": "1L",
                 "price": Decimal("199.00"),
-                "compare_at_price": None,
                 "stock_status": "in_stock",
                 "is_active": True,
             }

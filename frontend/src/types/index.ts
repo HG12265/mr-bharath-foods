@@ -40,7 +40,6 @@ export interface ProductVariant {
   title: string;
   volume_weight: string;
   price: number;
-  compare_at_price?: number;
   stock_status: "in_stock" | "out_of_stock";
   is_active: boolean;
 }

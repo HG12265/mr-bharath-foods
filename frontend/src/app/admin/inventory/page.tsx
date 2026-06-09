@@ -484,15 +484,27 @@ export default function AdminInventoryPage() {
     });
   }, [inventories, searchQuery, statusFilter]);
 
+  const [isExporting, setIsExporting] = useState(false);
+
   // ─── CSV Export ───
-  const handleExportCsv = () => {
-    const url = inventoryService.getExportCsvUrl();
-    const link = document.createElement("a");
-    link.href = url;
-    link.download = "inventory_export.csv";
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleExportCsv = async () => {
+    try {
+      setIsExporting(true);
+      const blob = await inventoryService.exportCsv();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.download = "inventory_export.csv";
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+    } catch (err) {
+      console.error("Failed to export CSV:", err);
+      alert("Failed to export inventory. Please try again.");
+    } finally {
+      setIsExporting(false);
+    }
   };
 
   if (isPending) {
@@ -543,10 +555,11 @@ export default function AdminInventoryPage() {
           {isAdmin && (
             <button
               onClick={handleExportCsv}
-              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider border border-burnishedGold/30 rounded-lg hover:bg-richCream/10 text-deodharForest transition"
+              disabled={isExporting}
+              className="flex items-center gap-1.5 px-3 py-2 text-xs font-bold uppercase tracking-wider border border-burnishedGold/30 rounded-lg hover:bg-richCream/10 text-deodharForest transition disabled:opacity-50"
             >
-              <Download className="w-3.5 h-3.5" />
-              Export CSV
+              {isExporting ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <Download className="w-3.5 h-3.5" />}
+              {isExporting ? "Exporting..." : "Export CSV"}
             </button>
           )}
         </div>

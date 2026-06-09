@@ -64,7 +64,6 @@ def create_mock_product_doc(
                 "title": "250ml",
                 "volume_weight": "250ml",
                 "price": Decimal("299.00"),
-                "compare_at_price": None,
                 "stock_status": "in_stock",
                 "is_active": True,
             }
@@ -265,7 +264,6 @@ async def test_add_wishlist_item_limit_exceeded(
                 "title": "New Var",
                 "volume_weight": "1L",
                 "price": Decimal("399.00"),
-                "compare_at_price": None,
                 "stock_status": "in_stock",
                 "is_active": True,
             }

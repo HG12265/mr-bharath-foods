@@ -43,7 +43,6 @@ def map_variant_response(var: ProductVariant) -> ProductVariantResponse:
         title=var.title,
         volume_weight=var.volume_weight,
         price=var.price,
-        compare_at_price=var.compare_at_price,
         stock_status=var.stock_status,
         is_active=var.is_active
     )
@@ -162,7 +161,8 @@ async def create_product(
     request: Request,
     payload: ProductCreate,
     current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
-    service: ProductService = Depends(get_product_service)
+    service: ProductService = Depends(get_product_service),
+    db: AsyncDatabase = Depends(get_db)
 ) -> Envelope[ProductResponse]:
     """
     Creates a new product catalog node. Requires admin role.
@@ -174,6 +174,28 @@ async def create_product(
         request=payload,
         ip_address=ip
     )
+
+    # Auto-create inventory records
+    from app.repositories.inventory_repository import InventoryRepository
+    from app.services.inventory_service import InventoryService
+    from app.schemas.inventory import InventoryCreate, WarehouseStockSchema
+    
+    inv_repo = InventoryRepository(db)
+    inv_service = InventoryService(inv_repo, service.product_repository, service.audit_service, None)
+
+    for variant in product.variants:
+        inv_payload = InventoryCreate(
+            sku=variant.sku,
+            variant_id=variant.variant_id,
+            product_id=product.id or "",
+            warehouse_stock=[WarehouseStockSchema(warehouse_id="WH-MAIN", on_hand=0, reserved=0)],
+            safety_stock_level=10
+        )
+        try:
+            await inv_service.create_inventory(inv_payload, ip_address=ip)
+        except Exception:
+            pass
+
     return Envelope(
         success=True,
         message="Product catalog listing registered successfully.",
@@ -187,7 +209,8 @@ async def update_product(
     id: str,
     payload: ProductUpdate,
     current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
-    service: ProductService = Depends(get_product_service)
+    service: ProductService = Depends(get_product_service),
+    db: AsyncDatabase = Depends(get_db)
 ) -> Envelope[ProductResponse]:
     """
     Modifies product catalog attributes. Requires admin role.
@@ -200,6 +223,30 @@ async def update_product(
         request=payload,
         ip_address=ip
     )
+
+    # Auto-create inventory records for any new variants
+    from app.repositories.inventory_repository import InventoryRepository
+    from app.services.inventory_service import InventoryService
+    from app.schemas.inventory import InventoryCreate, WarehouseStockSchema
+    
+    inv_repo = InventoryRepository(db)
+    inv_service = InventoryService(inv_repo, service.product_repository, service.audit_service, None)
+
+    for variant in product.variants:
+        existing = await inv_repo.get_by_sku(variant.sku)
+        if not existing:
+            inv_payload = InventoryCreate(
+                sku=variant.sku,
+                variant_id=variant.variant_id,
+                product_id=product.id or "",
+                warehouse_stock=[WarehouseStockSchema(warehouse_id="WH-MAIN", on_hand=0, reserved=0)],
+                safety_stock_level=10
+            )
+            try:
+                await inv_service.create_inventory(inv_payload, ip_address=ip)
+            except Exception:
+                pass
+
     return Envelope(
         success=True,
         message="Product catalog parameters updated successfully.",

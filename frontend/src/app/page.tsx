@@ -13,41 +13,18 @@ import {
   Check,
   ChevronRight,
   Flame,
-  Globe
+  Globe,
+  Loader2
 } from "lucide-react";
 
-// Clean static fallback products (Only Rasipuram & Uthukuli Ghee, no mock ratings)
-const GHEE_PRODUCTS = [
-  {
-    id: "mock-rasipuram",
-    name: "Rasipuram Pure Ghee",
-    slug: "rasipuram-ghee",
-    description: "Prepared through traditional slow-simmering methods. Celebrated for its deep aroma, nuttiness, and rich golden color.",
-    volume: "250ml",
-    price: 390.00,
-    region: "Rasipuram, Tamil Nadu",
-    texture: "Golden & Deeply Simmered"
-  },
-  {
-    id: "mock-uthukuli",
-    name: "Uthukuli A2 Cow Ghee",
-    slug: "uthukuli-ghee",
-    description: "Traditionally churned from milk of historical grass-fed herds. Notable for its delicate, natural white-to-yellow granules.",
-    volume: "250ml",
-    price: 420.00,
-    region: "Uthukuli, Tamil Nadu",
-    texture: "Naturally Granular & Fragrant"
-  }
-];
+
 
 export default function HomePage() {
-  const { data: productsData } = useProducts({ limit: 4 });
+  const { data: productsData, isPending: isLoadingProducts } = useProducts({ limit: 4 });
   const dbProducts = productsData?.data || [];
 
-  // Display only two ghee selections
-  const displayProducts = dbProducts.length > 0 
-    ? dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2)
-    : GHEE_PRODUCTS;
+  // Display only two ghee selections — only real data, no mock fallback
+  const displayProducts = dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2);
 
   const [scrollY, setScrollY] = useState(0);
   const [useParallax, setUseParallax] = useState(false);
@@ -169,13 +146,40 @@ export default function HomePage() {
             </div>
 
             {/* Showcase only two product cards */}
+            {isLoadingProducts ? (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-items-center w-full">
+                {[0, 1].map((i) => (
+                  <div key={i} className="w-full max-w-[520px] bg-white border border-burnishedGold/20 rounded-lg overflow-hidden shadow-sm animate-pulse">
+                    <div className="w-full h-[260px] md:h-[300px] bg-burnishedGold/10" />
+                    <div className="p-6 space-y-3">
+                      <div className="flex justify-between">
+                        <div className="h-5 w-28 bg-burnishedGold/10 rounded" />
+                        <div className="h-5 w-12 bg-burnishedGold/10 rounded" />
+                      </div>
+                      <div className="h-6 w-3/4 bg-burnishedGold/10 rounded" />
+                      <div className="space-y-1.5">
+                        <div className="h-3 w-full bg-burnishedGold/10 rounded" />
+                        <div className="h-3 w-5/6 bg-burnishedGold/10 rounded" />
+                      </div>
+                      <div className="flex justify-between items-center pt-4 border-t border-burnishedGold/10">
+                        <div className="h-6 w-20 bg-burnishedGold/10 rounded" />
+                        <div className="h-8 w-28 bg-burnishedGold/10 rounded" />
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : displayProducts.length === 0 ? (
+              <div className="text-center py-10 text-indianInk/50 text-sm font-sans">
+                Products coming soon.
+              </div>
+            ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto justify-items-center">
               {displayProducts.map((product: any, index: number) => {
-                const isFallback = !product.id || typeof product.id === "string" && product.id.startsWith("mock-");
-                const priceValue = isFallback ? product.price : (product.variants?.[0]?.price || 0);
-                const volumeText = isFallback ? product.volume : (product.variants?.[0]?.volume_weight || "250ml");
-                const regionName = isFallback ? product.region : (product.sourcing?.region || "Tamil Nadu");
-                const shortDesc = isFallback ? product.description : product.short_description;
+                const priceValue = product.variants?.[0]?.price || 0;
+                const volumeText = product.variants?.[0]?.volume_weight || "250ml";
+                const regionName = product.sourcing?.region || "Tamil Nadu";
+                const shortDesc = product.short_description;
 
                 const isRasipuram = product.slug.toLowerCase().includes("rasipuram");
                 const imageSrc = isRasipuram ? "/images/rasipuram-ghee.jpg" : "/images/uthukuli-ghee.jpg";
@@ -238,7 +242,8 @@ export default function HomePage() {
                   </div>
                 );
               })}
-            </div>
+              </div>
+            )}
 
           </div>
         </section>

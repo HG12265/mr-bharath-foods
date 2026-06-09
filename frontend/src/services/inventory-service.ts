@@ -48,12 +48,12 @@ export const inventoryService = {
     return response.data;
   },
 
-  /** Returns the URL for streaming CSV export (ADMIN only) */
-  getExportCsvUrl(): string {
-    const base =
-      process.env.NEXT_PUBLIC_API_URL ||
-      (typeof window !== "undefined" ? window.location.origin : "");
-    return `${base}/api/v1/inventories/export/csv`;
+  /** Fetches the CSV file as a Blob with auth headers (ADMIN only) */
+  async exportCsv(): Promise<Blob> {
+    const response = await apiClient.get<Blob>("/api/v1/inventories/export/csv", {
+      responseType: "blob",
+    });
+    return response.data;
   },
 };
 

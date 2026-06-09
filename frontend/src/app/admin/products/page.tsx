@@ -56,6 +56,37 @@ function ProductImage({ mediaId, className }: { mediaId?: string; className?: st
   );
 }
 
+const generateSku = (productName: string, volumeWeight: string) => {
+  if (!productName.trim() || !volumeWeight.trim()) return "";
+  
+  // Clean product name: remove generic words to keep SKU short and clean
+  const cleanProduct = productName
+    .toLowerCase()
+    .replace(/\b(mr|bharath|foods|ghee|pure|organic|natural|a2|cow)\b/g, "")
+    .replace(/[^a-z0-9]+/g, " ")
+    .trim()
+    .split(/\s+/)
+    .map(word => word.toUpperCase())
+    .filter(Boolean)
+    .join("-");
+    
+  let productCode = cleanProduct;
+  if (!productCode) {
+    productCode = productName
+      .toUpperCase()
+      .replace(/[^A-Z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "");
+  }
+
+  // Clean volume/weight, e.g. "250ml Glass Jar" -> "250ML"
+  const volumeMatch = volumeWeight.match(/^(\d+(?:ml|g|l|kg|ml|liter|kg|oz|ib|gm|kilogram|packet|box)?)/i);
+  const cleanVolume = (volumeMatch ? volumeMatch[1] : volumeWeight)
+    .toUpperCase()
+    .replace(/[^A-Z0-9]/g, "");
+
+  return `MBF-${productCode}-${cleanVolume}`;
+};
+
 export default function AdminProductsPage() {
   const { data: meData } = useMe();
   const isAdmin = meData?.data?.role === "admin";
@@ -103,12 +134,11 @@ export default function AdminProductsPage() {
     title: string;
     volume_weight: string;
     price: string;
-    compare_at_price: string;
     stock_status: "in_stock" | "out_of_stock";
     is_active: boolean;
   }
   const [formVariants, setFormVariants] = useState<VariantInput[]>([
-    { sku: "", title: "", volume_weight: "", price: "", compare_at_price: "", stock_status: "in_stock", is_active: true }
+    { sku: "", title: "", volume_weight: "", price: "", stock_status: "in_stock", is_active: true }
   ]);
 
   // Form validation errors
@@ -124,6 +154,25 @@ export default function AdminProductsPage() {
 
   // Active form Tab: 'basic' | 'variants' | 'seo' | 'media'
   const [activeFormTab, setActiveFormTab] = useState<"basic" | "variants" | "seo" | "media">("basic");
+
+  // Auto-generate SKUs for new variants when product name or variant volume changes
+  const volumeWeightsStr = formVariants.map(v => v.volume_weight).join(",");
+  React.useEffect(() => {
+    setFormVariants(prev => {
+      let changed = false;
+      const updated = prev.map(v => {
+        if (!v.variant_id) {
+          const expectedSku = generateSku(formName, v.volume_weight);
+          if (v.sku !== expectedSku) {
+            changed = true;
+            return { ...v, sku: expectedSku };
+          }
+        }
+        return v;
+      });
+      return changed ? updated : prev;
+    });
+  }, [formName, volumeWeightsStr]);
 
   // Handlers
   const toggleProductExpand = (id: string) => {
@@ -152,7 +201,7 @@ export default function AdminProductsPage() {
     setFormSeoDesc("");
     setFormSeoKeywords("");
     setFormVariants([
-      { sku: "", title: "Standard Pack", volume_weight: "500g", price: "", compare_at_price: "", stock_status: "in_stock", is_active: true }
+      { sku: "", title: "Standard Pack", volume_weight: "500g", price: "", stock_status: "in_stock", is_active: true }
     ]);
     setFormErrors({});
     setFormGeneralError("");
@@ -186,12 +235,11 @@ export default function AdminProductsPage() {
       title: v.title,
       volume_weight: v.volume_weight,
       price: v.price.toString(),
-      compare_at_price: v.compare_at_price?.toString() || "",
       stock_status: v.stock_status,
       is_active: v.is_active
     }));
     setFormVariants(mappedVariants.length > 0 ? mappedVariants : [
-      { sku: "", title: "", volume_weight: "", price: "", compare_at_price: "", stock_status: "in_stock", is_active: true }
+      { sku: "", title: "", volume_weight: "", price: "", stock_status: "in_stock", is_active: true }
     ]);
     setFormErrors({});
     setFormGeneralError("");
@@ -202,7 +250,7 @@ export default function AdminProductsPage() {
   const handleAddVariant = () => {
     setFormVariants(prev => [
       ...prev,
-      { sku: "", title: "", volume_weight: "", price: "", compare_at_price: "", stock_status: "in_stock", is_active: true }
+      { sku: "", title: "", volume_weight: "", price: "", stock_status: "in_stock", is_active: true }
     ]);
   };
 
@@ -299,9 +347,6 @@ export default function AdminProductsPage() {
         if (!v.price.trim() || parseFloat(v.price) <= 0 || isNaN(parseFloat(v.price))) {
           errors[`variant_${idx}_price`] = "Price must be greater than 0.";
         }
-        if (v.compare_at_price.trim() && (parseFloat(v.compare_at_price) <= 0 || isNaN(parseFloat(v.compare_at_price)))) {
-          errors[`variant_${idx}_compare`] = "Compare price must be greater than 0.";
-        }
       });
     }
 
@@ -323,7 +368,6 @@ export default function AdminProductsPage() {
       title: v.title.trim(),
       volume_weight: v.volume_weight.trim(),
       price: parseFloat(v.price),
-      compare_at_price: v.compare_at_price.trim() ? parseFloat(v.compare_at_price) : undefined,
       stock_status: v.stock_status,
       is_active: v.is_active
     }));
@@ -969,9 +1013,9 @@ export default function AdminProductsPage() {
                           <input
                             type="text"
                             value={v.sku}
-                            onChange={(e) => handleVariantChange(idx, "sku", e.target.value)}
-                            placeholder="e.g. GHEE-500ML"
-                            className={`w-full text-xs border rounded p-1.5 focus:outline-none focus:border-burnishedGold uppercase ${formErrors[`variant_${idx}_sku`] ? "border-red-500 bg-red-50/10" : "border-burnishedGold/30"}`}
+                            readOnly
+                            placeholder="Auto-generated SKU"
+                            className="w-full text-xs border border-burnishedGold/20 bg-richCream/10 rounded p-1.5 focus:outline-none cursor-not-allowed uppercase font-mono text-indianInk/60"
                           />
                           {formErrors[`variant_${idx}_sku`] && <p className="text-[9px] font-semibold text-red-600">{formErrors[`variant_${idx}_sku`]}</p>}
                         </div>
@@ -1012,17 +1056,6 @@ export default function AdminProductsPage() {
                           {formErrors[`variant_${idx}_price`] && <p className="text-[9px] font-semibold text-red-600">{formErrors[`variant_${idx}_price`]}</p>}
                         </div>
 
-                        <div className="space-y-1">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-indianInk/60">Original Compare Price</label>
-                          <input
-                            type="text"
-                            value={v.compare_at_price}
-                            onChange={(e) => handleVariantChange(idx, "compare_at_price", e.target.value)}
-                            placeholder="e.g. 499"
-                            className={`w-full text-xs border rounded p-1.5 focus:outline-none focus:border-burnishedGold ${formErrors[`variant_${idx}_compare`] ? "border-red-500 bg-red-50/10" : "border-burnishedGold/30"}`}
-                          />
-                          {formErrors[`variant_${idx}_compare`] && <p className="text-[9px] font-semibold text-red-600">{formErrors[`variant_${idx}_compare`]}</p>}
-                        </div>
 
                         <div className="space-y-1">
                           <label className="text-[9px] font-bold uppercase tracking-widest text-indianInk/60">Stock Status</label>

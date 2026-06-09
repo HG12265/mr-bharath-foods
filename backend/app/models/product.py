@@ -23,7 +23,6 @@ class ProductVariant(BaseModel):
     title: str
     volume_weight: str
     price: Decimal
-    compare_at_price: Decimal | None = None
     stock_status: str = "in_stock"  # in_stock, out_of_stock
     is_active: bool = True
 

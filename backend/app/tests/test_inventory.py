@@ -91,7 +91,6 @@ def create_mock_product_doc(
                 "title": "250ml",
                 "volume_weight": "250ml",
                 "price": Decimal("299.00"),
-                "compare_at_price": None,
                 "stock_status": "in_stock",
                 "is_active": True,
             }
