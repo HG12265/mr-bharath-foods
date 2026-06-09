@@ -24,8 +24,8 @@ export default function CheckoutPage() {
   const items = cart?.items || [];
   const summary = cart?.summary;
 
-  const subtotal = summary?.subtotal || 0;
-  const taxTotal = subtotal * 0.05; // 5% GST estimate
+  const subtotal = parseFloat(String(summary?.subtotal ?? 0)) || 0;
+  const taxTotal = Math.round(subtotal * 0.05); // 5% GST estimate
   const shippingTotal = subtotal > 0 && subtotal < 1000 ? 50 : 0; // Free shipping above 1000
   const grandTotal = subtotal + taxTotal + shippingTotal;
 
@@ -482,7 +482,7 @@ export default function CheckoutPage() {
                       const isRasipuram = productName.toLowerCase().includes("rasipuram");
                       const imageSrc = isRasipuram ? "/images/rasipuram-ghee.jpg" : "/images/uthukuli-ghee.jpg";
                       const variantTitle = "250ml";
-                      const itemPrice = item.unit_price_snapshot || 0;
+                      const itemPrice = parseFloat(String(item.unit_price_snapshot ?? 0)) || 0;
                       const itemTotal = itemPrice * item.quantity;
 
                       return (
