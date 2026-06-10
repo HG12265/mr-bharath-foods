@@ -51,6 +51,8 @@ class SettingsService(BaseService[Settings]):
             public_support_email=settings.public_support_email,
             public_support_phone=settings.public_support_phone,
             working_hours=settings.working_hours,
+            seo_keywords=settings.seo_keywords,
+            brand_tagline=settings.brand_tagline,
         )
 
     async def get_admin_settings(self) -> SettingsAdminResponse:
@@ -76,6 +78,8 @@ class SettingsService(BaseService[Settings]):
             public_support_email=settings.public_support_email,
             public_support_phone=settings.public_support_phone,
             working_hours=settings.working_hours,
+            seo_keywords=settings.seo_keywords,
+            brand_tagline=settings.brand_tagline,
         )
 
     async def update_settings(
@@ -97,7 +101,7 @@ class SettingsService(BaseService[Settings]):
             "fssai_number", "gst_number", "brand_name", "support_email",
             "support_phone", "business_address", "payment_display_name",
             "upi_instructions", "public_support_email", "public_support_phone",
-            "working_hours"
+            "working_hours", "seo_keywords", "brand_tagline"
         ]
 
         for k, v in dumped.items():

@@ -7,7 +7,19 @@ export const siteConfig = {
     "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for absolute purity, and trace-certified by batch.",
   url: env.NEXT_PUBLIC_APP_URL,
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
-  fssaiLicenseNumber: "12424999000123", // Example compliance registration
+  fssaiLicenseNumber: "12424999000123",
+  twitterHandle: "@mrbharathfoods",
+  keywords: [
+    "pure ghee online india",
+    "rasipuram ghee",
+    "uthukuli a2 cow ghee",
+    "traditional ghee",
+    "premium indian ghee",
+    "lab verified ghee",
+    "fssai certified ghee",
+    "buy ghee online",
+    "Mr. Bharath Foods",
+  ],
   links: {
     supportEmail: "mrbharathfoods@gmail.com",
     partnerPortal: "/b2b",

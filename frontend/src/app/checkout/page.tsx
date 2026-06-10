@@ -7,7 +7,7 @@ import { useRouter } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useCart } from "@/hooks/use-cart";
 import { useMe } from "@/hooks/use-auth";
-import { useInitiateCheckout } from "@/hooks/use-checkout";
+import { useInitiateCheckout, useCompleteCheckout } from "@/hooks/use-checkout";
 import { useCreateOrderFromCheckout } from "@/hooks/use-orders";
 import { formatINR } from "@/lib/utils";
 import { ArrowLeft, Loader2, ShieldCheck, CreditCard } from "lucide-react";
@@ -18,6 +18,7 @@ export default function CheckoutPage() {
   const { data: cartData, isPending: isCartPending } = useCart();
   const { data: meData } = useMe();
   const initiateCheckoutMutation = useInitiateCheckout();
+  const completeCheckoutMutation = useCompleteCheckout();
   const createOrderMutation = useCreateOrderFromCheckout();
 
   const cart = cartData?.data;
@@ -123,7 +124,7 @@ export default function CheckoutPage() {
     }
   };
 
-  const isSubmitting = initiateCheckoutMutation.isPending || createOrderMutation.isPending;
+  const isSubmitting = initiateCheckoutMutation.isPending || completeCheckoutMutation.isPending || createOrderMutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -165,21 +166,37 @@ export default function CheckoutPage() {
         if (checkoutRes.success && checkoutRes.data) {
           const checkoutId = checkoutRes.data.id;
           
-          // Create order from checkout session
-          createOrderMutation.mutate(checkoutId, {
-            onSuccess: (orderRes) => {
-              if (orderRes.success && orderRes.data) {
-                const orderId = orderRes.data.id;
-                router.push(`/order/${orderId}`);
+          // Step 2: Complete the checkout session (transitions status to 'completed')
+          completeCheckoutMutation.mutate(checkoutId, {
+            onSuccess: (completeRes) => {
+              if (completeRes.success && completeRes.data) {
+                // Step 3: Create order from the completed checkout session
+                createOrderMutation.mutate(checkoutId, {
+                  onSuccess: (orderRes) => {
+                    if (orderRes.success && orderRes.data) {
+                      const orderId = orderRes.data.id;
+                      router.push(`/order/${orderId}`);
+                    } else {
+                      setApiError(orderRes.message || "Failed to construct order details from checkout.");
+                    }
+                  },
+                  onError: (err: any) => {
+                    setApiError(
+                      err.response?.data?.message || 
+                      err.message || 
+                      "An error occurred while finalizing your order."
+                    );
+                  }
+                });
               } else {
-                setApiError(orderRes.message || "Failed to construct order details from checkout.");
+                setApiError(completeRes.message || "Failed to complete checkout session.");
               }
             },
             onError: (err: any) => {
               setApiError(
                 err.response?.data?.message || 
                 err.message || 
-                "An error occurred while finalizing your order."
+                "An error occurred while completing the checkout."
               );
             }
           });

@@ -3,16 +3,17 @@ import { siteConfig } from "@/config/site";
 
 export const defaultMetadata: Metadata = {
   title: {
-    default: `${siteConfig.name} - ${siteConfig.tagline}`,
+    default: `${siteConfig.name} — ${siteConfig.tagline}`,
     template: `%s | ${siteConfig.name}`,
   },
   description: siteConfig.description,
+  keywords: siteConfig.keywords,
   metadataBase: new URL(siteConfig.url),
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: `${siteConfig.name} - ${siteConfig.tagline}`,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
     url: siteConfig.url,
     siteName: siteConfig.name,
@@ -21,7 +22,7 @@ export const defaultMetadata: Metadata = {
         url: siteConfig.ogImage,
         width: 1200,
         height: 630,
-        alt: siteConfig.name,
+        alt: `${siteConfig.name} — Premium Regional Ghee`,
       },
     ],
     locale: "en_IN",
@@ -29,8 +30,9 @@ export const defaultMetadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} - ${siteConfig.tagline}`,
+    title: `${siteConfig.name} — ${siteConfig.tagline}`,
     description: siteConfig.description,
+    creator: siteConfig.twitterHandle,
     images: [siteConfig.ogImage],
   },
   robots: {
@@ -44,4 +46,13 @@ export const defaultMetadata: Metadata = {
       "max-snippet": -1,
     },
   },
+  // Search Console verification — stored in env only, never in DB
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SC_TOKEN && {
+    verification: {
+      google: process.env.NEXT_PUBLIC_GOOGLE_SC_TOKEN,
+      ...(process.env.NEXT_PUBLIC_BING_WMT_TOKEN && {
+        other: { "msvalidate.01": process.env.NEXT_PUBLIC_BING_WMT_TOKEN },
+      }),
+    },
+  }),
 };

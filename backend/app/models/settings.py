@@ -26,5 +26,8 @@ class Settings(MongoBaseModel):
     public_support_email: str | None = None
     public_support_phone: str | None = None
     working_hours: str | None = None
+    # SEO Settings
+    seo_keywords: str | None = None  # Comma-separated global keywords
+    brand_tagline: str | None = None  # Short tagline for SEO/OG descriptions
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

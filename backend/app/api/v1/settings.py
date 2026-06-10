@@ -100,6 +100,8 @@ async def update_admin_settings(
         public_support_email=updated.public_support_email,
         public_support_phone=updated.public_support_phone,
         working_hours=updated.working_hours,
+        seo_keywords=updated.seo_keywords,
+        brand_tagline=updated.brand_tagline,
     )
 
     return Envelope(

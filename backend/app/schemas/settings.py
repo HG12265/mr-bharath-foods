@@ -15,6 +15,8 @@ class SettingsPublicResponse(BaseModel):
     public_support_email: str | None = Field(default=None, description="Public support email address")
     public_support_phone: str | None = Field(default=None, description="Public support phone number")
     working_hours: str | None = Field(default=None, description="Storefront working hours")
+    seo_keywords: str | None = Field(default=None, description="Comma-separated global SEO keywords")
+    brand_tagline: str | None = Field(default=None, description="Short tagline for SEO descriptions")
 
 
 class SettingsAdminResponse(BaseModel):
@@ -38,6 +40,8 @@ class SettingsAdminResponse(BaseModel):
     public_support_email: str | None
     public_support_phone: str | None
     working_hours: str | None
+    seo_keywords: str | None
+    brand_tagline: str | None
 
 
 class SettingsUpdateSchema(BaseModel):
@@ -60,4 +64,6 @@ class SettingsUpdateSchema(BaseModel):
     public_support_email: str | None = Field(default=None, description="Public support email")
     public_support_phone: str | None = Field(default=None, description="Public support phone number")
     working_hours: str | None = Field(default=None, description="Working hours")
+    seo_keywords: str | None = Field(default=None, description="Comma-separated SEO keywords")
+    brand_tagline: str | None = Field(default=None, description="Short brand tagline")
 

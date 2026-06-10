@@ -275,8 +275,9 @@ class CheckoutService(BaseService[CheckoutSession]):
                 status_code=400,
             )
 
-        # Check Expiry
-        if datetime.now(UTC) > checkout.expires_at:
+        # Check Expiry (normalize naive datetime from MongoDB to UTC-aware)
+        expires = checkout.expires_at if checkout.expires_at.tzinfo else checkout.expires_at.replace(tzinfo=UTC)
+        if datetime.now(UTC) > expires:
             # Release and expire
             await self.release_checkout_inventory(checkout)
             await self.checkout_repository.update(
@@ -374,8 +375,9 @@ class CheckoutService(BaseService[CheckoutSession]):
                 status_code=400,
             )
 
-        # Check Expiry
-        if datetime.now(UTC) > checkout.expires_at:
+        # Check Expiry (normalize naive datetime from MongoDB to UTC-aware)
+        expires = checkout.expires_at if checkout.expires_at.tzinfo else checkout.expires_at.replace(tzinfo=UTC)
+        if datetime.now(UTC) > expires:
             await self.release_checkout_inventory(checkout)
             await self.checkout_repository.update(
                 checkout.id or "",

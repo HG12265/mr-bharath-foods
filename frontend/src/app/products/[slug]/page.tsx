@@ -7,6 +7,7 @@ import PublicLayout from "@/components/layout/public-layout";
 import { useProductBySlug } from "@/hooks/use-products";
 import { useAddToCart } from "@/hooks/use-cart";
 import { formatINR } from "@/lib/utils";
+import { siteConfig } from "@/config/site";
 import { ShieldCheck, Check, ArrowLeft, Plus, Minus, Loader2 } from "lucide-react";
 
 // Fallback details for static display
@@ -106,9 +107,65 @@ export default function ProductDetailPage({ params }: PageProps) {
     );
   }
 
+  // --- JSON-LD Structured Data (Product + Breadcrumb) ---
+  const jsonLdProduct = isDbAvailable
+    ? {
+        "@context": "https://schema.org",
+        "@type": "Product",
+        name: product.name,
+        description: product.short_description || product.description,
+        url: `${siteConfig.url}/products/${slug}`,
+        brand: { "@type": "Brand", name: siteConfig.name },
+        sku: selectedVariant?.sku,
+        offers: selectedVariant
+          ? {
+              "@type": "Offer",
+              price: Number(selectedVariant.price).toFixed(2),
+              priceCurrency: "INR",
+              availability:
+                selectedVariant.stock_status === "in_stock"
+                  ? "https://schema.org/InStock"
+                  : "https://schema.org/OutOfStock",
+              url: `${siteConfig.url}/products/${slug}`,
+              seller: { "@type": "Organization", name: siteConfig.name },
+            }
+          : undefined,
+        ...(product.ratings?.review_count > 0 && {
+          aggregateRating: {
+            "@type": "AggregateRating",
+            ratingValue: product.ratings.average_rating.toFixed(1),
+            reviewCount: product.ratings.review_count,
+            bestRating: "5",
+            worstRating: "1",
+          },
+        }),
+      }
+    : null;
+
+  const jsonLdBreadcrumb = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      { "@type": "ListItem", position: 1, name: "Home", item: siteConfig.url },
+      { "@type": "ListItem", position: 2, name: "Shop", item: `${siteConfig.url}/shop` },
+      { "@type": "ListItem", position: 3, name: product.name, item: `${siteConfig.url}/products/${slug}` },
+    ],
+  };
+
   return (
     <PublicLayout>
-      <div 
+      {/* JSON-LD Structured Data */}
+      {jsonLdProduct && (
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdProduct) }}
+        />
+      )}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLdBreadcrumb) }}
+      />
+      <div
         className="min-h-screen text-indianInk py-12 md:py-20 border-b border-burnishedGold/15"
         style={{ background: "radial-gradient(circle at center, #FFFDF0 0%, #FAF9F6 70%, #FFF7E8 100%)" }}
       >

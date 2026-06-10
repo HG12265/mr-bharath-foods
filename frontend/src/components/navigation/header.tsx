@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useMe, useLogout } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
@@ -45,17 +46,20 @@ export const Header: React.FC = () => {
       >
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-[var(--header-height)] flex items-center justify-between">
           
-          {/* Logo Area (Left) */}
-          <Link href="/" className="flex items-center gap-3 select-none group">
-            {/* Elegant Monogram Graphic Icon */}
-            <div className="w-10 h-10 bg-deodharForest text-richCream rounded-[4px] flex items-center justify-center font-serif text-lg font-bold border border-burnishedGold/40 shadow-sm group-hover:bg-deodharForest/95 transition-colors duration-200">
-              MB
-            </div>
-            <div className="flex flex-col">
-              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-deodharForest leading-tight">
-                Mr. Bharath Foods
+          <Link href="/" className="flex items-center gap-4 select-none group py-1">
+            <Image
+              src="/logo.png"
+              alt="Mr. Bharath Foods Logo"
+              width={56}
+              height={56}
+              priority
+              className="h-14 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
+            />
+            <div className="flex flex-col justify-center border-l border-[#C89B3C]/25 pl-4">
+              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#0F3D2E] leading-none">
+                MR. BHARATH FOODS
               </span>
-              <span className="text-[8px] uppercase tracking-[0.2em] text-burnishedGold font-bold">
+              <span className="text-[9px] uppercase tracking-[0.25em] text-[#C89B3C] font-bold mt-1.5">
                 FOOD DONE RIGHT.
               </span>
             </div>

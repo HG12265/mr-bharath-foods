@@ -3,7 +3,12 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ["pub-media.mrbharathfoods.in"], // Cloudflare R2 subdomain placeholder
+    remotePatterns: [
+      {
+        protocol: "https",
+        hostname: "pub-media.mrbharathfoods.in",
+      },
+    ],
   },
 };
 
