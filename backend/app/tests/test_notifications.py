@@ -108,7 +108,7 @@ async def test_list_customer_notifications(mock_db: MagicMock) -> None:
     mock_db["notifications"].find = MagicMock(return_value=mock_cursor)
 
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer
@@ -167,7 +167,7 @@ async def test_mark_notification_as_read(mock_db: MagicMock) -> None:
 
     # 1. Customer read success
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer
@@ -198,7 +198,7 @@ async def test_mark_all_notifications_as_read(mock_db: MagicMock) -> None:
     mock_db["notifications"].update_many.return_value = mock_result
 
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer
@@ -224,7 +224,7 @@ async def test_admin_notifications_listing_access(mock_db: MagicMock) -> None:
 
     # 1. Customer listing access forbidden
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer

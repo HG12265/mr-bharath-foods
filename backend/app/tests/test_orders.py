@@ -56,7 +56,7 @@ def create_mock_checkout_doc(
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
         "customer_id": "60c72b2f9b1d8e2a3c4f5e7b",  # Valid 24-char ObjectId string
         "guest_token": None,
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -130,7 +130,7 @@ def create_mock_customer_doc(customer_id: str) -> dict[str, Any]:
     return {
         "_id": customer_id,
         "auth": {
-            "email": "customer@mrbharathfoods.in",
+            "email": "customer@example.test",
             "phone": "9876543210",
             "role": "customer",
             "status": "active",
@@ -152,7 +152,7 @@ def create_mock_order_doc(order_id: str, status: str = "pending_payment") -> dic
             "customer_id": "60c72b2f9b1d8e2a3c4f5e7b",
             "first_name": "Gowtham",
             "last_name": "Dev",
-            "email": "customer@mrbharathfoods.in",
+            "email": "customer@example.test",
             "phone": "9876543210",
         },
         "shipping_address_snapshot": {
@@ -220,7 +220,7 @@ async def test_create_order_success(mock_db: MagicMock) -> None:
     mock_db["orders"].insert_one = AsyncMock(side_effect=mock_insert)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -250,7 +250,7 @@ async def test_create_order_duplicate_checkout(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one = AsyncMock(return_value=order_doc)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -271,7 +271,7 @@ async def test_create_order_incomplete_checkout(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one = AsyncMock(return_value=None)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -323,7 +323,7 @@ async def test_get_order_by_id_auth(mock_db: MagicMock) -> None:
 
     # Case 2: Authorized customer fetches
     mock_user_auth = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user_auth
     response2 = client.get(f"/api/v1/orders/{order_id}")
@@ -351,7 +351,7 @@ async def test_get_my_order_history(mock_db: MagicMock) -> None:
     mock_db["orders"].find = MagicMock(return_value=mock_cursor)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -419,7 +419,7 @@ async def test_cancel_unpaid_order_success(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -444,7 +444,7 @@ async def test_cancel_paid_order_fails(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one = AsyncMock(return_value=order_doc)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e7b", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user

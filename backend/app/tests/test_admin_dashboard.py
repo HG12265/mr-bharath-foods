@@ -54,7 +54,7 @@ def create_mock_order_doc(
         "checkout_id": "60c72b2f9b1d8e2a3c4f5e7b",
         "customer_id": "customer_123",
         "customer_snapshot": {
-            "email": "customer@mrbharathfoods.in"
+            "email": "customer@example.test"
         },
         "shipping_address_snapshot": {
             "full_name": "John Doe",
@@ -163,7 +163,7 @@ def create_mock_review_doc(review_id: str, status: str = "pending") -> dict[str,
 async def test_customer_denied_access(mock_db: MagicMock) -> None:
     mock_customer = TokenData(
         user_id="customer_123",
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db

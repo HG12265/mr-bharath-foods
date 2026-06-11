@@ -94,7 +94,7 @@ def create_mock_order_doc(
         "checkout_id": "60c72b2f9b1d8e2a3c4f5e7b",
         "customer_id": customer_id,
         "customer_snapshot": {
-            "email": "customer@mrbharathfoods.in"
+            "email": "customer@example.test"
         },
         "shipping_address_snapshot": {
             "full_name": "John Doe",
@@ -219,7 +219,7 @@ async def test_submit_review_success(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -256,7 +256,7 @@ async def test_submit_review_product_not_found(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id="customer_123",
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -294,7 +294,7 @@ async def test_submit_review_order_not_delivered(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -333,7 +333,7 @@ async def test_submit_review_product_not_in_order(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -373,7 +373,7 @@ async def test_submit_review_duplicate(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -418,7 +418,7 @@ async def test_edit_review_success(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -459,7 +459,7 @@ async def test_edit_review_expired_30_days(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 
@@ -543,7 +543,7 @@ async def test_delete_review_success_by_owner(mock_db: MagicMock) -> None:
 
     mock_customer = TokenData(
         user_id=customer_id,
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
 

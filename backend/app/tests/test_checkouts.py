@@ -149,7 +149,7 @@ async def test_initiate_checkout_success(mock_db: MagicMock) -> None:
 
     payload = {
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -226,7 +226,7 @@ async def test_initiate_checkout_empty_cart(mock_db: MagicMock) -> None:
 
     payload = {
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -275,7 +275,7 @@ async def test_initiate_checkout_validation_failures(mock_db: MagicMock) -> None
     # 1. Invalid Pincode
     payload: dict[str, Any] = {
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -351,7 +351,7 @@ async def test_initiate_checkout_insufficient_stock(mock_db: MagicMock) -> None:
 
     payload = {
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -376,7 +376,7 @@ async def test_apply_coupon_welcome10_success(mock_db: MagicMock) -> None:
     checkout_doc = {
         "_id": "60c72b2f9b1d8e2a3c4f5e6e",
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -445,7 +445,7 @@ async def test_complete_checkout_success(mock_db: MagicMock) -> None:
     checkout_doc = {
         "_id": "60c72b2f9b1d8e2a3c4f5e6e",
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",
@@ -500,7 +500,7 @@ async def test_complete_checkout_expired_releases_stock(mock_db: MagicMock) -> N
     checkout_doc = {
         "_id": "60c72b2f9b1d8e2a3c4f5e6e",
         "cart_id": "60c72b2f9b1d8e2a3c4f5e6f",
-        "email": "customer@mrbharathfoods.in",
+        "email": "customer@example.test",
         "shipping_address": {
             "full_name": "Gowtham Dev",
             "phone": "9876543210",

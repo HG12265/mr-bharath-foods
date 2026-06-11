@@ -125,7 +125,7 @@ async def test_get_public_settings_from_db(mock_db: MagicMock) -> None:
 async def test_customer_denied_admin_settings_get(mock_db: MagicMock) -> None:
     mock_customer = TokenData(
         user_id="customer_123",
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -194,7 +194,7 @@ async def test_payment_upi_id_settings_override(mock_db: MagicMock, monkeypatch:
         "order_number": "MBF-99999",
         "checkout_id": "checkout_123",
         "customer_id": "customer_123",
-        "customer_snapshot": {"email": "customer@mrbharathfoods.in"},
+        "customer_snapshot": {"email": "customer@example.test"},
         "shipping_address_snapshot": {
             "full_name": "Test Customer", "phone": "123", "address_line1": "123",
             "city": "Chennai", "state": "TN", "pincode": "123", "country": "India"
@@ -235,7 +235,7 @@ async def test_payment_upi_id_settings_override(mock_db: MagicMock, monkeypatch:
         audit_service=mock_audit
     )
 
-    token = TokenData(user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER)
+    token = TokenData(user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER)
     payment = await service.initiate_upi_payment(order_id="60c72b2f9b1d8e2a3c4f5e7b", current_user=token)
 
     # Assert deep link uses custom UPI ID
@@ -347,7 +347,7 @@ async def test_checkout_tax_and_shipping_override(mock_db: MagicMock) -> None:
     session = await service.initiate_checkout(
         cart_id="60c72b2f9b1d8e2a3c4f5e7b",
         customer_id="customer_123",
-        email="customer@mrbharathfoods.in",
+        email="customer@example.test",
         shipping_address=address,
         idempotency_key="test-key"
     )

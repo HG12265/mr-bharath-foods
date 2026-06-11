@@ -53,7 +53,7 @@ def create_mock_order_doc(
             "customer_id": "customer_123",
             "first_name": "Gowtham",
             "last_name": "Dev",
-            "email": "customer@mrbharathfoods.in",
+            "email": "customer@example.test",
             "phone": "9876543210",
         },
         "shipping_address_snapshot": {
@@ -266,7 +266,7 @@ async def test_customer_ownership_checks(mock_db: MagicMock) -> None:
 
     # Authorized Customer (owner)
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer
@@ -300,7 +300,7 @@ async def test_admin_listing_checks(mock_db: MagicMock) -> None:
 
     # 1. Customer request fails
     mock_customer = TokenData(
-        user_id="customer_123", email="customer@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_123", email="customer@example.test", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_customer

@@ -164,7 +164,9 @@ class EmailService:
         sender_email = settings.BREVO_SENDER_EMAIL or "no-reply@mrbharathfoods.in"
         sender_name = settings.BREVO_SENDER_NAME
 
-        is_mock = not api_key or "dummy" in api_key.lower() or api_key.strip() == ""
+        import sys
+        is_test = "pytest" in sys.modules or settings.ENVIRONMENT == "test"
+        is_mock = is_test or not api_key or "dummy" in api_key.lower() or api_key.strip() == ""
 
         # Prepare attachments
         brevo_attachments = []
