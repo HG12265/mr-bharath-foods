@@ -232,6 +232,8 @@ export interface Order {
   payment_status: PaymentStatus;
   fulfillment_status: FulfillmentStatus;
   order_status: OrderStatus;
+  invoice_number?: string;
+  invoice_generated_at?: string;
   created_at: string;
   updated_at: string;
 }
@@ -432,4 +434,30 @@ export interface DashboardData {
   low_stock_alerts?: Inventory[];
   pending_payment_proofs?: DashboardPaymentProof[];
   pending_reviews?: Review[];
+}
+
+export interface WishlistProductSummary {
+  name: string;
+  slug: string;
+  media_ids: string[];
+  price: number;
+  sku: string;
+  stock_status: "in_stock" | "out_of_stock";
+  volume_weight: string;
+}
+
+export interface WishlistItem {
+  product_id: string;
+  variant_id: string;
+  sku: string;
+  added_at: string;
+  product_summary: WishlistProductSummary;
+}
+
+export interface Wishlist {
+  id: string;
+  customer_id: string;
+  items: WishlistItem[];
+  created_at: string;
+  updated_at: string;
 }

@@ -9,6 +9,7 @@ import { useOrderDetails } from "@/hooks/use-orders";
 import { useInitiateUpiPayment, useSubmitUpiProof } from "@/hooks/use-payments";
 import { useNotifications } from "@/hooks/use-notifications";
 import mediaService from "@/services/media-service";
+import orderService from "@/services/order-service";
 import { formatINR } from "@/lib/utils";
 import { 
   ArrowLeft, 
@@ -21,7 +22,8 @@ import {
   UploadCloud, 
   FileText,
   Clock,
-  ExternalLink
+  ExternalLink,
+  X
 } from "lucide-react";
 import { InitiatePaymentResponse } from "@/services/payment-service";
 
@@ -48,6 +50,34 @@ export default function OrderDetailsPage() {
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgressMsg, setUploadProgressMsg] = useState("");
   const [submitError, setSubmitError] = useState<string | null>(null);
+
+  // Success alert state
+  const [showSuccessBanner, setShowSuccessBanner] = useState(false);
+
+  // Invoice Download states
+  const [isDownloadingInvoice, setIsDownloadingInvoice] = useState(false);
+  const [downloadInvoiceError, setDownloadInvoiceError] = useState<string | null>(null);
+
+  const handleDownloadInvoice = async () => {
+    if (!order) return;
+    setIsDownloadingInvoice(true);
+    setDownloadInvoiceError(null);
+    try {
+      const blob = await orderService.getInvoiceBlob(order.id, "download");
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      link.setAttribute("download", `invoice-${order.invoice_number || order.order_number}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      setDownloadInvoiceError("Failed to download invoice. Please try again.");
+    } finally {
+      setIsDownloadingInvoice(false);
+    }
+  };
 
   const hasAttemptedRef = useRef(false);
 
@@ -146,6 +176,17 @@ export default function OrderDetailsPage() {
             if (submitRes.success) {
               setUploadProgressMsg("Proof registered successfully!");
               setSelectedFile(null);
+              
+              // Update local state status to "proof_submitted"
+              if (submitRes.data) {
+                setPaymentInfo(prev => prev ? { ...prev, status: submitRes.data.status } : null);
+              } else {
+                setPaymentInfo(prev => prev ? { ...prev, status: "proof_submitted" } : null);
+              }
+
+              // Show success message
+              setShowSuccessBanner(true);
+              
               // Refetch order details to update status display
               refetchOrder();
             } else {
@@ -231,19 +272,66 @@ export default function OrderDetailsPage() {
             {/* Left/Main Column */}
             <div className="lg:col-span-7 space-y-6 animate-fade-up">
               
+              {/* SUCCESS BANNER */}
+              {showSuccessBanner && (
+                <div className="bg-[#EAF5EC] border border-green-300 rounded-lg p-5 shadow-sm flex items-start gap-3 relative animate-fade-up">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center border border-green-200 shrink-0 text-green-700">
+                    <CheckCircle2 className="w-5 h-5 animate-bounce" />
+                  </div>
+                  <div className="flex-grow pr-6">
+                    <h4 className="font-serif text-sm font-bold text-green-900">
+                      Transaction Proof Uploaded Successfully!
+                    </h4>
+                    <p className="text-[11px] font-sans text-green-800/85 mt-1 leading-relaxed">
+                      Admin will verify your order and update you.
+                    </p>
+                  </div>
+                  <button
+                    onClick={() => setShowSuccessBanner(false)}
+                    className="absolute right-2 top-2 p-1 text-green-700 hover:bg-green-200 rounded transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              )}
+
               {/* STATUS CARD */}
               {isConfirmed ? (
                 <div className="bg-white border-2 border-success/30 rounded-lg p-6 shadow-sm flex items-start gap-4">
                   <div className="w-12 h-12 bg-success/10 rounded-full flex items-center justify-center border border-success/20 shrink-0 text-success">
                     <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <div>
+                  <div className="flex-grow">
                     <h2 className="font-serif text-2xl font-bold text-deodharForest">
                       Order Confirmed!
                     </h2>
                     <p className="text-sm font-sans text-indianInk/60 mt-1">
                       We have received your payment. Your order <span className="font-bold text-indianInk">#{order.order_number}</span> is being processed for packing and dispatch.
                     </p>
+                    {order.payment_status === "paid" && (
+                      <div className="mt-4 space-y-2">
+                        <button
+                          onClick={handleDownloadInvoice}
+                          disabled={isDownloadingInvoice}
+                          className="inline-flex items-center gap-2 px-4 py-2 bg-deodharForest text-richCream border border-transparent hover:border-burnishedGold hover:shadow-[0_4px_12px_rgba(15,61,46,0.15)] rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-300 disabled:opacity-50"
+                        >
+                          {isDownloadingInvoice ? (
+                            <>
+                              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                              <span>Downloading Invoice...</span>
+                            </>
+                          ) : (
+                            <>
+                              <FileText className="w-3.5 h-3.5 text-gheeGold" />
+                              <span>Download Invoice</span>
+                            </>
+                          )}
+                        </button>
+                        {downloadInvoiceError && (
+                          <p className="text-xs text-destructive font-semibold font-sans">{downloadInvoiceError}</p>
+                        )}
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : isProofSubmitted ? (

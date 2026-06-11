@@ -6,6 +6,7 @@ import { useAdminOrders, useAdminUpdateOrderStatus } from "@/hooks/use-orders";
 import { useAdminPaymentByOrder, useAdminVerifyPayment } from "@/hooks/use-payments";
 import { useShipmentByOrder } from "@/hooks/use-shipments";
 import { useMediaAsset } from "@/hooks/use-media";
+import orderService from "@/services/order-service";
 import {
   Loader2,
   RefreshCw,
@@ -28,7 +29,8 @@ import {
   User,
   ShieldCheck,
   PlusCircle,
-  Info
+  Info,
+  FileText
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
@@ -56,6 +58,10 @@ export default function AdminOrdersPage() {
   // Rejection reason state
   const [rejectionReason, setRejectionReason] = useState("");
 
+  // Invoice states
+  const [isViewingInvoice, setIsViewingInvoice] = useState(false);
+  const [viewInvoiceError, setViewInvoiceError] = useState<string | null>(null);
+
   const orders = useMemo(() => ordersRes?.data || [], [ordersRes]);
 
   // Find the currently selected order from the list
@@ -80,6 +86,7 @@ export default function AdminOrdersPage() {
     if (selectedOrder) {
       setEditOrderStatus(selectedOrder.order_status);
       setEditPaymentStatus(selectedOrder.payment_status);
+      setViewInvoiceError(null);
     }
   }, [selectedOrder]);
 
@@ -188,6 +195,26 @@ export default function AdminOrdersPage() {
       }
     }
     return <span className={classes}>{status.replace(/_/g, " ")}</span>;
+  };
+
+  const handleViewInvoice = async () => {
+    if (!selectedOrder) return;
+    setIsViewingInvoice(true);
+    setViewInvoiceError(null);
+    try {
+      const blob = await orderService.getInvoiceBlob(selectedOrder.id, "view");
+      const url = URL.createObjectURL(blob);
+      window.open(url, "_blank");
+    } catch (err: any) {
+      console.error("Failed to fetch invoice:", err);
+      setViewInvoiceError(
+        err?.response?.data?.message || 
+        err?.message || 
+        "Failed to load invoice. Please try again."
+      );
+    } finally {
+      setIsViewingInvoice(false);
+    }
   };
 
   const handlePrint = () => {
@@ -453,6 +480,20 @@ export default function AdminOrdersPage() {
                 </p>
               </div>
               <div className="flex items-center gap-2">
+                {selectedOrder.payment_status === "paid" && (
+                  <button
+                    onClick={handleViewInvoice}
+                    disabled={isViewingInvoice}
+                    className="p-1.5 hover:bg-white/10 rounded transition text-white disabled:opacity-50 flex items-center justify-center"
+                    title="View Invoice PDF"
+                  >
+                    {isViewingInvoice ? (
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                    ) : (
+                      <FileText className="w-4 h-4" />
+                    )}
+                  </button>
+                )}
                 <button
                   onClick={handlePrint}
                   className="p-1.5 hover:bg-white/10 rounded transition text-white"
@@ -471,6 +512,21 @@ export default function AdminOrdersPage() {
 
             {/* Scrollable Container */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6 font-sans text-xs text-indianInk">
+              {viewInvoiceError && (
+                <div className="p-3 border border-red-200 bg-red-50 text-red-800 rounded font-medium text-[11px] flex items-start gap-2 relative">
+                  <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+                  <div className="flex-1 pr-6">
+                    <span className="font-bold block text-red-900 mb-0.5">Invoice Error</span>
+                    {viewInvoiceError}
+                  </div>
+                  <button
+                    onClick={() => setViewInvoiceError(null)}
+                    className="absolute right-2 top-2 p-1 text-red-800 hover:text-red-900 hover:bg-red-100 rounded transition"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                </div>
+              )}
               
               {/* Status Management Picker Panel */}
               <div className="bg-white border border-[#C49A45]/15 rounded p-4 space-y-3 shadow-sm">

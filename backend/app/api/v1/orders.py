@@ -1,3 +1,4 @@
+from typing import Any
 from fastapi import APIRouter, Depends, Header, Request
 from pymongo.asynchronous.database import AsyncDatabase
 
@@ -147,6 +148,86 @@ async def cancel_order(
         message="Order cancelled successfully.",
         data=OrderResponse(**res),
     )
+
+
+@router.get("/{id}/invoice")
+async def get_order_invoice(
+    id: str,
+    request: Request,
+    mode: str = "download",
+    x_guest_token: str | None = Header(None, alias="X-Guest-Token"),
+    current_user: TokenData | None = Depends(get_optional_current_user),
+    db: AsyncDatabase = Depends(get_db),  # type: ignore[type-arg]
+    service: OrderService = Depends(get_order_service),
+) -> Any:
+    """
+    Generates and returns the invoice PDF dynamically from live order data.
+    Supports mode=view (inline disposition) and mode=download (attachment disposition).
+    Enforces that the customer can only access their own order, while admin/warehouse can access it.
+    Only allowed if payment_status is 'paid'.
+    """
+    from fastapi.responses import StreamingResponse
+    from app.core.exceptions import BaseAppException
+    from app.services.invoice_service import InvoiceService
+    from app.repositories.settings_repository import SettingsRepository
+    from app.services.settings_service import SettingsService
+
+    ip = request.client.host if request.client else None
+
+    # Retrieve order - this automatically enforces customer/guest ownership or staff role clearance
+    order = await service.get_order_by_id(
+        order_id=id,
+        current_user=current_user,
+        guest_token=x_guest_token,
+        ip_address=ip,
+    )
+
+    # Restrict invoice availability to paid orders only
+    if order.payment_status != "paid":
+        raise BaseAppException(
+            message="Invoice PDF can only be generated for paid orders.",
+            code="ORDER_NOT_PAID",
+            status_code=400,
+        )
+
+    # Initialize InvoiceService & SettingsService
+    invoice_service = InvoiceService(service.order_repository, service.audit_service)
+    settings_repo = SettingsRepository(db)
+    settings_service = SettingsService(settings_repo, service.audit_service)
+
+    operator_id = current_user.user_id if current_user else "guest"
+
+    # Ensure invoice reference metadata exists in order document
+    invoice_number, _ = await invoice_service.ensure_invoice_metadata(
+        order, operator_id=operator_id, ip_address=ip
+    )
+
+    # Fetch global business details
+    settings_doc = await settings_service.get_or_create_default_settings()
+
+    # Generate dynamic ReportLab PDF in memory (BytesIO)
+    pdf_buffer = invoice_service.generate_invoice_pdf(order, settings_doc)
+
+    # Log specific audit action
+    audit_action = "INVOICE_DOWNLOADED" if mode == "download" else "INVOICE_VIEWED"
+    await service.audit_service.log_action(
+        action=audit_action,
+        target_collection="orders",
+        user_id=operator_id,
+        target_id=order.id,
+        ip_address=ip,
+    )
+
+    # Configure content-disposition
+    filename = f"invoice-{invoice_number}.pdf"
+    disposition = "attachment" if mode == "download" else "inline"
+    headers = {
+        "Content-Disposition": f'{disposition}; filename="{filename}"',
+        "Content-Type": "application/pdf",
+        "Access-Control-Expose-Headers": "Content-Disposition",
+    }
+
+    return StreamingResponse(pdf_buffer, media_type="application/pdf", headers=headers)
 
 
 # --- ADMIN ROUTER ENDPOINTS ---

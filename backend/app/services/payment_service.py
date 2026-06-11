@@ -300,6 +300,38 @@ class PaymentService(BaseService[Payment]):
             }
             await self.order_repository.update(payment.order_id, order_update)
 
+            # Update in-memory order object for immediate invoice generation/email trigger accuracy
+            order.payment_status = "paid"
+            order.order_status = "confirmed"
+
+            # Dynamic Invoice PDF Generation (In-Memory) & Brevo Transactional Email confirmation hook
+            try:
+                from app.services.invoice_service import InvoiceService
+                from app.services.email_service import EmailService
+                from app.repositories.settings_repository import SettingsRepository
+                from app.services.settings_service import SettingsService
+
+                invoice_service = InvoiceService(self.order_repository, self.audit_service)
+                email_service = EmailService(self.audit_service)
+                settings_repo = SettingsRepository(self.payment_repository.db)
+                settings_service = SettingsService(settings_repo, self.audit_service)
+
+                # Ensure metadata exists on order document
+                await invoice_service.ensure_invoice_metadata(
+                    order, operator_id=admin_user_id, ip_address=ip_address
+                )
+                settings_doc = await settings_service.get_or_create_default_settings()
+                pdf_buffer = invoice_service.generate_invoice_pdf(order, settings_doc)
+                pdf_bytes = pdf_buffer.getvalue()
+
+                # Trigger Brevo transactional confirmation with PDF attachment on-the-fly
+                await email_service.send_order_confirmed_email(order, pdf_bytes)
+            except Exception as exc:
+                # Catch configuration or runtime exceptions to prevent API failure on mail server errors
+                import structlog
+                logger = structlog.get_logger()
+                logger.error(f"Failed to auto-generate invoice or send Brevo confirmation email: {exc!s}")
+
             # Audit log
             await self.audit_service.log_action(
                 action="APPROVE_PAYMENT",
@@ -359,6 +391,16 @@ class PaymentService(BaseService[Payment]):
                 "updated_at": datetime.now(UTC),
             }
             await self.order_repository.update(payment.order_id, order_update)
+
+            # Trigger Brevo transactional notification to notify customer of payment rejection
+            try:
+                from app.services.email_service import EmailService
+                email_service = EmailService(self.audit_service)
+                await email_service.send_payment_rejected_email(order, rejection_reason.strip())
+            except Exception as exc:
+                import structlog
+                logger = structlog.get_logger()
+                logger.error(f"Failed to send Brevo payment proof rejection email: {exc!s}")
 
             # Audit log
             await self.audit_service.log_action(

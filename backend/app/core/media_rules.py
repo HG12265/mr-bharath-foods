@@ -31,6 +31,11 @@ MEDIA_RULES: dict[str, MediaRule] = {
         "allowed_extensions": {".jpg", ".jpeg", ".png", ".webp"},
         "max_size": 2 * 1024 * 1024,  # 2MB
     },
+    "payment_proof": {
+        "allowed_types": {"image/jpeg", "image/jpg", "image/png", "image/webp"},
+        "allowed_extensions": {".jpg", ".jpeg", ".png", ".webp"},
+        "max_size": 5 * 1024 * 1024,  # 5MB
+    },
     "packaging_file": {
         "allowed_types": {
             "image/jpeg", "image/png", "image/webp", "application/pdf",

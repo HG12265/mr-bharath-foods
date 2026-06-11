@@ -14,6 +14,7 @@ class WishlistProductSummary(BaseModel):
     price: Decimal
     sku: str
     stock_status: str
+    volume_weight: str
 
 class WishlistItemResponse(BaseModel):
     product_id: str

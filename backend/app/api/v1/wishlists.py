@@ -58,6 +58,7 @@ async def get_my_wishlist(
                     price=item["product_summary"]["price"],
                     sku=item["product_summary"]["sku"],
                     stock_status=item["product_summary"]["stock_status"],
+                    volume_weight=item["product_summary"]["volume_weight"],
                 ),
             )
         )
@@ -108,6 +109,7 @@ async def add_item_to_wishlist(
                     price=item["product_summary"]["price"],
                     sku=item["product_summary"]["sku"],
                     stock_status=item["product_summary"]["stock_status"],
+                    volume_weight=item["product_summary"]["volume_weight"],
                 ),
             )
         )
@@ -156,6 +158,7 @@ async def remove_item_from_wishlist(
                     price=item["product_summary"]["price"],
                     sku=item["product_summary"]["sku"],
                     stock_status=item["product_summary"]["stock_status"],
+                    volume_weight=item["product_summary"]["volume_weight"],
                 ),
             )
         )

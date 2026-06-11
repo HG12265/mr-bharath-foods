@@ -42,6 +42,14 @@ export const orderService = {
     const response = await apiClient.patch<Envelope<Order>>(`/api/v1/admin/orders/${orderId}/status`, payload);
     return response.data;
   },
+
+  async getInvoiceBlob(orderId: string, mode: "view" | "download"): Promise<Blob> {
+    const response = await apiClient.get(`/api/v1/orders/${orderId}/invoice`, {
+      params: { mode },
+      responseType: "blob",
+    });
+    return response.data;
+  },
 };
 
 export default orderService;

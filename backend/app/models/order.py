@@ -57,6 +57,8 @@ class Order(MongoBaseModel):
     payment_status: str = "pending"  # pending | paid | failed | refunded
     fulfillment_status: str = "pending"  # pending | packed | shipped | delivered | cancelled
     order_status: str = "pending_payment"  # pending_payment | confirmed | cancelled | closed
+    invoice_number: str | None = None
+    invoice_generated_at: datetime | None = None
     is_deleted: bool = False
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))

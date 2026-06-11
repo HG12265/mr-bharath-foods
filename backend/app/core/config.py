@@ -38,4 +38,9 @@ class Settings(BaseSettings):
     CLOUDINARY_API_KEY: str | None = None
     CLOUDINARY_API_SECRET: str | None = None
 
+    # Brevo Email configurations
+    BREVO_API_KEY: str | None = None
+    BREVO_SENDER_EMAIL: str | None = None
+    BREVO_SENDER_NAME: str = "Mr. Bharath Foods"
+
 settings = Settings()  # type: ignore[call-arg]

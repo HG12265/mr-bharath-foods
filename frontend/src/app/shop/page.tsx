@@ -3,9 +3,13 @@
 import React from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProducts } from "@/hooks/use-products";
+import { useMe } from "@/hooks/use-auth";
+import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { formatINR } from "@/lib/utils";
+import { Heart } from "lucide-react";
 
 export default function ShopPage() {
   const { data: productsData, isPending: isLoadingProducts } = useProducts({ limit: 10 });
@@ -13,6 +17,17 @@ export default function ShopPage() {
 
   // Only show real ghee products — no mock fallback
   const displayProducts = dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2);
+
+  const { data: meData } = useMe();
+  const user = meData?.data;
+  const isCustomer = user?.role === "customer";
+  const router = useRouter();
+
+  const { data: wishlistRes } = useWishlist();
+  const wishlistItems = wishlistRes?.data?.items || [];
+
+  const addToWishlistMutation = useAddToWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlist();
 
   return (
     <PublicLayout>
@@ -75,6 +90,9 @@ export default function ShopPage() {
                 const isRasipuram = product.slug.toLowerCase().includes("rasipuram");
                 const imageSrc = isRasipuram ? "/images/rasipuram-ghee.jpg" : "/images/uthukuli-ghee.jpg";
 
+                const firstVariantId = product.variants?.[0]?.variant_id;
+                const isWishlisted = firstVariantId ? wishlistItems.some((item: any) => item.variant_id === firstVariantId) : false;
+
                 return (
                   <div 
                     key={product.id || product.slug}
@@ -91,6 +109,35 @@ export default function ShopPage() {
                         priority={index === 0}
                         className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
                       />
+
+                      {/* Wishlist Heart Toggle Icon */}
+                      {firstVariantId && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            e.preventDefault();
+                            if (!isCustomer) {
+                              router.push("/login");
+                              return;
+                            }
+                            if (isWishlisted) {
+                              removeFromWishlistMutation.mutate(firstVariantId);
+                            } else {
+                              addToWishlistMutation.mutate({ productId: product.id, variantId: firstVariantId });
+                            }
+                          }}
+                          className="absolute top-4 right-4 z-30 p-2.5 bg-white/95 backdrop-blur-sm hover:bg-white text-indianInk rounded-full border border-burnishedGold/15 shadow-md transition-all duration-300 hover:scale-110 active:scale-95 group/heart"
+                          title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                        >
+                          <Heart
+                            className={`w-4 h-4 transition-all duration-300 ${
+                              isWishlisted
+                                ? "fill-red-600 text-red-600 scale-110"
+                                : "text-burnishedGold/80 group-hover/heart:text-red-500 group-hover/heart:fill-red-50/50"
+                            }`}
+                          />
+                        </button>
+                      )}
                     </div>
 
                     {/* Content Area */}

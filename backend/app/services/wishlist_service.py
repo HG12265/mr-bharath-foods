@@ -196,6 +196,7 @@ class WishlistService(BaseService[Wishlist]):
                 "price": variant.price,
                 "sku": variant.sku,
                 "stock_status": variant.stock_status,
+                "volume_weight": variant.volume_weight,
             }
 
             active_items.append(

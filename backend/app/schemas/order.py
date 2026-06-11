@@ -61,6 +61,8 @@ class OrderResponse(BaseModel):
     payment_status: PaymentStatus
     fulfillment_status: FulfillmentStatus
     order_status: OrderStatus
+    invoice_number: str | None = None
+    invoice_generated_at: datetime | None = None
     created_at: datetime
     updated_at: datetime
 

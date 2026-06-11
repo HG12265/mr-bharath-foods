@@ -5,7 +5,7 @@ import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
 import { useMe, useLogout } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
-import { User, ShoppingBag, Bell, MessageSquare, LogOut, Loader2 } from "lucide-react";
+import { User, ShoppingBag, Bell, MessageSquare, LogOut, Loader2, Heart } from "lucide-react";
 
 interface AccountShellProps {
   title: string;
@@ -36,6 +36,7 @@ export const AccountShell: React.FC<AccountShellProps> = ({ title, description, 
   const navItems = [
     { title: "Profile", href: "/account", icon: User },
     { title: "Orders", href: "/account/orders", icon: ShoppingBag },
+    { title: "Wishlist", href: "/account/wishlist", icon: Heart },
     { 
       title: "Notifications", 
       href: "/account/notifications", 

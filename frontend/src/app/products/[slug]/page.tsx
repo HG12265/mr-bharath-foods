@@ -3,12 +3,15 @@
 import React, { use, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProductBySlug } from "@/hooks/use-products";
 import { useAddToCart } from "@/hooks/use-cart";
+import { useMe } from "@/hooks/use-auth";
+import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { formatINR } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
-import { ShieldCheck, Check, ArrowLeft, Plus, Minus, Loader2 } from "lucide-react";
+import { ShieldCheck, Check, ArrowLeft, Plus, Minus, Loader2, Heart } from "lucide-react";
 
 // Fallback details for static display
 const STATIC_PRODUCTS: Record<string, any> = {
@@ -48,6 +51,17 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const addToCartMutation = useAddToCart();
 
+  const { data: meData } = useMe();
+  const user = meData?.data;
+  const isCustomer = user?.role === "customer";
+  const router = useRouter();
+
+  const { data: wishlistRes } = useWishlist();
+  const wishlistItems = wishlistRes?.data?.items || [];
+
+  const addToWishlistMutation = useAddToWishlist();
+  const removeFromWishlistMutation = useRemoveFromWishlist();
+
   // Slug matching to see if we fall back to Rasipuram or Uthukuli
   const isRasipuram = slug.toLowerCase().includes("rasipuram");
   const fallbackProduct = isRasipuram ? STATIC_PRODUCTS.rasipuram : STATIC_PRODUCTS.uthukuli;
@@ -70,6 +84,22 @@ export default function ProductDetailPage({ params }: PageProps) {
   const productId = isDbAvailable ? product.id : null;
   const variantId = isDbAvailable ? (selectedVariant?.variant_id || null) : null;
   const isCartDisabled = !productId || !variantId;
+
+  const isWishlisted = variantId ? wishlistItems.some((item: any) => item.variant_id === variantId) : false;
+
+  const handleToggleWishlist = () => {
+    if (!isCustomer) {
+      router.push("/login");
+      return;
+    }
+    if (!productId || !variantId) return;
+
+    if (isWishlisted) {
+      removeFromWishlistMutation.mutate(variantId);
+    } else {
+      addToWishlistMutation.mutate({ productId, variantId });
+    }
+  };
 
   const handleAddToCart = () => {
     if (isCartDisabled) return;
@@ -284,24 +314,39 @@ export default function ProductDetailPage({ params }: PageProps) {
 
               {/* Action Buttons */}
               <div className="space-y-3 pt-4">
-                <button
-                  onClick={handleAddToCart}
-                  disabled={isCartDisabled || addToCartMutation.isPending}
-                  className="w-full relative overflow-hidden group py-4 bg-deodharForest text-richCream rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 border border-transparent hover:border-gheeGold hover:shadow-[0_6px_20px_rgba(15,61,46,0.2)] disabled:opacity-50 disabled:cursor-not-allowed text-center flex items-center justify-center gap-2"
-                >
-                  {addToCartMutation.isPending ? (
-                    <span>Adding to Cart...</span>
-                  ) : (
-                    <>
-                      <span>Add to Cart</span>
-                      <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gheeGold/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
-                    </>
-                  )}
-                </button>
+                <div className="flex gap-4">
+                  <button
+                    onClick={handleAddToCart}
+                    disabled={isCartDisabled || addToCartMutation.isPending}
+                    className="flex-grow relative overflow-hidden group py-4 bg-deodharForest text-richCream rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 border border-transparent hover:border-gheeGold hover:shadow-[0_6px_20px_rgba(15,61,46,0.2)] disabled:opacity-50 disabled:cursor-not-allowed text-center flex items-center justify-center gap-2"
+                  >
+                    {addToCartMutation.isPending ? (
+                      <span>Adding to Cart...</span>
+                    ) : (
+                      <>
+                        <span>Add to Cart</span>
+                        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gheeGold/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+                      </>
+                    )}
+                  </button>
+
+                  <button
+                    onClick={handleToggleWishlist}
+                    disabled={isCartDisabled || addToWishlistMutation.isPending || removeFromWishlistMutation.isPending}
+                    className={`px-5 py-4 rounded-[4px] border transition-all duration-300 flex items-center justify-center select-none ${
+                      isWishlisted
+                        ? "bg-red-50 border-red-200 text-red-600 hover:bg-red-100/70"
+                        : "border-burnishedGold/25 hover:border-burnishedGold bg-white hover:bg-richCream/25 text-deodharForest"
+                    } disabled:opacity-50 disabled:cursor-not-allowed`}
+                    title={isWishlisted ? "Remove from Wishlist" : "Add to Wishlist"}
+                  >
+                    <Heart className={`w-4 h-4 transition-all duration-300 ${isWishlisted ? "fill-current scale-110" : "text-burnishedGold"}`} />
+                  </button>
+                </div>
 
                 {isCartDisabled && (
                   <p className="text-xs text-warmSaffron font-medium font-sans text-center mt-1.5 flex items-center justify-center gap-1.5">
-                    Product setup is pending. Please check back soon.
+                    Product setup is pending.
                   </p>
                 )}
 

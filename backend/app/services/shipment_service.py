@@ -109,6 +109,16 @@ class ShipmentService(BaseService[Shipment]):
                 ip_address=ip_address,
             )
 
+        # Brevo Email notification hook for shipment dispatch tracking
+        try:
+            from app.services.email_service import EmailService
+            email_service = EmailService(self.audit_service)
+            await email_service.send_shipment_created_email(order, shipment)
+        except Exception as exc:
+            import structlog
+            logger = structlog.get_logger()
+            logger.error(f"Failed to send Brevo shipment created email: {exc!s}")
+
         return shipment
 
     async def update_shipment_status(
@@ -204,6 +214,19 @@ class ShipmentService(BaseService[Shipment]):
                 operator_id=current_user.user_id,
                 ip_address=ip_address,
             )
+
+        # Brevo Email notification hook for shipment delivery confirmation
+        if status == "delivered":
+            try:
+                order_doc = await self.order_repository.get_by_id(shipment.order_id)
+                if order_doc:
+                    from app.services.email_service import EmailService
+                    email_service = EmailService(self.audit_service)
+                    await email_service.send_shipment_delivered_email(order_doc, updated)
+            except Exception as exc:
+                import structlog
+                logger = structlog.get_logger()
+                logger.error(f"Failed to send Brevo shipment delivered email: {exc!s}")
 
         return updated
 

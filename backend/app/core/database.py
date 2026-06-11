@@ -12,7 +12,7 @@ class DatabaseManager:
 
     async def connect_to_database(self) -> None:
         logger.info("Initiating connection to MongoDB Atlas...")
-        self.client = AsyncMongoClient(settings.MONGODB_URI)
+        self.client = AsyncMongoClient(settings.MONGODB_URI, tz_aware=True)
         # Force a connection check by accessing database reference
         self.db = self.client[settings.DATABASE_NAME]
         logger.info("Connection pool established successfully with MongoDB Atlas.")
