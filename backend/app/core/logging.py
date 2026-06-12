@@ -33,4 +33,4 @@ def setup_logging() -> None:
 
 # Export standard logger instantiation hook
 setup_logging()
-logger = logging.getLogger("mr-bharath-foods")
+logger = logging.getLogger("bharath-delight-foods")

@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
           <Link href="/" className="flex items-center gap-4 select-none group py-1">
             <Image
               src="/logo.png"
-              alt="Mr. Bharath Foods Logo"
+              alt="Bharath Delight Foods Logo"
               width={56}
               height={56}
               priority
@@ -57,7 +57,7 @@ export const Header: React.FC = () => {
             />
             <div className="flex flex-col justify-center border-l border-[#C89B3C]/25 pl-4">
               <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#0F3D2E] leading-none">
-                MR. BHARATH FOODS
+                BHARATH DELIGHT FOODS
               </span>
               <span className="text-[9px] uppercase tracking-[0.25em] text-[#C89B3C] font-bold mt-1.5">
                 FOOD DONE RIGHT.

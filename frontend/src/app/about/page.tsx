@@ -28,7 +28,7 @@ export default function AboutPage() {
               <Sparkles className="w-3 h-3 text-gheeGold" /> Established 2026
             </div>
             <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl font-bold text-deodharForest leading-tight">
-              About Mr. Bharath Foods
+              About Bharath Delight Foods
             </h1>
             <p className="font-serif text-lg sm:text-xl text-burnishedGold font-semibold italic tracking-wide">
               Selecting the Best to Serve the Best.
@@ -53,7 +53,7 @@ export default function AboutPage() {
               </div>
               <div className="md:col-span-2 space-y-4 font-sans text-sm sm:text-base text-indianInk/75 leading-relaxed">
                 <p>
-                  Mr. Bharath Foods was founded with a simple belief: every family deserves access to genuinely good food products.
+                  Bharath Delight Foods was founded with a simple belief: every family deserves access to genuinely good food products.
                 </p>
                 <p>
                   We begin with carefully selected ghee products and plan to expand thoughtfully into more Indian food categories.

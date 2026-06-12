@@ -92,10 +92,16 @@ class PaymentService(BaseService[Payment]):
         # 5. Generate link
         settings_doc = await self.payment_repository.db["settings"].find_one({"is_deleted": {"$ne": True}})
         upi_id = settings.UPI_ID
-        if settings_doc and settings_doc.get("upi_id"):
-            upi_id = settings_doc["upi_id"]
+        payee_name = settings.PROJECT_NAME
+        if settings_doc:
+            if settings_doc.get("upi_id"):
+                upi_id = settings_doc["upi_id"]
+            if settings_doc.get("payment_display_name"):
+                payee_name = settings_doc["payment_display_name"]
+            elif settings_doc.get("brand_name"):
+                payee_name = settings_doc["brand_name"]
 
-        upi_link = generate_upi_link(upi_id, order.pricing.grand_total, order.order_number)
+        upi_link = generate_upi_link(upi_id, order.pricing.grand_total, order.order_number, payee_name=payee_name)
         transaction_note = f"Order {order.order_number}"
 
         # 6. Save Payment
@@ -306,9 +312,9 @@ class PaymentService(BaseService[Payment]):
 
             # Dynamic Invoice PDF Generation (In-Memory) & Brevo Transactional Email confirmation hook
             try:
-                from app.services.invoice_service import InvoiceService
-                from app.services.email_service import EmailService
                 from app.repositories.settings_repository import SettingsRepository
+                from app.services.email_service import EmailService
+                from app.services.invoice_service import InvoiceService
                 from app.services.settings_service import SettingsService
 
                 invoice_service = InvoiceService(self.order_repository, self.audit_service)

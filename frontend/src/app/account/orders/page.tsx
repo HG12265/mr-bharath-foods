@@ -91,7 +91,7 @@ export default function OrdersPage() {
         ) : orders.length === 0 ? (
           <div className="text-center py-16 space-y-4">
             <p className="text-sm text-indianInk/60 font-sans">
-              You haven't placed any orders with Mr. Bharath Foods yet.
+              You haven't placed any orders with Bharath Delight Foods yet.
             </p>
             <Link
               href="/shop"

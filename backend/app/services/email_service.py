@@ -1,7 +1,8 @@
 import base64
-import httpx
 from datetime import UTC, datetime
 from typing import Any
+
+import httpx
 
 from app.core.config import settings
 from app.models.order import Order
@@ -16,7 +17,7 @@ class EmailService:
 
     def _get_base_template(self, title: str, content_html: str) -> str:
         """
-        Returns a premium branded HTML wrapper matching Mr. Bharath Foods aesthetics
+        Returns a premium branded HTML wrapper matching Bharath Delight Foods aesthetics
         (Deep Green #0F3D2E and Gold accents).
         """
         return f"""
@@ -130,14 +131,14 @@ class EmailService:
             <div class="wrapper">
                 <div class="container">
                     <div class="header">
-                        <div class="header-title">MR. BHARATH FOODS</div>
+                        <div class="header-title">BHARATH DELIGHT FOODS</div>
                         <div class="header-tagline">Food Done Right</div>
                     </div>
                     <div class="body">
                         {content_html}
                     </div>
                     <div class="footer">
-                        &copy; {datetime.now(UTC).year} Mr. Bharath Foods. All rights reserved.<br/>
+                        &copy; {datetime.now(UTC).year} Bharath Delight Foods. All rights reserved.<br/>
                         Sourced responsibly. FSSAI & GST Certified.
                     </div>
                 </div>
@@ -161,7 +162,7 @@ class EmailService:
         If key is dummy/missing, logs request details locally and mocks success.
         """
         api_key = settings.BREVO_API_KEY
-        sender_email = settings.BREVO_SENDER_EMAIL or "no-reply@mrbharathfoods.in"
+        sender_email = settings.BREVO_SENDER_EMAIL or "no-reply@bharathdelightfoods.in"
         sender_name = settings.BREVO_SENDER_NAME
 
         import sys
@@ -192,7 +193,7 @@ class EmailService:
             print(f"Subject: {subject}")
             print(f"Sender: {sender_name} <{sender_email}>")
             print(f"Attachments count: {len(brevo_attachments)}")
-            
+
             # Log sent audit log
             await self.audit_service.log_action(
                 action="EMAIL_SENT",
@@ -255,9 +256,9 @@ class EmailService:
         <div class="h2">Thank You for Your Order!</div>
         <p>Dear {cust_name},</p>
         <p>We are pleased to inform you that we have received and verified your payment. Your order <b>#{order.order_number}</b> has been confirmed and is now being packaged for dispatch.</p>
-        
+
         <p>Your official invoice has been generated and is attached to this email as a PDF document for your records.</p>
-        
+
         <div class="details-box">
             <h4 style="margin-top:0; color:#0F3D2E;">Order Summary</h4>
             <table>
@@ -279,7 +280,7 @@ class EmailService:
                 </tr>
             </table>
         </div>
-        
+
         <p>Once your order leaves our warehouse, we will email you with the carrier details and tracking numbers so you can follow its transit.</p>
         <p>If you have any questions or require support, reply to this email or contact our customer team.</p>
         """
@@ -314,19 +315,19 @@ class EmailService:
         <div class="h2" style="color: #C62828;">Payment Verification Unsuccessful</div>
         <p>Dear {cust_name},</p>
         <p>Thank you for submitting your payment proof screenshot for order <b>#{order.order_number}</b>. Unfortunately, our warehouse verification team was unable to verify the transfer.</p>
-        
+
         <div class="details-box" style="border-left: 4px solid #C62828; background-color: #FEF2F2;">
             <h4 style="margin-top:0; color:#C62828;">Rejection Reason</h4>
             <p style="margin: 0; font-size: 13px;">{reason}</p>
         </div>
-        
+
         <p><b>What you need to do:</b></p>
         <p>Please double-check your banking application or UPI transfer details. Make sure to capture a clear screenshot of the successful transaction showing the transaction ID and amount matching <b>INR {order.pricing.grand_total:,.2f}</b>, and re-submit it on the order details page.</p>
-        
+
         <p style="text-align: center;">
             <a href="/order/{order.id}" class="btn" style="background-color:#C62828;">Upload Correct Proof</a>
         </p>
-        
+
         <p>If you believe this is in error or require support, please contact our support team immediately.</p>
         """
 
@@ -348,7 +349,7 @@ class EmailService:
             cust_name = order.shipping_address_snapshot.full_name
 
         subject = f"Your Order has been Dispatched! - #{order.order_number}"
-        
+
         delivery_date_str = (
             shipment.estimated_delivery_date.strftime("%d-%b-%Y")
             if shipment.estimated_delivery_date else
@@ -359,7 +360,7 @@ class EmailService:
         <div class="h2">Your Order has been Dispatched!</div>
         <p>Dear {cust_name},</p>
         <p>Great news! Your order <b>#{order.order_number}</b> has been sealed and dispatched from our co-packer center. It is now on its way to you.</p>
-        
+
         <div class="details-box">
             <h4 style="margin-top:0; color:#0F3D2E;">Delivery Tracking Details</h4>
             <table>
@@ -378,9 +379,9 @@ class EmailService:
                 </tr>
             </table>
         </div>
-        
+
         <p>You can follow the progress of your shipment using the tracking number on the courier partner's portal.</p>
-        <p>Thank you for choosing Mr. Bharath Foods. We hope you enjoy the purity of our responsibly sourced products!</p>
+        <p>Thank you for choosing Bharath Delight Foods. We hope you enjoy the purity of our responsibly sourced products!</p>
         """
 
         html_body = self._get_base_template("Order Dispatched", content_html)
@@ -405,14 +406,14 @@ class EmailService:
         <div class="h2">Delivery Confirmed</div>
         <p>Dear {cust_name},</p>
         <p>Your order <b>#{order.order_number}</b> has been marked as successfully delivered. We hope it reached you in perfect condition.</p>
-        
+
         <p><b>Verify Batch Authenticity:</b></p>
         <p>For your trust and safety, you can verify your product batch test reports directly in our trust center. Simply enter the batch code printed on the product packaging.</p>
-        
+
         <p style="text-align: center;">
             <a href="/trust" class="btn">Verify Batch Purity</a>
         </p>
-        
+
         <p>If you did not receive this delivery or noticed any packaging leaks, please contact our support team immediately so we can assist you.</p>
         """
 

@@ -8,6 +8,10 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "pub-media.mrbharathfoods.in",
       },
+      {
+        protocol: "https",
+        hostname: "pub-media.bharathdelightfoods.in",
+      },
     ],
   },
 };

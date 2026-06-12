@@ -24,7 +24,7 @@ export function formatINR(amount: number): string {
  */
 export function optimizeCloudinaryUrl(url: string, width: number): string {
   if (!url) return url;
-  const isCloudinary = url.includes("res.cloudinary.com") || url.includes("pub-media.mrbharathfoods.in");
+  const isCloudinary = url.includes("res.cloudinary.com") || url.includes("pub-media.mrbharathfoods.in") || url.includes("pub-media.bharathdelightfoods.in");
   if (isCloudinary && url.includes("/image/upload/")) {
     return url.replace("/image/upload/", `/image/upload/f_auto,q_auto,w_${width}/`);
   }

@@ -17,7 +17,7 @@ export default function RegisterPage() {
         </div>
         <AuthCard
           title="Create Your Account"
-          subtitle="Join Mr. Bharath Foods to order premium lab-certified foods"
+          subtitle="Join Bharath Delight Foods to order premium lab-certified foods"
           footerText="Already have an account?"
           footerLinkText="Sign in instead"
           footerLinkHref="/login"

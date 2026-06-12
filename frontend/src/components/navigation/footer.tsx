@@ -14,7 +14,7 @@ export const Footer: React.FC = () => {
           {/* Brand Info */}
           <div className="space-y-3">
             <h4 className="font-serif text-base font-bold tracking-tight text-warmIvory">
-              Mr. Bharath Foods
+              Bharath Delight Foods
             </h4>
             <span className="block text-[9px] uppercase tracking-[0.2em] text-gheeGold font-semibold">
               FOOD DONE RIGHT.
@@ -89,7 +89,7 @@ export const Footer: React.FC = () => {
 
         {/* Bottom Bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-warmIvory/50 font-sans tracking-wide">
-          <p>© {new Date().getFullYear()} Mr. Bharath Foods. Sourced responsibly.</p>
+          <p>© {new Date().getFullYear()} Bharath Delight Foods. Sourced responsibly.</p>
           <div className="flex gap-4">
             <Link href="/trust" className="hover:text-warmIvory transition-colors">Trust Center</Link>
             <a href="#" className="hover:text-warmIvory transition-colors">Terms of Service</a>

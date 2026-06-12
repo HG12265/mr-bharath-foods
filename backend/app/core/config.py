@@ -10,7 +10,7 @@ class Settings(BaseSettings):
         env_ignore_empty=True
     )
 
-    PROJECT_NAME: str = "Mr. Bharath Foods"
+    PROJECT_NAME: str = "Bharath Delight Foods"
     API_V1_STR: str = "/api/v1"
     SECRET_KEY: str
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 11520  # 8 days
@@ -19,7 +19,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "mr_bharath_foods"
 
     REDIS_URL: str
-    UPI_ID: str = "mrbharathfoods@upi"
+    UPI_ID: str = "mrbharathfoods@upi"  # TODO: Update after new UPI ID is created
 
     # Production Hardening Configurations
     ENVIRONMENT: str = "development"
@@ -41,6 +41,6 @@ class Settings(BaseSettings):
     # Brevo Email configurations
     BREVO_API_KEY: str | None = None
     BREVO_SENDER_EMAIL: str | None = None
-    BREVO_SENDER_NAME: str = "Mr. Bharath Foods"
+    BREVO_SENDER_NAME: str = "Bharath Delight Foods"
 
 settings = Settings()  # type: ignore[call-arg]

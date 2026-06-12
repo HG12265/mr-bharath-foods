@@ -937,7 +937,7 @@ export default function AdminOrdersPage() {
           {/* Header */}
           <div className="flex justify-between items-start border-b border-black/15 pb-6 mb-6">
             <div>
-              <h1 className="font-serif text-2xl font-bold text-[#1E352F]">MR. BHARATH FOODS</h1>
+              <h1 className="font-serif text-2xl font-bold text-[#1E352F]">BHARATH DELIGHT FOODS</h1>
               <p className="text-[10px] text-black/60 mt-1">Selecting the Best to Serve the Best</p>
               <p className="text-[9px] text-black/50 mt-2">FSSAI Lic. No: 12423999000123</p>
             </div>
@@ -1025,7 +1025,7 @@ export default function AdminOrdersPage() {
 
           {/* Footer print disclaimer */}
           <div className="border-t border-black/10 pt-6 text-center text-[9px] text-black/40 space-y-1.5">
-            <p>Thank you for purchasing curated gourmet products from MR. BHARATH FOODS.</p>
+            <p>Thank you for purchasing curated gourmet products from BHARATH DELIGHT FOODS.</p>
             <p>This document is an administrative invoice summary compiled directly from digital catalog records.</p>
           </div>
         </div>

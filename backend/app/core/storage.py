@@ -144,15 +144,18 @@ class StorageManager:
             try:
                 parts = key.split("/")
                 # key: media/{asset_type}/{user_id}/{filename}
-                # folder matches mr-bharath-foods/{asset_type}/{user_id}
                 asset_type = parts[1] if len(parts) > 1 else "misc"
                 user_id = parts[2] if len(parts) > 2 else "anonymous"
-                folder = f"mr-bharath-foods/{asset_type}/{user_id}"
 
                 filename_with_ext = parts[-1]
                 filename_base, _ = os.path.splitext(filename_with_ext)
                 public_id = re.sub(r'[^a-zA-Z0-9._-]', '_', filename_base)
-                full_public_id = f"{folder}/{public_id}"
+
+                folder_old = f"mr-bharath-foods/{asset_type}/{user_id}"
+                full_public_id_old = f"{folder_old}/{public_id}"
+
+                folder_new = f"bharath-delight-foods/{asset_type}/{user_id}"
+                full_public_id_new = f"{folder_new}/{public_id}"
 
                 import cloudinary
                 import cloudinary.uploader
@@ -162,7 +165,8 @@ class StorageManager:
                     api_secret=settings.CLOUDINARY_API_SECRET,
                     secure=True
                 )
-                cloudinary.uploader.destroy(full_public_id)
+                cloudinary.uploader.destroy(full_public_id_old)
+                cloudinary.uploader.destroy(full_public_id_new)
                 return True
             except Exception:
                 return False

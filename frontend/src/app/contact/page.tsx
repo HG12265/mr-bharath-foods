@@ -190,10 +190,10 @@ export default function ContactPage() {
                       Business Enquiries
                     </h3>
                     <a 
-                      href={`mailto:enquiries@mrbharathfoods.com`}
+                      href={`mailto:enquiries@bharathdelightfoods.in`}
                       className="text-sm font-semibold text-deodharForest hover:underline truncate block mt-0.5"
                     >
-                      enquiries@mrbharathfoods.com
+                      enquiries@bharathdelightfoods.in
                     </a>
                   </div>
                 </div>

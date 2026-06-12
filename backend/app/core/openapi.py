@@ -13,7 +13,7 @@ def custom_openapi(app: FastAPI) -> dict[str, Any]:
     openapi_schema = get_openapi(
         title=settings.PROJECT_NAME,
         version="1.0.0",
-        description="Enterprise API Core Gateway for Mr. Bharath Foods digital platform.",
+        description="Enterprise API Core Gateway for Bharath Delight Foods digital platform.",
         routes=app.routes,
     )
 

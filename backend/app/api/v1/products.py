@@ -177,9 +177,9 @@ async def create_product(
 
     # Auto-create inventory records
     from app.repositories.inventory_repository import InventoryRepository
-    from app.services.inventory_service import InventoryService
     from app.schemas.inventory import InventoryCreate, WarehouseStockSchema
-    
+    from app.services.inventory_service import InventoryService
+
     inv_repo = InventoryRepository(db)
     inv_service = InventoryService(inv_repo, service.product_repository, service.audit_service, None)
 
@@ -226,9 +226,9 @@ async def update_product(
 
     # Auto-create inventory records for any new variants
     from app.repositories.inventory_repository import InventoryRepository
-    from app.services.inventory_service import InventoryService
     from app.schemas.inventory import InventoryCreate, WarehouseStockSchema
-    
+    from app.services.inventory_service import InventoryService
+
     inv_repo = InventoryRepository(db)
     inv_service = InventoryService(inv_repo, service.product_repository, service.audit_service, None)
 

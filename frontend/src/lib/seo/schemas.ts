@@ -150,7 +150,7 @@ export function buildItemListSchema(
   return {
     "@context": "https://schema.org",
     "@type": "ItemList",
-    name: "Premium Indian Ghee — Mr. Bharath Foods",
+    name: "Premium Indian Ghee — Bharath Delight Foods",
     url: `${appUrl}/shop`,
     itemListElement: products.map((product, index) => ({
       "@type": "ListItem",

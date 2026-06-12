@@ -1,4 +1,5 @@
 from typing import Any
+
 from fastapi import APIRouter, Depends, Header, Request
 from pymongo.asynchronous.database import AsyncDatabase
 
@@ -167,9 +168,10 @@ async def get_order_invoice(
     Only allowed if payment_status is 'paid'.
     """
     from fastapi.responses import StreamingResponse
+
     from app.core.exceptions import BaseAppException
-    from app.services.invoice_service import InvoiceService
     from app.repositories.settings_repository import SettingsRepository
+    from app.services.invoice_service import InvoiceService
     from app.services.settings_service import SettingsService
 
     ip = request.client.host if request.client else None

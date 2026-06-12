@@ -63,7 +63,7 @@ const generateSku = (productName: string, volumeWeight: string) => {
   // Clean product name: remove generic words to keep SKU short and clean
   const cleanProduct = productName
     .toLowerCase()
-    .replace(/\b(mr|bharath|foods|ghee|pure|organic|natural|a2|cow)\b/g, "")
+    .replace(/\b(mr|bharath|delight|foods|ghee|pure|organic|natural|a2|cow)\b/g, "")
     .replace(/[^a-z0-9]+/g, " ")
     .trim()
     .split(/\s+/)
@@ -1140,7 +1140,7 @@ export default function AdminProductsPage() {
                         type="text"
                         value={formSeoTitle}
                         onChange={(e) => setFormSeoTitle(e.target.value)}
-                        placeholder="e.g. Buy Premium Organic Cow Ghee | Mr. Bharath Foods"
+                        placeholder="e.g. Buy Premium Organic Cow Ghee | Bharath Delight Foods"
                         className="w-full text-xs border border-burnishedGold/30 rounded p-2 focus:outline-none focus:border-burnishedGold"
                       />
                     </div>

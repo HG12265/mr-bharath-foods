@@ -243,7 +243,7 @@ export default function CartPage() {
                   </div>
 
                   <p className="text-[10px] text-indianInk/55 leading-relaxed font-sans border-t border-burnishedGold/10 pt-4">
-                    Mr. Bharath Foods complies strictly with FSSAI packing guidelines. Orders are dispatched trace-sealed.
+                    Bharath Delight Foods complies strictly with FSSAI packing guidelines. Orders are dispatched trace-sealed.
                   </p>
 
                   <button

@@ -1,6 +1,7 @@
 import os
-import pytest
 from unittest.mock import AsyncMock, patch
+
+import pytest
 
 # Set environment variables to override any real settings from .env
 os.environ["ENVIRONMENT"] = "test"

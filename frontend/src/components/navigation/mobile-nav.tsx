@@ -123,7 +123,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
           )}
 
           <p className="text-[9px] text-center text-indianInk/55 font-sans tracking-widest uppercase">
-            © 2026 Mr. Bharath Foods
+            © 2026 Bharath Delight Foods
           </p>
         </div>
       </div>

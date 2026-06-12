@@ -1,14 +1,14 @@
 import { env } from "@/lib/env";
 
 export const siteConfig = {
-  name: "Mr. Bharath Foods",
+  name: "Bharath Delight Foods",
   tagline: "Selecting the Best to Serve the Best",
   description:
     "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for absolute purity, and trace-certified by batch.",
   url: env.NEXT_PUBLIC_APP_URL,
   ogImage: `${env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
   fssaiLicenseNumber: "12424999000123",
-  twitterHandle: "@mrbharathfoods",
+  twitterHandle: "",
   keywords: [
     "pure ghee online india",
     "rasipuram ghee",
@@ -18,7 +18,7 @@ export const siteConfig = {
     "lab verified ghee",
     "fssai certified ghee",
     "buy ghee online",
-    "Mr. Bharath Foods",
+    "Bharath Delight Foods",
   ],
   links: {
     supportEmail: "mrbharathfoods@gmail.com",

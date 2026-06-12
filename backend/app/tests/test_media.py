@@ -407,7 +407,7 @@ def test_cloudinary_upload_mock_put(
         # Verify cloudinary upload call parameters
         mock_upload.assert_called_once()
         _, kwargs = mock_upload.call_args
-        assert kwargs["folder"] == "mr-bharath-foods/avatar/507f1f77bcf86cd799439011"
+        assert kwargs["folder"] == "bharath-delight-foods/avatar/507f1f77bcf86cd799439011"
         assert kwargs["public_id"] == "uuid-avatar"
 
         # Verify db update call

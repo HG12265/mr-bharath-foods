@@ -110,7 +110,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
         <div className="h-16 flex items-center justify-between px-6 border-b border-burnishedGold/10 bg-deodharForest/95">
           <Link href="/admin" className="flex items-center gap-2">
             <span className="font-serif font-bold text-lg text-gheeGold tracking-wide">
-              Mr. Bharath Admin
+              Bharath Delight Admin
             </span>
           </Link>
         </div>
@@ -175,7 +175,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
         {/* Mobile Header / Top Bar */}
         <header className="lg:hidden h-16 bg-deodharForest text-richCream flex items-center justify-between px-4 border-b border-burnishedGold/10 shrink-0">
           <Link href="/admin" className="font-serif font-bold text-sm text-gheeGold tracking-widest uppercase">
-            Mr. Bharath Admin
+            Bharath Delight Admin
           </Link>
           <div className="flex items-center gap-4">
             <span className="text-[9px] font-bold uppercase tracking-widest border border-gheeGold/40 px-2 py-0.5 rounded text-gheeGold bg-gheeGold/5">

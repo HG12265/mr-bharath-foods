@@ -23,7 +23,7 @@ export const AuthCard: React.FC<AuthCardProps> = ({
       {/* Brand Header */}
       <div className="bg-deodharForest text-richCream px-8 py-6 text-center border-b border-indianInk/5">
         <h2 className="font-serif text-3xl text-white font-medium tracking-tight mb-1">
-          MR. BHARATH FOODS
+          BHARATH DELIGHT FOODS
         </h2>
         <p className="text-xs uppercase tracking-[0.12em] font-sans text-warmIvory/70">
           Selecting the Best to Serve the Best

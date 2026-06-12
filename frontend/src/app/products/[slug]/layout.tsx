@@ -36,7 +36,7 @@ export async function generateMetadata({
     // Title: prefer product SEO meta_title, fallback to product name
     const title =
       product.seo?.meta_title ||
-      `${product.name} | Mr. Bharath Foods`;
+      `${product.name} | Bharath Delight Foods`;
 
     // Description: prefer SEO meta_description, fallback to short_description
     const description =

@@ -2,7 +2,7 @@ import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "Shop Pure Ghee Online | Mr. Bharath Foods",
+  title: "Shop Pure Ghee Online | Bharath Delight Foods",
   description:
     "Buy premium Rasipuram Pure Ghee and Uthukuli A2 Cow Ghee online. FSSAI certified, lab-verified purity, trace-sealed batches. Free shipping above ₹1000.",
   keywords: [
@@ -20,18 +20,18 @@ export const metadata: Metadata = {
     canonical: `${siteConfig.url}/shop`,
   },
   openGraph: {
-    title: "Shop Pure Ghee Online | Mr. Bharath Foods",
+    title: "Shop Pure Ghee Online | Bharath Delight Foods",
     description:
       "Premium Rasipuram & Uthukuli ghee. Lab-verified, FSSAI certified. Delivered to your door.",
     url: `${siteConfig.url}/shop`,
     siteName: siteConfig.name,
-    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: "Mr. Bharath Foods — Shop Ghee" }],
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: "Bharath Delight Foods — Shop Ghee" }],
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "Shop Pure Ghee Online | Mr. Bharath Foods",
+    title: "Shop Pure Ghee Online | Bharath Delight Foods",
     description: "Premium Rasipuram & Uthukuli ghee. Lab-verified, FSSAI certified.",
     images: [siteConfig.ogImage],
     creator: siteConfig.twitterHandle,

@@ -18,7 +18,7 @@ from app.core.logging import logger
 
 async def initialize_indexes(db: AsyncDatabase) -> None:  # type: ignore[type-arg]
     """
-    Registers and initializes all critical database indexes for Mr. Bharath Foods.
+    Registers and initializes all critical database indexes for Bharath Delight Foods.
     """
     logger.info("Initializing system database indexes...")
 

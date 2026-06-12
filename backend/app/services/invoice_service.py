@@ -1,13 +1,11 @@
-import os
 from datetime import UTC, datetime
-from io import BytesIO
 from decimal import Decimal
+from io import BytesIO
 
-from reportlab.lib.pagesizes import A4
 from reportlab.lib import colors
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
-from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-from reportlab.lib.units import inch
+from reportlab.lib.pagesizes import A4
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
+from reportlab.platypus import Paragraph, SimpleDocTemplate, Spacer, Table, TableStyle
 
 from app.models.order import Order
 from app.models.settings import Settings
@@ -137,7 +135,7 @@ class InvoiceService:
         story = []
 
         # Header section (Company Name + Tagline & FSSAI/GSTIN metadata)
-        story.append(Paragraph(settings.brand_name or "Mr. Bharath Foods", title_style))
+        story.append(Paragraph(settings.brand_name or "Bharath Delight Foods", title_style))
         story.append(Paragraph("FOOD DONE RIGHT.", tagline_style))
 
         # Company Compliance Info
@@ -148,7 +146,7 @@ class InvoiceService:
             compliance_lines.append(f"<b>FSSAI Lic. No:</b> {settings.fssai_number}")
         if settings.business_address:
             compliance_lines.append(f"<b>Address:</b> {settings.business_address}")
-        
+
         compliance_text = "<br/>".join(compliance_lines)
         story.append(Paragraph(compliance_text, text_style))
         story.append(Spacer(1, 15))
@@ -301,7 +299,7 @@ class InvoiceService:
             alignment=1  # Centered
         )
         story.append(Paragraph(
-            "Thank you for shopping with Mr. Bharath Foods. Sourced responsibly.<br/>"
+            "Thank you for shopping with Bharath Delight Foods. Sourced responsibly.<br/>"
             "This is a computer-generated document. No signature is required.",
             footer_style
         ))

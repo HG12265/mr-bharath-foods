@@ -174,7 +174,7 @@ export default function AdminSettingsPage() {
         tax_percentage: Number(form.tax_percentage),
         shipping_fee: Number(form.shipping_fee),
         free_shipping_threshold: Number(form.free_shipping_threshold),
-        support_contact: form.support_email.trim() || form.support_contact.trim() || "support@mrbharathfoods.in",
+        support_contact: form.support_email.trim() || form.support_contact.trim() || "support@bharathdelightfoods.in",
         fssai_number: form.fssai_number.trim() || null,
         gst_number: form.gst_number.trim().toUpperCase() || null,
         brand_name: form.brand_name.trim() || null,
@@ -291,7 +291,7 @@ export default function AdminSettingsPage() {
                     type="text"
                     value={form.brand_name}
                     onChange={(e) => handleChange("brand_name", e.target.value)}
-                    placeholder="e.g. Mr. Bharath Foods"
+                    placeholder="e.g. Bharath Delight Foods"
                     className="w-full text-xs border border-burnishedGold/30 focus:border-burnishedGold rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk"
                   />
                 </div>
@@ -303,7 +303,7 @@ export default function AdminSettingsPage() {
                     type="email"
                     value={form.support_email}
                     onChange={(e) => handleChange("support_email", e.target.value)}
-                    placeholder="e.g. support@mrbharathfoods.in"
+                    placeholder="e.g. support@bharathdelightfoods.in"
                     className="w-full text-xs border border-burnishedGold/30 focus:border-burnishedGold rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk"
                   />
                 </div>
@@ -413,7 +413,7 @@ export default function AdminSettingsPage() {
                     type="text"
                     value={form.upi_id}
                     onChange={(e) => handleChange("upi_id", e.target.value)}
-                    placeholder="e.g. mrbharathfoods@upi"
+                    placeholder="e.g. bharathdelightfoods@upi"
                     className={`w-full text-xs border rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk ${
                       validationErrors.upi_id ? "border-red-500 focus:border-red-600" : "border-burnishedGold/30 focus:border-burnishedGold"
                     }`}
@@ -431,7 +431,7 @@ export default function AdminSettingsPage() {
                     type="text"
                     value={form.payment_display_name}
                     onChange={(e) => handleChange("payment_display_name", e.target.value)}
-                    placeholder="e.g. Mr. Bharath Foods"
+                    placeholder="e.g. Bharath Delight Foods"
                     className="w-full text-xs border border-burnishedGold/30 focus:border-burnishedGold rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk"
                   />
                 </div>
@@ -571,7 +571,7 @@ export default function AdminSettingsPage() {
                     type="email"
                     value={form.public_support_email}
                     onChange={(e) => handleChange("public_support_email", e.target.value)}
-                    placeholder="e.g. info@mrbharathfoods.in"
+                    placeholder="e.g. info@bharathdelightfoods.in"
                     className="w-full text-xs border border-burnishedGold/30 focus:border-burnishedGold rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk"
                   />
                 </div>

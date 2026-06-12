@@ -115,7 +115,7 @@ export default function HomePage() {
 
               {/* Description with motion-safe fade-up */}
               <p className="font-sans text-sm sm:text-base md:text-lg mb-8 max-w-md md:max-w-lg leading-relaxed text-[#FAF9F6]/90 motion-safe:animate-fade-up">
-                Mr. Bharath Foods brings carefully selected Indian food products to families with a focus on quality, responsibility, and trust.
+                Bharath Delight Foods brings carefully selected Indian food products to families with a focus on quality, responsibility, and trust.
               </p>
 
               {/* Stacking Buttons with motion-safe fade-up */}
