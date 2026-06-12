@@ -55,7 +55,7 @@ def create_mock_settings_doc(
         "tax_percentage": tax,
         "shipping_fee": shipping,
         "free_shipping_threshold": free_shipping,
-        "support_contact": "help@mrbharathfoods.in",
+        "support_contact": "help@bharathdelight.in",
         "fssai_number": "12345678901234",
         "gst_number": "33AABCM1234D1Z5",
         "is_deleted": False,
@@ -146,7 +146,7 @@ async def test_admin_settings_get_and_update(mock_db: MagicMock) -> None:
     # 1. Test GET Admin settings
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -371,7 +371,7 @@ async def test_admin_settings_clear_nullable_fields(mock_db: MagicMock) -> None:
 
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -413,13 +413,13 @@ async def test_admin_settings_clear_nullable_fields(mock_db: MagicMock) -> None:
 async def test_admin_settings_structured_fields(mock_db: MagicMock) -> None:
     mock_settings = create_mock_settings_doc()
     # Add initial fields
-    mock_settings["brand_name"] = "Mr. Bharath Foods"
-    mock_settings["support_email"] = "support@mrbharathfoods.in"
+    mock_settings["brand_name"] = "Bharath Delight"
+    mock_settings["support_email"] = "support@bharathdelight.in"
     mock_settings["support_phone"] = "+91 98765 43210"
     mock_settings["business_address"] = "123, Main Street"
-    mock_settings["payment_display_name"] = "Mr. Bharath Foods"
+    mock_settings["payment_display_name"] = "Bharath Delight"
     mock_settings["upi_instructions"] = "Please pay"
-    mock_settings["public_support_email"] = "info@mrbharathfoods.in"
+    mock_settings["public_support_email"] = "info@bharathdelight.in"
     mock_settings["public_support_phone"] = "+91 98765 43210"
     mock_settings["working_hours"] = "9 AM - 9 PM"
 
@@ -428,7 +428,7 @@ async def test_admin_settings_structured_fields(mock_db: MagicMock) -> None:
 
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db

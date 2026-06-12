@@ -6,7 +6,7 @@ export const useWishlist = () => {
   const { data: meData } = useMe();
   const user = meData?.data;
   // Enable query only for customer users (do not fetch for guests)
-  const isCustomer = user?.role === "customer";
+  const isCustomer = !!user && user.role === "customer";
 
   return useQuery({
     queryKey: ["wishlist"],

@@ -14,6 +14,7 @@ class PaymentInitiateResponse(BaseModel):
     upi_id: str
     upi_link: str
     status: PaymentStatus
+    rejection_reason: str | None = None
 
 
 class PaymentProofSubmitRequest(BaseModel):

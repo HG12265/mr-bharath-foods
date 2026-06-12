@@ -6,7 +6,7 @@ import Image from "next/image";
 import AccountShell from "@/components/features/account/account-shell";
 import { useWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { useAddToCart } from "@/hooks/use-cart";
-import { formatINR } from "@/lib/utils";
+import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
 import { 
   Loader2, 
   Trash2, 
@@ -173,7 +173,7 @@ export default function WishlistPage() {
                   {/* Image & Header */}
                   <div className="relative w-full h-[180px] bg-richCream/10 border-b border-burnishedGold/10">
                     <Image
-                      src={imageSrc}
+                      src={optimizeCloudinaryUrl(imageSrc, 600)}
                       alt={summary.name}
                       fill
                       className="object-cover object-center select-none"

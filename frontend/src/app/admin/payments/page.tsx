@@ -5,6 +5,7 @@ import { useDashboard } from "@/hooks/use-dashboard";
 import { useAdminVerifyPayment } from "@/hooks/use-payments";
 import { useMediaAsset } from "@/hooks/use-media";
 import { Loader2, Check, X, Eye, Clock, FileText } from "lucide-react";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
 
 export default function AdminPaymentsPage() {
   const { data: dashboardRes, isPending, refetch } = useDashboard();
@@ -267,7 +268,7 @@ function ScreenshotViewer({ mediaId }: ScreenshotViewerProps) {
       <div className="border border-burnishedGold/10 rounded overflow-hidden bg-richCream/5 flex justify-center max-h-[400px]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
-          src={asset.public_url}
+          src={optimizeCloudinaryUrl(asset.public_url, 1200)}
           alt={asset.original_filename || "Proof Screenshot"}
           className="object-contain w-full max-h-[400px]"
         />

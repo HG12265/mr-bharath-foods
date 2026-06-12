@@ -129,7 +129,7 @@ async def test_create_shipment_success(mock_db: MagicMock) -> None:
     mock_db["shipments"].insert_one = AsyncMock(side_effect=mock_insert)
 
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -160,7 +160,7 @@ async def test_create_shipment_unpaid_fails(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one = AsyncMock(return_value=order_doc)
 
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -187,7 +187,7 @@ async def test_create_shipment_duplicate_fails(mock_db: MagicMock) -> None:
     mock_db["shipments"].find_one = AsyncMock(return_value=existing_shipment)
 
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -229,7 +229,7 @@ async def test_update_status_timeline_append_and_sync(mock_db: MagicMock) -> Non
     mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update_order)
 
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -276,7 +276,7 @@ async def test_customer_ownership_checks(mock_db: MagicMock) -> None:
 
     # Unauthorized Customer (different user ID)
     mock_other_customer = TokenData(
-        user_id="customer_999", email="hacker@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_999", email="hacker@bharathdelight.in", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_current_user] = lambda: mock_other_customer
     response_forbidden = client.get(f"/api/v1/shipments/{shipment_id}")
@@ -310,7 +310,7 @@ async def test_admin_listing_checks(mock_db: MagicMock) -> None:
 
     # 2. Warehouse request succeeds
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
     response_staff = client.get("/api/v1/admin/shipments/")
@@ -346,7 +346,7 @@ async def test_admin_edit_cancel_delete_shipment(mock_db: MagicMock) -> None:
 
     # 1. Non-admin fails to edit
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -362,7 +362,7 @@ async def test_admin_edit_cancel_delete_shipment(mock_db: MagicMock) -> None:
 
     # 2. Admin edits successfully
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_current_user] = lambda: mock_admin
     response_edit_admin = client.patch(f"/api/v1/admin/shipments/{shipment_id}", json=payload_edit)

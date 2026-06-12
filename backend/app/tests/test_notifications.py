@@ -137,7 +137,7 @@ async def test_role_target_notification_visibility(mock_db: MagicMock) -> None:
 
     # Warehouse staff request
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -178,7 +178,7 @@ async def test_mark_notification_as_read(mock_db: MagicMock) -> None:
 
     # 2. Other customer read forbidden
     mock_other_customer = TokenData(
-        user_id="customer_999", email="hacker@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="customer_999", email="hacker@bharathdelight.in", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_current_user] = lambda: mock_other_customer
     response_forbidden = client.patch(f"/api/v1/notifications/{noti_id}/read")
@@ -234,7 +234,7 @@ async def test_admin_notifications_listing_access(mock_db: MagicMock) -> None:
 
     # 2. Warehouse staff listing access allowed
     mock_warehouse = TokenData(
-        user_id="staff_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="staff_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
     response_staff = client.get("/api/v1/admin/notifications")

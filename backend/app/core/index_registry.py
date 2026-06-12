@@ -3,6 +3,7 @@ from pymongo.asynchronous.database import AsyncDatabase
 
 from app.core.constants import (
     COLLECTION_CARTS,
+    COLLECTION_CATEGORIES,
     COLLECTION_CUSTOMERS,
     COLLECTION_INVENTORIES,
     COLLECTION_NOTIFICATIONS,
@@ -107,5 +108,12 @@ async def initialize_indexes(db: AsyncDatabase) -> None:  # type: ignore[type-ar
         logger.info("Inventories SKU unique index initialized.")
     except Exception as exc:
         logger.error(f"Error creating inventories index: {exc}")
+
+    # 10. Categories
+    try:
+        await db[COLLECTION_CATEGORIES].create_index([("slug", ASCENDING)], unique=True)
+        logger.info("Categories unique index on slug initialized.")
+    except Exception as exc:
+        logger.error(f"Error creating categories index: {exc}")
 
     logger.info("All system database indexes check completed.")

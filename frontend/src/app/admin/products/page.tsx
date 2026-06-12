@@ -11,6 +11,7 @@ import {
 } from "@/hooks/use-products";
 import { useMediaAsset } from "@/hooks/use-media";
 import mediaService from "@/services/media-service";
+import { optimizeCloudinaryUrl } from "@/lib/utils";
 import { 
   Plus, 
   Search, 
@@ -46,7 +47,7 @@ function ProductImage({ mediaId, className }: { mediaId?: string; className?: st
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={url || "https://placehold.co/100x100?text=Product"}
+      src={optimizeCloudinaryUrl(url, 100) || "https://placehold.co/100x100?text=Product"}
       alt="Product preview"
       className={className || "w-10 h-10 object-cover rounded border border-burnishedGold/15"}
       onError={(e) => {

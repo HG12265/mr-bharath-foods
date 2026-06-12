@@ -1,10 +1,14 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import notificationService, { ListNotificationsParams } from "../services/notification-service";
+import { useMe } from "./use-auth";
 
 export const useNotifications = (params?: ListNotificationsParams) => {
+  const { data: meData } = useMe();
+  const isLoggedIn = !!meData?.data;
   return useQuery({
     queryKey: ["notifications", params],
     queryFn: () => notificationService.listMyNotifications(params),
+    enabled: isLoggedIn,
   });
 };
 
@@ -29,8 +33,12 @@ export const useMarkNotificationRead = () => {
 };
 
 export const useAdminNotifications = (params?: ListNotificationsParams) => {
+  const { data: meData } = useMe();
+  const user = meData?.data;
+  const isAdminOrWarehouse = !!user && (user.role === "admin" || user.role === "warehouse");
   return useQuery({
     queryKey: ["admin", "notifications", params],
     queryFn: () => notificationService.adminListNotifications(params),
+    enabled: isAdminOrWarehouse,
   });
 };

@@ -9,6 +9,7 @@ export interface InitiatePaymentResponse {
   upi_id: string;
   upi_link: string;
   status: string;
+  rejection_reason?: string | null;
 }
 
 export interface SubmitProofPayload {

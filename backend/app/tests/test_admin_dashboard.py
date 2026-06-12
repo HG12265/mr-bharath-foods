@@ -202,7 +202,7 @@ async def test_warehouse_dashboard_limited_access(mock_db: MagicMock) -> None:
     # 2. Setup Warehouse role overrides
     mock_warehouse = TokenData(
         user_id="warehouse_123",
-        email="warehouse@mrbharathfoods.in",
+        email="warehouse@bharathdelight.in",
         role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -287,7 +287,7 @@ async def test_admin_dashboard_full_access(mock_db: MagicMock) -> None:
     # 2. Setup Admin role override
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db

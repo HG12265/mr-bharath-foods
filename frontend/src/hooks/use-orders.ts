@@ -19,11 +19,11 @@ export const useOrders = (params?: ListOrdersParams) => {
   });
 };
 
-export const useOrderDetails = (orderId: string) => {
+export const useOrderDetails = (orderId: string, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["order", orderId],
     queryFn: () => orderService.getOrderDetails(orderId),
-    enabled: !!orderId,
+    enabled: options?.enabled !== undefined ? options.enabled && !!orderId : !!orderId,
   });
 };
 
@@ -38,10 +38,11 @@ export const useCancelOrder = () => {
   });
 };
 
-export const useAdminOrders = (params?: ListOrdersParams) => {
+export const useAdminOrders = (params?: ListOrdersParams, options?: { enabled?: boolean }) => {
   return useQuery({
     queryKey: ["admin", "orders", params],
     queryFn: () => orderService.adminListOrders(params),
+    ...options,
   });
 };
 

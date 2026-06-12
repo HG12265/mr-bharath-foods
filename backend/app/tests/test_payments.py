@@ -103,8 +103,8 @@ def create_mock_payment_doc(payment_id: str, status: str = "pending") -> dict[st
         "customer_id": "60c72b2f9b1d8e2a3c4f5e7b",
         "guest_token": None,
         "amount": Decimal("470.00"),
-        "upi_id": "mrbharathfoods@upi",
-        "upi_link": "upi://pay?pa=mrbharathfoods@upi&pn=MR%20BHARATH%20FOODS&am=470.00&cu=INR&tn=MBF-20260606-000042",
+        "upi_id": "bharathdelight@upi",
+        "upi_link": "upi://pay?pa=bharathdelight@upi&pn=BHARATH%20DELIGHT&am=470.00&cu=INR&tn=MBF-20260606-000042",
         "status": status,
         "screenshot_media_id": None,
         "transaction_note": "Order MBF-20260606-000042",
@@ -122,7 +122,7 @@ def create_mock_media_doc(media_id: str, uploaded_by: str = "60c72b2f9b1d8e2a3c4
         "content_type": "image/png",
         "size": 1024 * 1024,  # 1MB
         "storage_key": "payment_proofs/receipt.png",
-        "public_url": "https://r2.mrbharathfoods.in/payment_proofs/receipt.png",
+        "public_url": "https://r2.bharathdelight.in/payment_proofs/receipt.png",
         "uploaded_by": uploaded_by,
         "asset_type": "payment_proof",
         "status": "completed",
@@ -178,7 +178,7 @@ async def test_initiate_payment_unauthorized_fails(mock_db: MagicMock) -> None:
 
     # Different user
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@bharathdelight.in", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -295,7 +295,7 @@ async def test_admin_payment_approval(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update_order)
 
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_admin
@@ -335,7 +335,7 @@ async def test_admin_payment_rejection(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update_order)
 
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_admin
@@ -366,7 +366,7 @@ async def test_warehouse_payment_verification_denied(mock_db: MagicMock) -> None
     mock_db["payments"].find_one = AsyncMock(return_value=payment_doc)
 
     mock_warehouse = TokenData(
-        user_id="warehouse_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="warehouse_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -389,7 +389,7 @@ async def test_admin_and_warehouse_get_payment_by_order(mock_db: MagicMock) -> N
 
     # Test Warehouse Access
     mock_warehouse = TokenData(
-        user_id="warehouse_123", email="warehouse@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="warehouse_123", email="warehouse@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -401,7 +401,7 @@ async def test_admin_and_warehouse_get_payment_by_order(mock_db: MagicMock) -> N
 
     # Test Admin Access
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_current_user] = lambda: mock_admin
 

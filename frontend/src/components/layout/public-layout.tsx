@@ -1,7 +1,11 @@
 import React from "react";
 import Header from "../navigation/header";
 import Footer from "../navigation/footer";
-import CartDrawer from "../features/cart/cart-drawer";
+import dynamic from "next/dynamic";
+
+const CartDrawer = dynamic(() => import("../features/cart/cart-drawer"), {
+  ssr: false,
+});
 
 interface PublicLayoutProps {
   children: React.ReactNode;

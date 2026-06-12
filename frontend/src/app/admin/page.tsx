@@ -4,7 +4,17 @@ import React from "react";
 import Link from "next/link";
 import { useMe } from "@/hooks/use-auth";
 import { useDashboard } from "@/hooks/use-dashboard";
-import { LineChart, BarChart, ProgressDistribution } from "@/components/ui/svg-charts";
+import dynamic from "next/dynamic";
+
+const LineChart = dynamic(() => import("@/components/ui/svg-charts").then((mod) => mod.LineChart), {
+  ssr: false,
+});
+const BarChart = dynamic(() => import("@/components/ui/svg-charts").then((mod) => mod.BarChart), {
+  ssr: false,
+});
+const ProgressDistribution = dynamic(() => import("@/components/ui/svg-charts").then((mod) => mod.ProgressDistribution), {
+  ssr: false,
+});
 import { 
   TrendingUp, 
   ShoppingBag, 

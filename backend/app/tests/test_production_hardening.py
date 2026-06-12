@@ -126,7 +126,7 @@ async def test_startup_checks_and_admin_checklist(mock_db: MagicMock, monkeypatc
     # Mock admin current user
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -140,7 +140,7 @@ async def test_startup_checks_and_admin_checklist(mock_db: MagicMock, monkeypatc
             "tax_percentage": Decimal("5.00"),
             "shipping_fee": Decimal("50.00"),
             "free_shipping_threshold": Decimal("500.00"),
-            "support_contact": "support@mrbharathfoods.in",
+            "support_contact": "support@bharathdelight.in",
             "fssai_number": "12345678901234",
             "gst_number": "33AABCM1234D1Z5",
             "is_deleted": False,

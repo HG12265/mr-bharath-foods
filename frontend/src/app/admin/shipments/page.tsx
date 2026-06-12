@@ -43,9 +43,13 @@ export default function AdminShipmentsPage() {
   const isAdmin = role === "admin";
   const isWarehouse = role === "warehouse";
 
+  // Page States
+  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
+
   // Data fetching
   const { data: shipmentsRes, isPending: isShipmentsPending, refetch, isRefetching } = useAdminShipments();
-  const { data: ordersRes } = useAdminOrders();
+  const { data: ordersRes } = useAdminOrders(undefined, { enabled: isCreateModalOpen });
 
   // Mutations
   const createShipmentMutation = useCreateShipment();
@@ -53,10 +57,6 @@ export default function AdminShipmentsPage() {
   const cancelShipmentMutation = useAdminCancelShipment();
   const deleteShipmentMutation = useAdminDeleteShipment();
   const updateStatusMutation = useAdminUpdateShipmentStatus();
-
-  // Page States
-  const [selectedShipmentId, setSelectedShipmentId] = useState<string | null>(null);
-  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   // Search & Filter States
   const [searchOrderNo, setSearchOrderNo] = useState("");
@@ -100,7 +100,8 @@ export default function AdminShipmentsPage() {
 
   // Dynamic order details fetch inside drawer
   const { data: orderDetailsRes, isPending: isOrderPending } = useOrderDetails(
-    selectedShipment?.order_id || ""
+    selectedShipment?.order_id || "",
+    { enabled: !!selectedShipmentId }
   );
   const orderDetails = orderDetailsRes?.data;
 

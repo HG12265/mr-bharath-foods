@@ -291,7 +291,7 @@ async def test_create_order_forbidden_owner(mock_db: MagicMock) -> None:
     mock_db["checkouts"].find_one = AsyncMock(return_value=checkout_doc)
 
     mock_user = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@bharathdelight.in", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user
@@ -313,7 +313,7 @@ async def test_get_order_by_id_auth(mock_db: MagicMock) -> None:
 
     # Case 1: Unauthorized customer attempts to fetch
     mock_user_unauth = TokenData(
-        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@mrbharathfoods.in", role=UserRole.CUSTOMER
+        user_id="60c72b2f9b1d8e2a3c4f5e99", email="hacker@bharathdelight.in", role=UserRole.CUSTOMER
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_optional_current_user] = lambda: mock_user_unauth
@@ -331,7 +331,7 @@ async def test_get_order_by_id_auth(mock_db: MagicMock) -> None:
 
     # Case 3: Admin fetches
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_optional_current_user] = lambda: mock_admin
     response3 = client.get(f"/api/v1/orders/{order_id}")
@@ -376,7 +376,7 @@ async def test_admin_order_listing(mock_db: MagicMock) -> None:
 
     # Warehouse role has clearance to view admin orders
     mock_warehouse = TokenData(
-        user_id="wh_123", email="wh@mrbharathfoods.in", role=UserRole.WAREHOUSE
+        user_id="wh_123", email="wh@bharathdelight.in", role=UserRole.WAREHOUSE
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_warehouse
@@ -472,7 +472,7 @@ async def test_admin_update_status_transitions(mock_db: MagicMock) -> None:
     mock_db["orders"].find_one_and_update = AsyncMock(side_effect=mock_update)
 
     mock_admin = TokenData(
-        user_id="admin_123", email="admin@mrbharathfoods.in", role=UserRole.ADMIN
+        user_id="admin_123", email="admin@bharathdelight.in", role=UserRole.ADMIN
     )
     app.dependency_overrides[get_db] = lambda: mock_db
     app.dependency_overrides[get_current_user] = lambda: mock_admin

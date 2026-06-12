@@ -37,7 +37,7 @@ def mock_db() -> MagicMock:
 def mock_token_data() -> TokenData:
     return TokenData(
         user_id="507f1f77bcf86cd799439011",
-        email="test@mrbharathfoods.in",
+        email="test@bharathdelight.in",
         role=UserRole.CUSTOMER
     )
 
@@ -46,7 +46,7 @@ def mock_token_data() -> TokenData:
 def mock_admin_token_data() -> TokenData:
     return TokenData(
         user_id="admin_user_id_12345",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
 

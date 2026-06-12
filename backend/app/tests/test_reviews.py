@@ -493,7 +493,7 @@ async def test_edit_review_unauthorized_customer(mock_db: MagicMock) -> None:
     # Different customer logged in
     mock_other_customer = TokenData(
         user_id="customer_999",
-        email="other@mrbharathfoods.in",
+        email="other@bharathdelight.in",
         role=UserRole.CUSTOMER
     )
 
@@ -578,7 +578,7 @@ async def test_admin_list_reviews(mock_db: MagicMock) -> None:
 
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
 
@@ -621,7 +621,7 @@ async def test_admin_approve_review_success(mock_db: MagicMock) -> None:
 
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
 
@@ -674,7 +674,7 @@ async def test_admin_reject_review_success(mock_db: MagicMock) -> None:
 
     mock_admin = TokenData(
         user_id="admin_123",
-        email="admin@mrbharathfoods.in",
+        email="admin@bharathdelight.in",
         role=UserRole.ADMIN
     )
 

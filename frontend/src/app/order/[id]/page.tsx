@@ -7,7 +7,6 @@ import { useParams } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useOrderDetails } from "@/hooks/use-orders";
 import { useInitiateUpiPayment, useSubmitUpiProof } from "@/hooks/use-payments";
-import { useNotifications } from "@/hooks/use-notifications";
 import mediaService from "@/services/media-service";
 import orderService from "@/services/order-service";
 import { formatINR } from "@/lib/utils";
@@ -32,7 +31,6 @@ export default function OrderDetailsPage() {
   const orderId = params?.id as string;
 
   const { data: orderData, isPending: isOrderPending, isError: isOrderError, refetch: refetchOrder } = useOrderDetails(orderId);
-  const { data: notificationsData } = useNotifications();
   
   const order = orderData?.data;
   
@@ -81,11 +79,8 @@ export default function OrderDetailsPage() {
 
   const hasAttemptedRef = useRef(false);
 
-  // Rejection notification lookup
-  const rejectionNotification = notificationsData?.data?.find(
-    (n) => n.type === "payment_rejected" && n.metadata?.order_id === orderId
-  );
-  const rejectionReason = rejectionNotification?.message?.split("Reason: ")?.[1] || null;
+  // Rejection reason lookup
+  const rejectionReason = paymentInfo?.rejection_reason || null;
 
   // Guard payment initiation: run only once when order is pending_payment and payment info is not loaded
   useEffect(() => {

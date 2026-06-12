@@ -4,7 +4,11 @@ import React, { useState } from "react";
 import Link from "next/link";
 import AccountShell from "@/components/features/account/account-shell";
 import OrderStatusBadge from "@/components/features/account/order-status-badge";
-import ShipmentTimeline from "@/components/features/account/shipment-timeline";
+import dynamic from "next/dynamic";
+
+const ShipmentTimeline = dynamic(() => import("@/components/features/account/shipment-timeline"), {
+  ssr: false,
+});
 import { useOrders, useCancelOrder } from "@/hooks/use-orders";
 import { useShipmentByOrder } from "@/hooks/use-shipments";
 import { formatINR } from "@/lib/utils";

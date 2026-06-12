@@ -62,7 +62,7 @@ def test_register_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
     payload = {
         "first_name": "Gowtham",
         "last_name": "Kumar",
-        "email": "test@mrbharathfoods.in",
+        "email": "test@bharathdelight.in",
         "phone_number": "+919876543210",
         "password": "SecurePassword123!"
     }
@@ -73,7 +73,7 @@ def test_register_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
     assert response.status_code == 201
     json_data = response.json()
     assert json_data["success"] is True
-    assert json_data["data"]["email"] == "test@mrbharathfoods.in"
+    assert json_data["data"]["email"] == "test@bharathdelight.in"
     assert json_data["data"]["phone"] == "+919876543210"
 
 def test_login_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
@@ -81,7 +81,7 @@ def test_login_flow(mock_db: MagicMock, mock_redis: AsyncMock) -> None:
     customer_doc = {
         "_id": "507f1f77bcf86cd799439011",
         "auth": {
-            "email": "test@mrbharathfoods.in",
+            "email": "test@bharathdelight.in",
             "phone": "+919876543210",
             "password_hash": hashed_pwd,
             "status": "active",

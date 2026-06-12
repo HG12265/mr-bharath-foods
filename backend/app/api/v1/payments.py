@@ -78,6 +78,7 @@ async def initiate_upi_payment(
             upi_id=res["upi_id"],
             upi_link=res["upi_link"],
             status=res["status"],
+            rejection_reason=res.get("rejection_reason"),
         ),
     )
 

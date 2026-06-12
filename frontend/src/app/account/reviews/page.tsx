@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import Image from "next/image";
 import AccountShell from "@/components/features/account/account-shell";
 import { useOrders } from "@/hooks/use-orders";
 import { 
@@ -111,10 +112,12 @@ export default function ReviewsPage() {
                     className="border border-burnishedGold/10 rounded-lg bg-white p-4 flex gap-4 items-center shadow-xs hover:border-burnishedGold/25 transition-all duration-200"
                   >
                     <div className="relative w-14 h-14 rounded border border-burnishedGold/10 overflow-hidden bg-richCream/10 shrink-0">
-                      <img
+                      <Image
                         src={imageSrc}
                         alt={item.product_name}
-                        className="object-cover w-full h-full"
+                        fill
+                        sizes="56px"
+                        className="object-cover"
                       />
                     </div>
 

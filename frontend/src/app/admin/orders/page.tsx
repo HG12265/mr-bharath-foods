@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
 import { useMe } from "@/hooks/use-auth";
 import { useAdminOrders, useAdminUpdateOrderStatus } from "@/hooks/use-orders";
 import { useAdminPaymentByOrder, useAdminVerifyPayment } from "@/hooks/use-payments";
@@ -764,7 +765,7 @@ export default function AdminOrdersPage() {
                         ) : mediaRes.data?.data?.public_url ? (
                           <div className="border border-indianInk/10 rounded overflow-hidden max-w-sm">
                             <img
-                              src={mediaRes.data.data.public_url}
+                              src={optimizeCloudinaryUrl(mediaRes.data.data.public_url, 600)}
                               alt="Payment Screenshot Receipt Proof"
                               className="w-full h-auto object-contain max-h-[200px] hover:scale-[1.02] transition"
                             />

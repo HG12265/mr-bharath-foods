@@ -8,7 +8,7 @@ import PublicLayout from "@/components/layout/public-layout";
 import { useProducts } from "@/hooks/use-products";
 import { useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
-import { formatINR } from "@/lib/utils";
+import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
 import { 
   ShieldCheck, 
   ArrowRight, 
@@ -212,7 +212,7 @@ export default function HomePage() {
                     {/* Product Image Container */}
                     <div className="w-full h-[260px] md:h-[300px] border-b border-burnishedGold/15 relative overflow-hidden select-none bg-gradient-to-br from-gheeGold/5 to-richCream/10">
                       <Image
-                        src={imageSrc}
+                        src={optimizeCloudinaryUrl(imageSrc, 600)}
                         alt={product.name}
                         fill
                         className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"

@@ -42,7 +42,7 @@ def mock_redis() -> AsyncMock:
 def mock_token_data() -> TokenData:
     return TokenData(
         user_id="507f1f77bcf86cd799439011",
-        email="test@mrbharathfoods.in",
+        email="test@bharathdelight.in",
         role=UserRole.CUSTOMER
     )
 
@@ -50,7 +50,7 @@ def test_get_customer_profile(mock_db: MagicMock, mock_token_data: TokenData) ->
     customer_doc = {
         "_id": "507f1f77bcf86cd799439011",
         "auth": {
-            "email": "test@mrbharathfoods.in",
+            "email": "test@bharathdelight.in",
             "phone": "+919876543210",
             "status": "active",
             "role": "customer"
@@ -82,7 +82,7 @@ def test_add_customer_address(mock_db: MagicMock, mock_token_data: TokenData) ->
     customer_doc = {
         "_id": "507f1f77bcf86cd799439011",
         "auth": {
-            "email": "test@mrbharathfoods.in",
+            "email": "test@bharathdelight.in",
             "phone": "+919876543210",
             "status": "active",
             "role": "customer"
@@ -145,7 +145,7 @@ def test_update_profile_and_address_clear_nullable(mock_db: MagicMock, mock_toke
     customer_doc = {
         "_id": "507f1f77bcf86cd799439011",
         "auth": {
-            "email": "test@mrbharathfoods.in",
+            "email": "test@bharathdelight.in",
             "phone": "+919876543210",
             "status": "active",
             "role": "customer"
