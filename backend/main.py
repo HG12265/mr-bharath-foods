@@ -116,7 +116,7 @@ def create_app() -> FastAPI:
     # Core Versioned API routing
     app.include_router(
         health_router,
-        prefix=f"{settings.API_V1_STR}/health",
+        prefix=settings.API_V1_STR,
         tags=["Health Monitoring Checks"]
     )
     app.include_router(

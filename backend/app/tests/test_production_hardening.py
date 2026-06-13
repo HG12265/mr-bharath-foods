@@ -86,6 +86,14 @@ async def test_readiness_probe_healthy(monkeypatch: pytest.MonkeyPatch) -> None:
     assert res_data["data"]["database"] == "healthy"
     assert res_data["data"]["redis"] == "healthy"
 
+    # Check new path
+    response_new = client.get("/api/v1/readiness")
+    assert response_new.status_code == 200
+    res_data_new = response_new.json()
+    assert res_data_new["success"] is True
+    assert res_data_new["data"]["database"] == "healthy"
+    assert res_data_new["data"]["redis"] == "healthy"
+
 
 @pytest.mark.anyio
 async def test_readiness_probe_unhealthy(monkeypatch: pytest.MonkeyPatch) -> None:
@@ -108,6 +116,14 @@ async def test_readiness_probe_unhealthy(monkeypatch: pytest.MonkeyPatch) -> Non
     assert res_data["success"] is False
     assert res_data["data"]["database"] == "unhealthy"
     assert res_data["data"]["redis"] == "healthy"
+
+    # Check new path
+    response_new = client.get("/api/v1/readiness")
+    assert response_new.status_code == 503
+    res_data_new = response_new.json()
+    assert res_data_new["success"] is False
+    assert res_data_new["data"]["database"] == "unhealthy"
+    assert res_data_new["data"]["redis"] == "healthy"
 
 
 # --- 3. Security Config Verification & Admin Production Checklist Tests ---

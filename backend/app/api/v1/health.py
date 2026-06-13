@@ -10,7 +10,7 @@ from app.schemas.health import ComponentStatus, SystemHealthResponse
 
 router = APIRouter()
 
-@router.get("", response_model=Envelope[SystemHealthResponse])
+@router.get("/health", response_model=Envelope[SystemHealthResponse])
 async def check_system_health() -> Envelope[SystemHealthResponse]:
     """
     Pings MongoDB Atlas and Redis connections to verify overall backend status.
@@ -57,6 +57,7 @@ async def check_system_health() -> Envelope[SystemHealthResponse]:
 
 
 @router.get("/readiness", response_model=Envelope[dict[str, Any]])
+@router.get("/health/readiness", response_model=Envelope[dict[str, Any]], include_in_schema=False)
 async def check_system_readiness() -> Any:
     """
     Readiness probe verifying MongoDB and Redis connections.
