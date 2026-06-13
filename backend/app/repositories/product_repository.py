@@ -41,11 +41,12 @@ class ProductRepository(BaseRepository[Product]):
     async def get_active_products(
         self,
         category_id: str | None = None,
+        is_featured: bool | None = None,
         skip: int = 0,
         limit: int = 100
     ) -> list[Product]:
         """
-        Retrieves active, non-deleted products, optionally filtered by category.
+        Retrieves active, non-deleted products, optionally filtered by category and featured status.
         """
         query: dict[str, Any] = {
             "status": "active",
@@ -53,6 +54,8 @@ class ProductRepository(BaseRepository[Product]):
         }
         if category_id:
             query["category_id"] = category_id
+        if is_featured is not None:
+            query["is_featured"] = is_featured
 
         from app.core.pagination import cap_pagination_limit
         capped_limit = cap_pagination_limit(limit)

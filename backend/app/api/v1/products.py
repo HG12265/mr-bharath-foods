@@ -96,15 +96,17 @@ def map_product_response(prod: Product) -> ProductResponse:
 @router.get("", response_model=Envelope[list[ProductResponse]])
 async def list_products(
     category_id: str | None = None,
+    is_featured: bool | None = None,
     skip: int = 0,
     limit: int = 100,
     service: ProductService = Depends(get_product_service)
 ) -> Envelope[list[ProductResponse]]:
     """
-    Retrieves a list of active, non-deleted products. Supports category filter and pagination.
+    Retrieves a list of active, non-deleted products. Supports category and featured filtering and pagination.
     """
     products = await service.list_public_products(
         category_id=category_id,
+        is_featured=is_featured,
         skip=skip,
         limit=limit
     )

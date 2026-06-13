@@ -2,8 +2,8 @@ import re
 
 from app.core.exceptions import BaseAppException
 
-# SKU must be alphanumeric, uppercase, 3-30 characters, and can include hyphens or underscores
-SKU_REGEX = re.compile(r"^[A-Z0-9_-]{3,30}$")
+# SKU must be alphanumeric, uppercase, 3-50 characters, and can include hyphens or underscores
+SKU_REGEX = re.compile(r"^[A-Z0-9_-]{3,50}$")
 
 
 def validate_sku(sku: str) -> str:
@@ -16,7 +16,7 @@ def validate_sku(sku: str) -> str:
         raise BaseAppException(
             message=(
                 f"Invalid SKU format: '{sku}'. "
-                "SKU must contain 3-30 alphanumeric characters, hyphens, or underscores."
+                "SKU must contain 3-50 alphanumeric characters, hyphens, or underscores."
             ),
             code="INVALID_SKU_FORMAT",
             status_code=400

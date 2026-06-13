@@ -51,6 +51,7 @@ class ProductService(BaseService[Product]):
     async def list_public_products(
         self,
         category_id: str | None = None,
+        is_featured: bool | None = None,
         skip: int = 0,
         limit: int = 100
     ) -> list[Product]:
@@ -59,6 +60,7 @@ class ProductService(BaseService[Product]):
         """
         return await self.product_repository.get_active_products(
             category_id=category_id,
+            is_featured=is_featured,
             skip=skip,
             limit=limit
         )

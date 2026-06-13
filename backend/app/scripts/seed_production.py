@@ -35,7 +35,7 @@ async def seed_production() -> None:
     print("Seeding default administrator...")
     customer_repo = CustomerRepository(db)
     admin_email = os.getenv("ADMIN_EMAIL", "admin@bharathdelightfoods.in")
-    admin_phone = os.getenv("ADMIN_PHONE", "9092748525")    
+    admin_phone = os.getenv("ADMIN_PHONE", "9092748525")
     admin_password = os.getenv("ADMIN_PASSWORD", "ChangeMe123!")
 
     existing_admin = await customer_repo.get_by_email_or_phone(admin_email)

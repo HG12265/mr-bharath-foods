@@ -22,3 +22,22 @@ __pycache__/
 .env
 .env.*.local
 .DS_Store
+
+# Cache and generated files
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.turbo/
+.vercel/
+htmlcov/
+.coverage
+tsconfig.tsbuildinfo
+
+# Temporary / backup files
+*.log
+*.tmp
+*.temp
+*.bak
+*.old
+*.orig
+Thumbs.db

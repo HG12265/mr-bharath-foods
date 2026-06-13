@@ -3,42 +3,34 @@
 import React, { use, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { useRouter, notFound } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProductBySlug } from "@/hooks/use-products";
 import { useAddToCart } from "@/hooks/use-cart";
 import { useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
+import { useMediaAsset } from "@/hooks/use-media";
 import { formatINR } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ShieldCheck, Check, ArrowLeft, Plus, Minus, Loader2, Heart } from "lucide-react";
 
-// Fallback details for static display
-const STATIC_PRODUCTS: Record<string, any> = {
-  rasipuram: {
-    id: "mock-rasipuram",
-    name: "Rasipuram Pure Ghee",
-    slug: "rasipuram-ghee",
-    description: "Prepared through traditional slow-simmering methods. Celebrated for its deep aroma, nuttiness, and rich golden color.",
-    volume: "250ml",
-    price: 390.00,
-    region: "Rasipuram, Tamil Nadu",
-    texture: "Golden & Deeply Simmered"
-  },
-  uthukuli: {
-    id: "mock-uthukuli",
-    name: "Uthukuli A2 Cow Ghee",
-    slug: "uthukuli-ghee",
-    description: "Traditionally churned from milk of historical grass-fed herds. Notable for its delicate, natural white-to-yellow granules.",
-    volume: "250ml",
-    price: 420.00,
-    region: "Uthukuli, Tamil Nadu",
-    texture: "Naturally Granular & Fragrant"
-  }
-};
-
 interface PageProps {
   params: Promise<{ slug: string }>;
+}
+
+function ProductDetailImage({ mediaId, alt, fallbackSrc }: { mediaId?: string; alt: string; fallbackSrc: string }) {
+  const { data: mediaRes } = useMediaAsset(mediaId || "", { enabled: !!mediaId });
+  const url = mediaRes?.data?.public_url || fallbackSrc;
+  
+  return (
+    <Image
+      src={url}
+      alt={alt}
+      fill
+      priority
+      className="object-cover object-center select-none pointer-events-none"
+    />
+  );
 }
 
 export default function ProductDetailPage({ params }: PageProps) {
@@ -62,27 +54,57 @@ export default function ProductDetailPage({ params }: PageProps) {
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
 
-  // Slug matching to see if we fall back to Rasipuram or Uthukuli
-  const isRasipuram = slug.toLowerCase().includes("rasipuram");
-  const fallbackProduct = isRasipuram ? STATIC_PRODUCTS.rasipuram : STATIC_PRODUCTS.uthukuli;
+  // Handle Next.js loading state
+  if (isPending) {
+    return (
+      <PublicLayout>
+        <div className="min-h-screen bg-richCream flex flex-col justify-center items-center font-sans py-16">
+          <div className="flex flex-col items-center gap-4">
+            <Loader2 className="w-10 h-10 text-burnishedGold animate-spin" />
+            <p className="text-indianInk/60 text-xs tracking-wider uppercase font-semibold">
+              Loading Product Details...
+            </p>
+          </div>
+        </div>
+      </PublicLayout>
+    );
+  }
 
-  // Final display product
-  const product = dbProduct || fallbackProduct;
-  const isDbAvailable = !!dbProduct;
+  // Trigger 404 if product is not found in database
+  if (!dbProduct) {
+    notFound();
+  }
 
-  const variants = isDbAvailable ? (product.variants || []) : [];
+  // Safe fallback to avoid typescript compile-time property lookup warnings during build
+  const product = dbProduct || {
+    id: "",
+    name: "",
+    slug: "",
+    description: "",
+    variants: [],
+    price: 0,
+    volume: "",
+    region: "",
+    texture: "",
+    media_ids: [],
+    sourcing: { region: "", story: "" }
+  };
+  const isDbAvailable = true;
+
+  const variants = product.variants || [];
   const selectedVariant = variants[selectedVariantIndex] || null;
 
-  const priceValue = isDbAvailable ? (selectedVariant?.price || 0) : product.price;
-  const volumeText = isDbAvailable ? (selectedVariant?.volume_weight || "250ml") : product.volume;
-  const regionName = isDbAvailable ? (product.sourcing?.region || "Tamil Nadu") : product.region;
-  const descriptionText = isDbAvailable ? product.description : product.description;
+  const priceValue = selectedVariant?.price || 0;
+  const volumeText = selectedVariant?.volume_weight || "250ml";
+  const regionName = product.sourcing?.region || "Tamil Nadu";
+  const descriptionText = product.description;
 
+  const isRasipuram = slug.toLowerCase().includes("rasipuram");
   const imageSrc = isRasipuram ? "/images/rasipuram-ghee.jpg" : "/images/uthukuli-ghee.jpg";
 
   // Check if we can interact with real DB cart additions
-  const productId = isDbAvailable ? product.id : null;
-  const variantId = isDbAvailable ? (selectedVariant?.variant_id || null) : null;
+  const productId = product.id;
+  const variantId = selectedVariant?.variant_id || null;
   const isCartDisabled = !productId || !variantId;
 
   const isWishlisted = variantId ? wishlistItems.some((item: any) => item.variant_id === variantId) : false;
@@ -217,12 +239,10 @@ export default function ProductDetailPage({ params }: PageProps) {
             {/* Left Column: Product Image */}
             <div className="lg:col-span-6 animate-fade-up">
               <div className="bg-white border border-burnishedGold/20 rounded-lg overflow-hidden shadow-[0_8px_30px_rgba(25,25,25,0.04)] aspect-square relative select-none">
-                <Image
-                  src={imageSrc}
+                <ProductDetailImage
+                  mediaId={product.media_ids?.[0]}
                   alt={product.name}
-                  fill
-                  priority
-                  className="object-cover object-center select-none pointer-events-none"
+                  fallbackSrc={imageSrc}
                 />
               </div>
             </div>

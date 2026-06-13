@@ -20,15 +20,28 @@ import {
   Loader2,
   Heart
 } from "lucide-react";
+import { useMediaAsset } from "@/hooks/use-media";
 
-
+function HomeProductImage({ mediaId, alt, fallbackSrc }: { mediaId?: string; alt: string; fallbackSrc: string }) {
+  const { data: mediaRes } = useMediaAsset(mediaId || "", { enabled: !!mediaId });
+  const url = mediaRes?.data?.public_url || fallbackSrc;
+  
+  return (
+    <Image
+      src={optimizeCloudinaryUrl(url, 600)}
+      alt={alt}
+      fill
+      className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
+    />
+  );
+}
 
 export default function HomePage() {
-  const { data: productsData, isPending: isLoadingProducts } = useProducts({ limit: 4 });
+  const { data: productsData, isPending: isLoadingProducts } = useProducts({ is_featured: true, limit: 4 });
   const dbProducts = productsData?.data || [];
 
-  // Display only two ghee selections — only real data, no mock fallback
-  const displayProducts = dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2);
+  // Display only active featured products from the database
+  const displayProducts = dbProducts.filter((product: any) => product.is_featured === true);
 
   const { data: meData } = useMe();
   const user = meData?.data;
@@ -129,7 +142,7 @@ export default function HomePage() {
                 </Link>
 
                 <Link
-                  href="/trust"
+                  href="/about"
                   className="px-8 py-4 border border-[rgba(255,255,255,0.45)] bg-[rgba(255,255,255,0.16)] text-white hover:border-[#D9A441] hover:text-[#D9A441] hover:bg-[rgba(255,255,255,0.25)] rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
                 >
                   LEARN OUR SELECTION PROCESS
@@ -137,6 +150,88 @@ export default function HomePage() {
               </div>
 
             </div>
+          </div>
+        </section>
+
+        {/* BRAND STORY & OUR PROMISE SECTION */}
+        <section className="py-20 bg-richCream border-b border-burnishedGold/15">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 space-y-16">
+            
+            {/* Brand Story */}
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-start animate-fade-up">
+              <div className="lg:col-span-5 space-y-3">
+                <span className="text-[10px] uppercase tracking-[0.25em] text-burnishedGold font-bold font-sans">
+                  Our Journey
+                </span>
+                <h2 className="font-serif text-3xl sm:text-4xl font-bold text-deodharForest">
+                  Welcome to Bharath Delight Foods
+                </h2>
+                <div className="w-12 h-0.5 bg-gheeGold" />
+              </div>
+              <div className="lg:col-span-7 space-y-4 font-sans text-sm sm:text-base text-indianInk/75 leading-relaxed">
+                <p>
+                  Bharath Delight Foods was founded with a simple belief: every family deserves access to food products they can trust.
+                </p>
+                <p>
+                  In a market filled with countless choices, we focus on selecting products with care, consistency, and responsibility. Our aim is not to offer everything — our aim is to offer the right products.
+                </p>
+              </div>
+            </div>
+
+            {/* Our Promise Divider */}
+            <div className="w-full h-px bg-burnishedGold/15 pt-4" />
+
+            {/* Our Promise Cards */}
+            <div className="space-y-10 animate-fade-up" style={{ animationDelay: "100ms" }}>
+              <div className="text-center">
+                <h3 className="font-serif text-2xl sm:text-3xl font-bold text-deodharForest">
+                  Our Promise
+                </h3>
+                <div className="w-8 h-0.5 bg-gheeGold mx-auto mt-3" />
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 sm:gap-8 max-w-5xl mx-auto">
+                {/* Promise Card 1 */}
+                <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 group">
+                  <div className="w-10 h-10 bg-deodharForest/5 border border-burnishedGold/15 rounded-full flex items-center justify-center text-deodharForest group-hover:bg-deodharForest group-hover:text-richCream transition-all duration-300">
+                    <Check className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-serif text-lg font-bold text-deodharForest">Carefully Selected</h4>
+                    <p className="font-sans text-xs sm:text-sm text-indianInk/70 leading-relaxed">
+                      We choose products that align with our expectations for taste, quality, and everyday family use.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Promise Card 2 */}
+                <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 group">
+                  <div className="w-10 h-10 bg-deodharForest/5 border border-burnishedGold/15 rounded-full flex items-center justify-center text-deodharForest group-hover:bg-deodharForest group-hover:text-richCream transition-all duration-300">
+                    <Compass className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-serif text-lg font-bold text-deodharForest">Responsible Presentation</h4>
+                    <p className="font-sans text-xs sm:text-sm text-indianInk/70 leading-relaxed">
+                      Every product is presented with clear details so customers can make confident purchase decisions.
+                    </p>
+                  </div>
+                </div>
+
+                {/* Promise Card 3 */}
+                <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 shadow-sm hover:shadow-md hover:-translate-y-1 transition-all duration-300 flex flex-col gap-4 group">
+                  <div className="w-10 h-10 bg-deodharForest/5 border border-burnishedGold/15 rounded-full flex items-center justify-center text-deodharForest group-hover:bg-deodharForest group-hover:text-richCream transition-all duration-300">
+                    <ShieldCheck className="w-5 h-5" />
+                  </div>
+                  <div className="space-y-2">
+                    <h4 className="font-serif text-lg font-bold text-deodharForest">Built on Trust</h4>
+                    <p className="font-sans text-xs sm:text-sm text-[#0F3D2E]/70 leading-relaxed">
+                      From product selection to delivery, our process is designed to protect customer confidence.
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
           </div>
         </section>
 
@@ -155,7 +250,7 @@ export default function HomePage() {
                 Featured Products
               </h2>
               <p className="font-sans text-xs text-indianInk/70 mt-2">
-                Our first carefully selected ghee products.
+                Our carefully selected food products.
               </p>
               <div className="w-12 h-0.5 bg-burnishedGold mx-auto mt-4" />
             </div>
@@ -211,11 +306,10 @@ export default function HomePage() {
                     
                     {/* Product Image Container */}
                     <div className="w-full h-[260px] md:h-[300px] border-b border-burnishedGold/15 relative overflow-hidden select-none bg-gradient-to-br from-gheeGold/5 to-richCream/10">
-                      <Image
-                        src={optimizeCloudinaryUrl(imageSrc, 600)}
+                      <HomeProductImage
+                        mediaId={product.media_ids?.[0]}
                         alt={product.name}
-                        fill
-                        className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
+                        fallbackSrc={imageSrc}
                       />
 
                       {/* Wishlist Heart Toggle Icon */}
@@ -292,6 +386,27 @@ export default function HomePage() {
               </div>
             )}
 
+          </div>
+        </section>
+
+        {/* BOTTOM CTA SECTION */}
+        <section className="py-20 border-b border-burnishedGold/15 bg-richCream">
+          <div className="mx-auto max-w-4xl px-4 sm:px-6 lg:px-8 text-center space-y-6">
+            <h2 className="font-serif text-3xl sm:text-4xl font-bold text-deodharForest leading-tight">
+              Food products selected with care.
+            </h2>
+            <p className="font-sans text-sm sm:text-base text-indianInk/70 leading-relaxed max-w-2xl mx-auto">
+              Explore our carefully selected range and choose products made for everyday family trust.
+            </p>
+            <div className="pt-4">
+              <Link
+                href="/shop"
+                className="relative overflow-hidden group inline-flex px-8 py-4 bg-deodharForest text-warmIvory border border-gheeGold/40 hover:border-gheeGold rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 hover:shadow-[0_4px_20px_rgba(217,164,65,0.25)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+              >
+                <span className="relative z-10">Shop Products</span>
+                <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
+              </Link>
+            </div>
           </div>
         </section>
 

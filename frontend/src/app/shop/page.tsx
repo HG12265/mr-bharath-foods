@@ -10,13 +10,29 @@ import { useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
 import { Heart } from "lucide-react";
+import { useMediaAsset } from "@/hooks/use-media";
+
+function ShopProductImage({ mediaId, alt, fallbackSrc, index }: { mediaId?: string; alt: string; fallbackSrc: string; index: number }) {
+  const { data: mediaRes } = useMediaAsset(mediaId || "", { enabled: !!mediaId });
+  const url = mediaRes?.data?.public_url || fallbackSrc;
+  
+  return (
+    <Image
+      src={optimizeCloudinaryUrl(url, 600)}
+      alt={alt}
+      fill
+      priority={index === 0}
+      className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
+    />
+  );
+}
 
 export default function ShopPage() {
   const { data: productsData, isPending: isLoadingProducts } = useProducts({ limit: 10 });
   const dbProducts = productsData?.data || [];
 
-  // Only show real ghee products — no mock fallback
-  const displayProducts = dbProducts.filter(p => p.slug.includes("ghee")).slice(0, 2);
+  // Show all active products from the database
+  const displayProducts = dbProducts;
 
   const { data: meData } = useMe();
   const user = meData?.data;
@@ -43,10 +59,10 @@ export default function ShopPage() {
               Pure Regional Selections
             </span>
             <h1 className="font-serif text-4xl sm:text-5xl font-bold text-deodharForest mt-2">
-              Shop Ghee
+              Our Product Catalog
             </h1>
             <p className="font-sans text-sm text-indianInk/70 mt-3 max-w-md mx-auto leading-relaxed">
-              Carefully selected ghee products from trusted regional sources.
+              Carefully selected food products from trusted regional sources.
             </p>
             <div className="w-16 h-0.5 bg-burnishedGold mx-auto mt-5" />
           </div>
@@ -102,12 +118,11 @@ export default function ShopPage() {
                     
                     {/* Product Image Container */}
                     <div className="w-full h-[260px] md:h-[300px] border-b border-burnishedGold/15 relative overflow-hidden select-none bg-gradient-to-br from-gheeGold/5 to-richCream/10">
-                      <Image
-                        src={optimizeCloudinaryUrl(imageSrc, 600)}
+                      <ShopProductImage
+                        mediaId={product.media_ids?.[0]}
                         alt={product.name}
-                        fill
-                        priority={index === 0}
-                        className="object-cover object-center transition-transform duration-500 ease-out group-hover:scale-[1.04] select-none pointer-events-none"
+                        fallbackSrc={imageSrc}
+                        index={index}
                       />
 
                       {/* Wishlist Heart Toggle Icon */}

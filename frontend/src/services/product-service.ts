@@ -3,6 +3,7 @@ import { Envelope, Product } from "../types";
 
 export interface ListProductsParams {
   category_id?: string;
+  is_featured?: boolean;
   skip?: number;
   limit?: number;
 }

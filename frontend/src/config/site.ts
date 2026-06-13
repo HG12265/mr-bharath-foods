@@ -28,15 +28,14 @@ export const siteConfig = {
     main: [
       { title: "Home", href: "/" },
       { title: "Shop", href: "/shop" },
-      { title: "About", href: "/about" },
+      { title: "Trust", href: "/about" },
       { title: "Contact", href: "/contact" },
     ],
     footer: [
       {
         title: "Products",
         items: [
-          { title: "Uthukuli A2 Ghee", href: "/products/uthukuli-ghee" },
-          { title: "Rasipuram Pure Ghee", href: "/products/rasipuram-ghee" },
+          { title: "Product Catalog", href: "/shop" },
           { title: "Cold Pressed Oils (Coming Soon)", href: "#" },
           { title: "Wild Honey (Coming Soon)", href: "#" },
         ],

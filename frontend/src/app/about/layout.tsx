@@ -2,34 +2,33 @@ import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
-  title: "About Us — Our Story | Bharath Delight Foods",
+  title: "Trust Process | Bharath Delight Foods",
   description:
-    "Learn the story behind Bharath Delight Foods — a brand built on trust, purity, and traditional Indian food sourcing. FSSAI licensed. Lab-verified products.",
+    "Learn how Bharath Delight Foods selects, handles, packs, and ships food products with care and responsibility.",
   keywords: [
-    "about bharath delight foods",
-    "premium ghee brand india",
-    "traditional indian food brand",
-    "pure ghee sourcing",
-    "fssai licensed food brand",
-    "lab verified food india",
+    "Bharath Delight Foods",
+    "trust process",
+    "food product quality",
+    "safe packing",
+    "responsible food brand"
   ],
   alternates: {
     canonical: `${siteConfig.url}/about`,
   },
   openGraph: {
-    title: "About Bharath Delight Foods — Selecting the Best to Serve the Best",
+    title: "Trust Process | Bharath Delight Foods",
     description:
-      "A brand dedicated to curating and delivering pure, traditional Indian kitchen staples with full batch-level transparency.",
+      "Learn how Bharath Delight Foods selects, handles, packs, and ships food products with care and responsibility.",
     url: `${siteConfig.url}/about`,
     siteName: siteConfig.name,
-    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: "About Bharath Delight Foods" }],
+    images: [{ url: siteConfig.ogImage, width: 1200, height: 630, alt: "Trust Process | Bharath Delight Foods" }],
     locale: "en_IN",
     type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: "About Bharath Delight Foods",
-    description: "Pure, traditional Indian food. Batch-verified. Trace-sealed.",
+    title: "Trust Process | Bharath Delight Foods",
+    description: "Learn how Bharath Delight Foods selects, handles, packs, and ships food products with care and responsibility.",
     images: [siteConfig.ogImage],
     creator: siteConfig.twitterHandle,
   },

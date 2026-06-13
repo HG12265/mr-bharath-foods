@@ -5,16 +5,16 @@ Run from the backend directory:
     py -3 app/scripts/test_brevo_email.py
 """
 
+import json
 import os
 import sys
-import json
+import urllib.request
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))))
 
 from dotenv import load_dotenv
-load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env"))
 
-import urllib.request
+load_dotenv(os.path.join(os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__)))), ".env"))
 
 BREVO_API_KEY = os.environ.get("BREVO_API_KEY", "")
 SENDER_EMAIL = os.environ.get("BREVO_SENDER_EMAIL", "")
@@ -29,7 +29,7 @@ if not SENDER_EMAIL:
     print("ERROR: BREVO_SENDER_EMAIL not found in .env")
     sys.exit(1)
 
-print(f"Testing Brevo email...")
+print("Testing Brevo email...")
 print(f"  API Key  : {BREVO_API_KEY[:20]}...")
 print(f"  From     : {SENDER_NAME} <{SENDER_EMAIL}>")
 print(f"  To       : {ADMIN_EMAIL}")
@@ -74,7 +74,7 @@ try:
     with urllib.request.urlopen(req, timeout=15) as resp:
         body = resp.read().decode("utf-8")
         result = json.loads(body)
-        print(f"\nSUCCESS! Email sent successfully.")
+        print("\nSUCCESS! Email sent successfully.")
         print(f"  Message ID : {result.get('messageId', 'N/A')}")
         print(f"\nCheck inbox: {ADMIN_EMAIL}")
 except urllib.error.HTTPError as e:

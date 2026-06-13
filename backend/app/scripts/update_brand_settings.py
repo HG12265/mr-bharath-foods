@@ -15,7 +15,6 @@ from motor.motor_asyncio import AsyncIOMotorClient
 
 from app.core.config import settings
 
-
 BRAND_UPDATE_FIELDS = {
     "brand_name": "Bharath Delight Foods",
     "payment_display_name": "Bharath Delight Foods",
@@ -48,7 +47,7 @@ async def run() -> None:
         print(f"[update_brand_settings] ✅ AppSettings document (id={doc_id}) "
               "updated to Bharath Delight Foods brand successfully.")
     else:
-        print(f"[update_brand_settings] ℹ️  AppSettings document (id={doc_id}) "
+        print(f"[update_brand_settings] [INFO] AppSettings document (id={doc_id}) "
               "was already up to date — no changes needed.")
 
     client.close()
