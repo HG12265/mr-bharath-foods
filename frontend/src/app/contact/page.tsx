@@ -5,6 +5,7 @@ import Link from "next/link";
 import PublicLayout from "@/components/layout/public-layout";
 import { usePublicSettings } from "@/hooks/use-settings";
 import { siteConfig } from "@/config/site";
+import contactService from "@/services/contact-service";
 import { 
   Mail, 
   Phone, 
@@ -20,14 +21,10 @@ export default function ContactPage() {
   const { data: settingsData } = usePublicSettings();
   const settings = settingsData?.data;
 
-  // Extract support details dynamically with fallbacks
-  const supportEmail = settings?.support_contact && settings.support_contact.includes("@") 
-    ? settings.support_contact 
-    : siteConfig.links.supportEmail;
-
-  const supportPhone = settings?.support_contact && !settings.support_contact.includes("@") 
-    ? settings.support_contact 
-    : "+91 99999 88888";
+  // Extract support details dynamically from correct fields with fallbacks
+  const supportEmail = settings?.public_support_email || siteConfig.links.supportEmail;
+  const supportPhone = settings?.public_support_phone || "+91 90927 48525";
+  const workingHours = settings?.working_hours || "Mon – Sat, 9 AM – 6 PM";
 
   const fssaiNumber = settings?.fssai_number;
   const gstNumber = settings?.gst_number;
@@ -90,33 +87,38 @@ export default function ContactPage() {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const [formError, setFormError] = useState("");
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!validateForm()) return;
 
     setIsLoading(true);
-
-    // Mock API call latency for realistic verification feedback
-    setTimeout(() => {
-      // TODO: Integrate with backend contact inquiry endpoint once the backend controller module is built.
-      // API payload structure will match:
-      // {
-      //   full_name: fullName,
-      //   email: email,
-      //   phone: phoneVal,
-      //   inquiry_type: inquiryType,
-      //   message: message
-      // }
-      setIsLoading(false);
+    setFormError("");
+    try {
+      await contactService.submitInquiry({
+        full_name: fullName.trim(),
+        email: email.trim(),
+        phone: phoneVal.trim(),
+        inquiry_type: inquiryType,
+        message: message.trim(),
+      });
       setIsSuccess(true);
-      // Reset form fields
       setFullName("");
       setEmail("");
       setPhoneVal("");
       setInquiryType("Order Support");
       setMessage("");
-    }, 1200);
+    } catch (err: any) {
+      setFormError(
+        err?.response?.data?.message ||
+        "Something went wrong. Please try again or email us directly."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
+
 
   return (
     <PublicLayout>
@@ -208,7 +210,7 @@ export default function ContactPage() {
                       Working Hours
                     </h3>
                     <p className="text-xs font-semibold text-deodharForest mt-0.5 leading-relaxed">
-                      Mon - Sat, 9:00 AM - 6:00 PM IST
+                      {workingHours}
                     </p>
                   </div>
                 </div>
@@ -377,6 +379,14 @@ export default function ContactPage() {
                       )}
                     </div>
 
+                    {/* API Error Banner */}
+                    {formError && (
+                      <div className="flex items-start gap-2.5 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded text-xs font-sans">
+                        <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-red-500" />
+                        <span>{formError}</span>
+                      </div>
+                    )}
+
                     {/* Submit Button */}
                     <button
                       type="submit"
@@ -397,6 +407,7 @@ export default function ContactPage() {
                       <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-gheeGold/20 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
                     </button>
                   </form>
+
                 )}
 
               </div>

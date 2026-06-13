@@ -5,6 +5,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.auth import router as auth_router
+from app.api.v1.contact import router as contact_router
 from app.api.v1.carts import router as carts_router
 from app.api.v1.categories import router as categories_router
 from app.api.v1.checkouts import router as checkouts_router
@@ -237,6 +238,11 @@ def create_app() -> FastAPI:
         production_hardening_router,
         prefix=f"{settings.API_V1_STR}/admin",
         tags=["Production Hardening Operations"]
+    )
+    app.include_router(
+        contact_router,
+        prefix=f"{settings.API_V1_STR}",
+        tags=["Contact Operations"]
     )
 
     return app

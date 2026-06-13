@@ -425,3 +425,65 @@ class EmailService:
             html_content=html_body,
             order_id=order.id
         )
+
+    async def send_contact_inquiry_email(
+        self,
+        full_name: str,
+        customer_email: str,
+        phone: str,
+        inquiry_type: str,
+        message: str,
+    ) -> bool:
+        """
+        Sends a contact inquiry notification email to the admin.
+        Triggered when a user submits the 'Send Us a Message' form on the Contact page.
+        """
+        admin_email = settings.ADMIN_EMAIL or settings.BREVO_SENDER_EMAIL or "bharathdelightfoods@gmail.com"
+        subject = f"New Contact Inquiry: {inquiry_type} — from {full_name}"
+
+        content_html = f"""
+        <div class="h2">New Customer Inquiry Received</div>
+        <p>A new message has been submitted through the <b>Contact Us</b> form on the Bharath Delight Foods storefront.</p>
+
+        <div class="details-box">
+            <h4 style="margin-top:0; color:#0F3D2E;">Inquiry Details</h4>
+            <table>
+                <tr>
+                    <th>Name:</th>
+                    <td>{full_name}</td>
+                </tr>
+                <tr>
+                    <th>Email:</th>
+                    <td><a href="mailto:{customer_email}" style="color:#0F3D2E;">{customer_email}</a></td>
+                </tr>
+                <tr>
+                    <th>Phone:</th>
+                    <td>{phone}</td>
+                </tr>
+                <tr>
+                    <th>Inquiry Type:</th>
+                    <td><b>{inquiry_type}</b></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="details-box" style="border-left: 4px solid #C89B3C; background-color: #FFFDF0;">
+            <h4 style="margin-top:0; color:#0F3D2E;">Message</h4>
+            <p style="margin: 0; font-size: 13px; line-height: 1.7; white-space: pre-wrap;">{message}</p>
+        </div>
+
+        <p style="font-size: 12px; color: #6B7280;">
+            Reply directly to this email or reach the customer at
+            <a href="mailto:{customer_email}" style="color:#0F3D2E;">{customer_email}</a>
+            or call <b>{phone}</b>.
+        </p>
+        """
+
+        html_body = self._get_base_template("New Contact Inquiry", content_html)
+        return await self.send_transactional_email(
+            to_email=admin_email,
+            to_name="Admin — Bharath Delight Foods",
+            subject=subject,
+            html_content=html_body,
+        )
+

@@ -34,9 +34,9 @@ async def seed_production() -> None:
     # 2. Seed Initial Admin User
     print("Seeding default administrator...")
     customer_repo = CustomerRepository(db)
-    admin_email = "admin@mrbharathfoods.in"  # Legacy admin email to preserve existing database credentials
-    admin_phone = "9999999999"
-    admin_password = os.getenv("ADMIN_PASSWORD", "AdminPassword123!")
+    admin_email = os.getenv("ADMIN_EMAIL", "admin@bharathdelightfoods.in")
+    admin_phone = os.getenv("ADMIN_PHONE", "9092748525")    
+    admin_password = os.getenv("ADMIN_PASSWORD", "ChangeMe123!")
 
     existing_admin = await customer_repo.get_by_email_or_phone(admin_email)
     if not existing_admin:

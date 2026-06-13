@@ -43,4 +43,7 @@ class Settings(BaseSettings):
     BREVO_SENDER_EMAIL: str | None = None
     BREVO_SENDER_NAME: str = "Bharath Delight Foods"
 
+    # Admin contact for notifications (e.g. contact form inquiries)
+    ADMIN_EMAIL: str = "bharathdelightfoods@gmail.com" 
+
 settings = Settings()  # type: ignore[call-arg]

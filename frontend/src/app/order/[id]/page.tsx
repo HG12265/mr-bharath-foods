@@ -7,6 +7,7 @@ import { useParams } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useOrderDetails } from "@/hooks/use-orders";
 import { useInitiateUpiPayment, useSubmitUpiProof } from "@/hooks/use-payments";
+import { useClearCart } from "@/hooks/use-cart";
 import mediaService from "@/services/media-service";
 import orderService from "@/services/order-service";
 import { formatINR } from "@/lib/utils";
@@ -36,6 +37,7 @@ export default function OrderDetailsPage() {
   
   const initiateMutation = useInitiateUpiPayment();
   const submitProofMutation = useSubmitUpiProof();
+  const clearCartMutation = useClearCart();
 
   // Component states
   const [paymentInfo, setPaymentInfo] = useState<InitiatePaymentResponse | null>(null);
@@ -178,6 +180,9 @@ export default function OrderDetailsPage() {
               } else {
                 setPaymentInfo(prev => prev ? { ...prev, status: "proof_submitted" } : null);
               }
+
+              // Clear cart so badge resets to 0
+              clearCartMutation.mutate(undefined);
 
               // Show success message
               setShowSuccessBanner(true);
