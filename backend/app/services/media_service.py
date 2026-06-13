@@ -149,15 +149,31 @@ class MediaService(BaseService[MediaAsset]):
 
         return updated_asset
 
-    async def get_media_asset(self, user_id: str, is_admin: bool, asset_id: str) -> MediaAsset:
+    async def get_media_asset(self, user_id: str | None, is_admin: bool, asset_id: str) -> MediaAsset:
         """
-        Retrieves media asset details, enforcing owner/admin access.
+        Retrieves media asset details, enforcing public/owner/admin access rules based on asset_type.
         """
         asset = await self.media_repository.get_by_id(asset_id)
         if not asset or asset.is_deleted:
             raise NotFoundException("Media asset record not found.")
 
-        if asset.uploaded_by != user_id and not is_admin:
+        # Allow public read for completed public image types with a valid public_url
+        public_types = {"product_image", "category_image", "blog_image", "banner_image"}
+        if (
+            asset.status == "completed"
+            and bool(asset.public_url)
+            and asset.asset_type in public_types
+        ):
+            return asset
+
+        # - payment_proof: require admin only.
+        if asset.asset_type == "payment_proof":
+            if not is_admin:
+                raise PermissionDeniedException("You do not have permission to view this media asset.")
+            return asset
+
+        # - avatar/customer private assets or non-completed assets: require owner or admin.
+        if not is_admin and (user_id is None or asset.uploaded_by != user_id):
             raise PermissionDeniedException("You do not have permission to view this media asset.")
 
         return asset

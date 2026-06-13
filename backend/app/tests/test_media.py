@@ -420,3 +420,199 @@ def test_cloudinary_upload_mock_put(
     settings.CLOUDINARY_API_KEY = orig_cloud_key
     settings.CLOUDINARY_API_SECRET = orig_cloud_secret
     app.dependency_overrides.clear()
+
+
+def test_media_permissions_anonymous_product_image(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439333",
+        "original_filename": "product.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/product_image/owner_id/uuid-product.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/product_image/uuid-product.png",
+        "uploaded_by": "owner_id",
+        "asset_type": "product_image",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: None
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439333")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    json_res = response.json()
+    assert json_res["success"] is True
+    # Verify field masking for anonymous
+    assert json_res["data"]["storage_key"] == ""
+    assert json_res["data"]["uploaded_by"] == ""
+    assert json_res["data"]["public_url"] == "https://r2.com/mbf-media-bucket/media/product_image/uuid-product.png"
+    assert json_res["data"]["original_filename"] == "product.png"
+
+
+def test_media_permissions_anonymous_category_image(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439444",
+        "original_filename": "category.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/category_image/owner_id/uuid-category.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/category_image/uuid-category.png",
+        "uploaded_by": "owner_id",
+        "asset_type": "category_image",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: None
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439444")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    json_res = response.json()
+    assert json_res["success"] is True
+    assert json_res["data"]["storage_key"] == ""
+    assert json_res["data"]["uploaded_by"] == ""
+    assert json_res["data"]["public_url"] == "https://r2.com/mbf-media-bucket/media/category_image/uuid-category.png"
+
+
+def test_media_permissions_anonymous_cannot_get_payment_proof(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439555",
+        "original_filename": "proof.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/payment_proof/owner_id/uuid-proof.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/payment_proof/uuid-proof.png",
+        "uploaded_by": "owner_id",
+        "asset_type": "payment_proof",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: None
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439555")
+    app.dependency_overrides.clear()
+
+    # Anonymous user should get 403 Forbidden for payment proof
+    assert response.status_code == 403
+
+
+def test_media_permissions_customer_cannot_get_other_private_media(mock_db: MagicMock, mock_token_data: TokenData) -> None:
+    from app.core.dependencies import get_optional_user
+
+    # Customer tries to get another customer's avatar
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439666",
+        "original_filename": "avatar.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/avatar/other_owner_id/uuid-avatar.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/avatar/uuid-avatar.png",
+        "uploaded_by": "other_owner_id",
+        "asset_type": "avatar",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: mock_token_data
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439666")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 403
+
+
+def test_media_permissions_admin_can_get_payment_proof(mock_db: MagicMock, mock_admin_token_data: TokenData) -> None:
+    from app.core.dependencies import get_optional_user
+
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439777",
+        "original_filename": "proof.png",
+        "content_type": "image/png",
+        "size": 1024,
+        "storage_key": "media/payment_proof/owner_id/uuid-proof.png",
+        "public_url": "https://r2.com/mbf-media-bucket/media/payment_proof/uuid-proof.png",
+        "uploaded_by": "owner_id",
+        "asset_type": "payment_proof",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: mock_admin_token_data
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439777")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    json_res = response.json()
+    assert json_res["success"] is True
+    # Admin gets full details (no masking)
+    assert json_res["data"]["storage_key"] == "media/payment_proof/owner_id/uuid-proof.png"
+    assert json_res["data"]["uploaded_by"] == "owner_id"
+
+
+def test_media_permissions_unsafe_filename_masked(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+
+    asset_doc = {
+        "_id": "507f1f77bcf86cd799439888",
+        "original_filename": "../../unsafe/path/traversal.jpg",
+        "content_type": "image/jpeg",
+        "size": 1024,
+        "storage_key": "media/product_image/owner_id/uuid-traversal.jpg",
+        "public_url": "https://r2.com/mbf-media-bucket/media/product_image/uuid-traversal.jpg",
+        "uploaded_by": "owner_id",
+        "asset_type": "product_image",
+        "status": "completed",
+        "is_deleted": False,
+        "created_at": datetime.now(UTC),
+        "updated_at": datetime.now(UTC)
+    }
+
+    mock_db["media_assets"].find_one = AsyncMock(return_value=asset_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: None
+
+    response = client.get("/api/v1/media/507f1f77bcf86cd799439888")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    json_res = response.json()
+    assert json_res["success"] is True
+    assert json_res["data"]["original_filename"] == "file.jpg"

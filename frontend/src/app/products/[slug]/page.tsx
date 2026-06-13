@@ -19,8 +19,9 @@ interface PageProps {
 }
 
 function ProductDetailImage({ mediaId, alt, fallbackSrc }: { mediaId?: string; alt: string; fallbackSrc: string }) {
-  const { data: mediaRes } = useMediaAsset(mediaId || "", { enabled: !!mediaId });
-  const url = mediaRes?.data?.public_url || fallbackSrc;
+  const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
+  const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
+  const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : fallbackSrc);
   
   return (
     <Image

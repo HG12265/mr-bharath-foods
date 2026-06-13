@@ -35,8 +35,9 @@ interface TreeNode extends Category {
 }
 
 function CategoryImage({ mediaId, className }: { mediaId?: string; className?: string }) {
-  const { data: mediaRes } = useMediaAsset(mediaId || "", { enabled: !!mediaId });
-  const url = mediaRes?.data?.public_url || "";
+  const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
+  const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
+  const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : "");
   
   if (!mediaId) {
     return (

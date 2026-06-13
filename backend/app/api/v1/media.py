@@ -3,7 +3,12 @@ from typing import Any
 
 from fastapi import APIRouter, Depends, Request
 
-from app.core.dependencies import get_current_user, get_db, require_role
+from app.core.dependencies import (
+    get_current_user,
+    get_db,
+    get_optional_user,
+    require_role,
+)
 from app.core.roles import UserRole
 from app.models.media_asset import MediaAsset
 from app.repositories.audit_repository import AuditRepository
@@ -259,25 +264,66 @@ async def check_media_storage_health(
     )
 
 
+def is_safe_filename(filename: str) -> bool:
+    """
+    Checks if a filename is safe to expose publicly, preventing directory traversal
+    or leak of sensitive absolute path formats.
+    """
+    if not filename:
+        return False
+    if ".." in filename or "/" in filename or "\\" in filename:
+        return False
+    import re
+    return bool(re.match(r'^[\w\-. ]+$', filename))
+
+
 @router.get("/{id}", response_model=Envelope[MediaAssetResponse])
 async def get_media_asset_metadata(
     id: str,
-    current_user: TokenData = Depends(get_current_user),
+    current_user: TokenData | None = Depends(get_optional_user),
     service: MediaService = Depends(get_media_service)
 ) -> Envelope[MediaAssetResponse]:
     """
-    Fetches file metadata constraints, enforcing ownership check.
+    Fetches file metadata constraints, enforcing ownership/public check.
     """
-    is_admin = current_user.role == UserRole.ADMIN
+    is_admin = current_user.role == UserRole.ADMIN if current_user else False
+    user_id = current_user.user_id if current_user else None
+
     asset = await service.get_media_asset(
-        user_id=current_user.user_id,
+        user_id=user_id,
         is_admin=is_admin,
         asset_id=id
     )
+
+    is_owner = current_user and asset.uploaded_by == current_user.user_id
+    if not is_admin and not is_owner:
+        safe_filename = asset.original_filename
+        if not is_safe_filename(safe_filename):
+            _, ext = os.path.splitext(safe_filename)
+            if ext and ext.startswith(".") and ext[1:].isalnum() and len(ext) <= 5:
+                safe_filename = f"file{ext.lower()}"
+            else:
+                safe_filename = "file"
+
+        response_data = MediaAssetResponse(
+            id=asset.id or "",
+            original_filename=safe_filename,
+            content_type=asset.content_type,
+            size=asset.size,
+            storage_key="",
+            public_url=asset.public_url,
+            uploaded_by="",
+            asset_type=asset.asset_type,
+            status=asset.status,
+            created_at=asset.created_at.isoformat()
+        )
+    else:
+        response_data = map_media_response(asset)
+
     return Envelope(
         success=True,
         message="Media asset metadata retrieved successfully.",
-        data=map_media_response(asset)
+        data=response_data
     )
 
 

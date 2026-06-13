@@ -68,6 +68,41 @@ async def get_current_user(
     except ValueError as exc:
         raise AuthenticationException("Invalid user role mapping contained in credentials claims.") from exc
 
+async def get_optional_user(
+    credentials: HTTPAuthorizationCredentials | None = Depends(security_jwt)
+) -> TokenData | None:
+    """
+    Decodes JWT token signature if provided, otherwise returns None.
+    Does not raise AuthenticationException if credentials are missing or invalid,
+    instead returning None to represent an anonymous session.
+    """
+    if not credentials:
+        return None
+
+    try:
+        if redis_manager.client:
+            import hashlib
+            token_hash = hashlib.sha256(credentials.credentials.encode("utf-8")).hexdigest()
+            blacklisted = await redis_manager.client.get(f"blacklist:{token_hash}")
+            if blacklisted:
+                return None
+
+        payload = decode_access_token(credentials.credentials)
+        user_id = payload.get("sub")
+        email = payload.get("email")
+        role_str = payload.get("role", "customer")
+
+        if not user_id:
+            return None
+
+        return TokenData(
+            user_id=user_id,
+            email=email,
+            role=UserRole(role_str)
+        )
+    except Exception:
+        return None
+
 def require_role(required_role: UserRole) -> Callable[[TokenData], TokenData]:
     """
     Dependency checking user permissions clearance level.
