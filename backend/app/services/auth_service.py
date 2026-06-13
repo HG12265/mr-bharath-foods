@@ -4,6 +4,7 @@ from datetime import UTC, datetime, timedelta
 
 import redis.asyncio as aioredis
 
+from app.core.config import settings
 from app.core.exceptions import AuthenticationException
 from app.core.roles import UserRole
 from app.core.security import create_access_token, get_password_hash, verify_password
@@ -108,17 +109,17 @@ class AuthService:
         return customer
 
     def create_tokens(self, customer: Customer) -> tuple[str, str]:
-        # Short-lived access token (15 mins)
+        # Short-lived access token
         access_token = create_access_token(
             subject=customer.id,
             role=customer.auth.role.value,
-            expires_delta=timedelta(minutes=15)
+            expires_delta=timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
         )
-        # Long-lived refresh token (30 days)
+        # Long-lived refresh token
         refresh_token = create_access_token(
             subject=customer.id,
             role=customer.auth.role.value,
-            expires_delta=timedelta(days=30)
+            expires_delta=timedelta(days=settings.REFRESH_TOKEN_EXPIRE_DAYS)
         )
         return access_token, refresh_token
 

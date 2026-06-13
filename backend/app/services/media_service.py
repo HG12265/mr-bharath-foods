@@ -56,9 +56,13 @@ class MediaService(BaseService[MediaAsset]):
             upload_url = f"{base_url_clean}/api/v1/media/upload/mock/{storage_key}"
         else:
             # Construct public URL based on endpoint and bucket name
-            base_endpoint = settings.R2_ENDPOINT_URL or ""
-            endpoint_clean = base_endpoint.rstrip("/")
-            public_url = f"{endpoint_clean}/{settings.R2_BUCKET_NAME}/{storage_key}"
+            if settings.R2_PUBLIC_BASE_URL and asset_type != "payment_proof":
+                public_base = settings.R2_PUBLIC_BASE_URL.rstrip("/")
+                public_url = f"{public_base}/{storage_key}"
+            else:
+                base_endpoint = settings.R2_ENDPOINT_URL or ""
+                endpoint_clean = base_endpoint.rstrip("/")
+                public_url = f"{endpoint_clean}/{settings.R2_BUCKET_NAME}/{storage_key}"
 
             # Generate the presigned URL via the storage manager
             upload_url = storage_manager.generate_presigned_put_url(

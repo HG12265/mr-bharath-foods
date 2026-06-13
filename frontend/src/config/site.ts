@@ -3,6 +3,11 @@ import { env } from "@/lib/env";
 export const siteConfig = {
   name: "Bharath Delight Foods",
   tagline: "Selecting the Best to Serve the Best",
+  mediaDomains: [
+    "res.cloudinary.com",
+    "pub-media.bharathdelightfoods.in",
+    "pub-media.mrbharathfoods.in",
+  ],
   description:
     "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for absolute purity, and trace-certified by batch.",
   url: env.NEXT_PUBLIC_APP_URL,

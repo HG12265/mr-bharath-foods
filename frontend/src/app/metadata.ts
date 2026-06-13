@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { env } from "@/lib/env";
 
 export const defaultMetadata: Metadata = {
   title: {
@@ -47,11 +48,11 @@ export const defaultMetadata: Metadata = {
     },
   },
   // Search Console verification — stored in env only, never in DB
-  ...(process.env.NEXT_PUBLIC_GOOGLE_SC_TOKEN && {
+  ...(env.NEXT_PUBLIC_GOOGLE_SC_TOKEN && {
     verification: {
-      google: process.env.NEXT_PUBLIC_GOOGLE_SC_TOKEN,
-      ...(process.env.NEXT_PUBLIC_BING_WMT_TOKEN && {
-        other: { "msvalidate.01": process.env.NEXT_PUBLIC_BING_WMT_TOKEN },
+      google: env.NEXT_PUBLIC_GOOGLE_SC_TOKEN,
+      ...(env.NEXT_PUBLIC_BING_WMT_TOKEN && {
+        other: { "msvalidate.01": env.NEXT_PUBLIC_BING_WMT_TOKEN },
       }),
     },
   }),

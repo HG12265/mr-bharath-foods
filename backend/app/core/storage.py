@@ -154,7 +154,7 @@ class StorageManager:
                 folder_old = f"mr-bharath-foods/{asset_type}/{user_id}"
                 full_public_id_old = f"{folder_old}/{public_id}"
 
-                folder_new = f"bharath-delight-foods/{asset_type}/{user_id}"
+                folder_new = f"{settings.MEDIA_FOLDER_PREFIX}/{asset_type}/{user_id}"
                 full_public_id_new = f"{folder_new}/{public_id}"
 
                 import cloudinary

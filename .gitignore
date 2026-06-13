@@ -20,6 +20,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 .env
+.env.local
 .env.*.local
 .DS_Store
 

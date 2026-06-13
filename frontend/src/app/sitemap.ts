@@ -1,5 +1,6 @@
 import { MetadataRoute } from "next";
 import { siteConfig } from "@/config/site";
+import { env } from "@/lib/env";
 
 /**
  * Dynamic sitemap generator — fetches all active products from the backend
@@ -7,7 +8,7 @@ import { siteConfig } from "@/config/site";
  */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const appUrl = siteConfig.url;
-  const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+  const apiUrl = env.NEXT_PUBLIC_API_URL;
 
   // Static pages
   const staticRoutes: MetadataRoute.Sitemap = [

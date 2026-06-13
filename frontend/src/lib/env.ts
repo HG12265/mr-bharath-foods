@@ -4,6 +4,9 @@ const envSchema = z.object({
   NEXT_PUBLIC_API_URL: z.string().url().default("http://localhost:8000"),
   NEXT_PUBLIC_APP_URL: z.string().url().default("http://localhost:3000"),
   NODE_ENV: z.enum(["development", "production", "test"]).default("development"),
+  NEXT_PUBLIC_GOOGLE_SC_TOKEN: z.string().optional(),
+  NEXT_PUBLIC_BING_WMT_TOKEN: z.string().optional(),
+  NEXT_PUBLIC_MEDIA_BASE_URL: z.string().optional(),
 });
 
 const getEnvData = () => {
@@ -11,6 +14,9 @@ const getEnvData = () => {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000",
     NEXT_PUBLIC_APP_URL: process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000",
     NODE_ENV: process.env.NODE_ENV || "development",
+    NEXT_PUBLIC_GOOGLE_SC_TOKEN: process.env.NEXT_PUBLIC_GOOGLE_SC_TOKEN,
+    NEXT_PUBLIC_BING_WMT_TOKEN: process.env.NEXT_PUBLIC_BING_WMT_TOKEN,
+    NEXT_PUBLIC_MEDIA_BASE_URL: process.env.NEXT_PUBLIC_MEDIA_BASE_URL,
   };
 };
 
@@ -28,6 +34,9 @@ const parseEnv = () => {
       NEXT_PUBLIC_API_URL: "http://localhost:8000",
       NEXT_PUBLIC_APP_URL: "http://localhost:3000",
       NODE_ENV: "development" as const,
+      NEXT_PUBLIC_GOOGLE_SC_TOKEN: undefined,
+      NEXT_PUBLIC_BING_WMT_TOKEN: undefined,
+      NEXT_PUBLIC_MEDIA_BASE_URL: undefined,
     };
   }
 

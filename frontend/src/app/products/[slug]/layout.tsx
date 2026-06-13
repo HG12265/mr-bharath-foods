@@ -1,7 +1,8 @@
 import { Metadata } from "next";
 import { siteConfig } from "@/config/site";
+import { env } from "@/lib/env";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+const API_URL = env.NEXT_PUBLIC_API_URL;
 const APP_URL = siteConfig.url;
 
 interface LayoutProps {

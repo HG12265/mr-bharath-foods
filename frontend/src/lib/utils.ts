@@ -1,5 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
+import { env } from "./env";
+import { siteConfig } from "@/config/site";
 
 /**
  * Standard utility function to merge Tailwind classes safely with clsx and tailwind-merge.
@@ -24,7 +26,18 @@ export function formatINR(amount: number): string {
  */
 export function optimizeCloudinaryUrl(url: string, width: number): string {
   if (!url) return url;
-  const isCloudinary = url.includes("res.cloudinary.com") || url.includes("pub-media.mrbharathfoods.in") || url.includes("pub-media.bharathdelightfoods.in");
+  
+  const domainsToCheck = [...(siteConfig.mediaDomains || [])];
+  if (env.NEXT_PUBLIC_MEDIA_BASE_URL) {
+    try {
+      const parsed = new URL(env.NEXT_PUBLIC_MEDIA_BASE_URL);
+      domainsToCheck.push(parsed.hostname);
+    } catch {
+      domainsToCheck.push(env.NEXT_PUBLIC_MEDIA_BASE_URL);
+    }
+  }
+
+  const isCloudinary = domainsToCheck.some((domain) => url.includes(domain));
   if (isCloudinary && url.includes("/image/upload/")) {
     return url.replace("/image/upload/", `/image/upload/f_auto,q_auto,w_${width}/`);
   }

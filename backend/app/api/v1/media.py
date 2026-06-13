@@ -148,8 +148,8 @@ async def upload_mock_file(
             filename_base, _ = os.path.splitext(filename_with_ext)
             public_id = re.sub(r'[^a-zA-Z0-9._-]', '_', filename_base)
 
-            # Use folder: bharath-delight-foods/{asset_type}/{uploaded_by}
-            folder_path = f"bharath-delight-foods/{asset_type}/{uploaded_by}"
+            # Use folder: {settings.MEDIA_FOLDER_PREFIX}/{asset_type}/{uploaded_by}
+            folder_path = f"{settings.MEDIA_FOLDER_PREFIX}/{asset_type}/{uploaded_by}"
 
             # Initialize Cloudinary credentials securely without exposing in logs
             cloudinary.config(

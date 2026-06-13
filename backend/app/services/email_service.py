@@ -206,7 +206,7 @@ class EmailService:
 
         # Live Brevo API POST
         headers = {
-            "api-key": api_key,
+            "api-key": api_key or "",
             "Content-Type": "application/json",
             "Accept": "application/json"
         }
