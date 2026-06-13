@@ -64,7 +64,7 @@ class Settings(BaseSettings):
         if self.ENVIRONMENT.lower() == "production":
             # 1. SECRET_KEY Strength Check
             default_secret = "generate_a_secure_random_string_signature"
-            if self.SECRET_KEY == default_secret:
+            if self.SECRET_KEY == default_secret or "replace-with-secure-random-secret" in self.SECRET_KEY:
                 raise ValueError("Production configuration error: SECRET_KEY cannot be the default development value.")
             if len(self.SECRET_KEY) < 32:
                 raise ValueError("Production configuration error: SECRET_KEY must be at least 32 characters long.")
@@ -87,7 +87,7 @@ class Settings(BaseSettings):
                 raise ValueError("Production configuration error: FRONTEND_ORIGIN must be configured and start with https:// in production.")
 
             # 5. BREVO_API_KEY Check
-            if not self.BREVO_API_KEY or "your_brevo_api_key_here" in self.BREVO_API_KEY or self.BREVO_API_KEY.strip() == "":
+            if not self.BREVO_API_KEY or "your_brevo_api_key_here" in self.BREVO_API_KEY or "replace-with-brevo-api-key" in self.BREVO_API_KEY or self.BREVO_API_KEY.strip() == "":
                 raise ValueError("Production configuration error: BREVO_API_KEY must be configured in production.")
 
             # 6. Storage Credentials Check (Cloudinary or R2)
@@ -111,7 +111,7 @@ class Settings(BaseSettings):
                 raise ValueError("Production configuration error: Either Cloudflare R2 or Cloudinary credentials must be fully configured in production.")
 
             # 7. UPI_ID Check
-            if not self.UPI_ID or "mrbharathfoods@upi" in self.UPI_ID or "bharathdelightfoods@upi" in self.UPI_ID or self.UPI_ID.strip() == "":
+            if not self.UPI_ID or "replace-with-business-upi-id" in self.UPI_ID or self.UPI_ID.strip() == "":
                 raise ValueError("Production configuration error: UPI_ID must be configured in production.")
 
         return self
