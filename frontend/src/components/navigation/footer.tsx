@@ -90,9 +90,12 @@ export const Footer: React.FC = () => {
         {/* Bottom Bar */}
         <div className="pt-6 flex flex-col sm:flex-row items-center justify-between gap-3 text-[10px] text-warmIvory/50 font-sans tracking-wide">
           <p>© {new Date().getFullYear()} Bharath Delight Foods. Sourced responsibly.</p>
-          <div className="flex gap-4">
-            <Link href="/trust" className="hover:text-warmIvory transition-colors">Trust Center</Link>
-            <a href="#" className="hover:text-warmIvory transition-colors">Terms of Service</a>
+          <div className="flex flex-wrap gap-x-4 gap-y-2 justify-center sm:justify-end text-center">
+            <Link href="/privacy-policy" className="hover:text-warmIvory transition-colors">Privacy Policy</Link>
+            <Link href="/terms-and-conditions" className="hover:text-warmIvory transition-colors">Terms & Conditions</Link>
+            <Link href="/shipping-policy" className="hover:text-warmIvory transition-colors">Shipping Policy</Link>
+            <Link href="/refund-cancellation-policy" className="hover:text-warmIvory transition-colors">Refund Policy</Link>
+            <Link href="/contact" className="hover:text-warmIvory transition-colors">Contact Us</Link>
           </div>
         </div>
 

@@ -14,7 +14,8 @@ import {
   CheckCircle2, 
   Loader2, 
   ShieldAlert,
-  Send
+  Send,
+  MapPin
 } from "lucide-react";
 
 export default function ContactPage() {
@@ -22,12 +23,12 @@ export default function ContactPage() {
   const settings = settingsData?.data;
 
   // Extract support details dynamically from correct fields with fallbacks
-  const supportEmail = settings?.public_support_email || siteConfig.links.supportEmail;
-  const supportPhone = settings?.public_support_phone || "+91 90927 48525";
-  const workingHours = settings?.working_hours || "Mon – Sat, 9 AM – 6 PM";
+  const supportEmail = "bharathdelightfoods@gmail.com";
+  const supportPhone = "+91 90927 48525";
+  const workingHours = "Mon – Sat, 9 AM – 6 PM";
 
-  const fssaiNumber = settings?.fssai_number;
-  const gstNumber = settings?.gst_number;
+  const fssaiNumber = settings?.fssai_number || "[Co-Packer FSSAI License Number]";
+  const gstNumber = settings?.gst_number || "[Co-Packer GST Number]";
 
   // Form states
   const [fullName, setFullName] = useState("");
@@ -215,24 +216,39 @@ export default function ContactPage() {
                   </div>
                 </div>
 
+                {/* Address Card */}
+                <div className="bg-white border border-burnishedGold/15 rounded-lg p-5 shadow-sm space-y-2.5 sm:col-span-2">
+                  <div className="w-8 h-8 bg-deodharForest/5 border border-burnishedGold/15 rounded-full flex items-center justify-center text-deodharForest">
+                    <MapPin className="w-4 h-4 text-gheeGold" />
+                  </div>
+                  <div>
+                    <h3 className="text-xs font-sans font-bold uppercase tracking-wider text-indianInk/55">
+                      Business Address
+                    </h3>
+                    <p className="text-xs font-semibold text-deodharForest mt-0.5 leading-relaxed">
+                      [Business Address]
+                    </p>
+                  </div>
+                </div>
+
               </div>
 
-              {/* Compliance Mini Section (Hides gracefully if FSSAI and GST are not configured) */}
+              {/* Compliance / Co-Packer Section */}
               {(fssaiNumber || gstNumber) && (
                 <div className="bg-white border border-burnishedGold/15 rounded-lg p-5 shadow-sm space-y-3">
                   <h4 className="font-serif text-sm font-bold text-deodharForest flex items-center gap-1.5 border-b border-burnishedGold/10 pb-2">
-                    <CheckCircle2 className="w-4 h-4 text-gheeGold shrink-0" /> Compliance Details
+                    <CheckCircle2 className="w-4 h-4 text-gheeGold shrink-0" /> Co-Packer Declarations
                   </h4>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs font-sans">
+                  <div className="grid grid-cols-1 gap-3 text-xs font-sans">
                     {fssaiNumber && (
                       <div>
-                        <span className="text-indianInk/55 block">FSSAI License No.</span>
+                        <span className="text-indianInk/55 block">Co-Packer FSSAI License No.</span>
                         <span className="font-bold text-indianInk">{fssaiNumber}</span>
                       </div>
                     )}
                     {gstNumber && (
                       <div>
-                        <span className="text-indianInk/55 block">GSTIN Registration</span>
+                        <span className="text-indianInk/55 block">Co-Packer GSTIN</span>
                         <span className="font-bold text-indianInk">{gstNumber}</span>
                       </div>
                     )}
@@ -413,6 +429,60 @@ export default function ContactPage() {
               </div>
             </div>
 
+          </div>
+
+          {/* Simple Support Sections */}
+          <div className="max-w-6xl mx-auto border-t border-burnishedGold/15 pt-12 md:pt-16 space-y-8 animate-fade-up" style={{ animationDelay: "200ms" }}>
+            <div className="text-center max-w-xl mx-auto space-y-2">
+              <h2 className="font-serif text-2xl font-bold text-deodharForest">
+                Help & Support Categories
+              </h2>
+              <p className="font-sans text-xs text-indianInk/60">
+                Find answers or query specific help desks for quick assistance.
+              </p>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {/* Orders Support */}
+              <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 className="font-serif text-base font-bold text-deodharForest flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-gheeGold" /> Orders
+                </h3>
+                <p className="font-sans text-xs text-indianInk/70 leading-relaxed">
+                  Support for active orders, changing delivery details, packing status, or processing questions.
+                </p>
+              </div>
+
+              {/* Payments Support */}
+              <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 className="font-serif text-base font-bold text-deodharForest flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-gheeGold" /> Payments
+                </h3>
+                <p className="font-sans text-xs text-indianInk/70 leading-relaxed">
+                  Manual UPI screenshot matching, payment verification questions, and receipt confirmations.
+                </p>
+              </div>
+
+              {/* Shipping Support */}
+              <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 className="font-serif text-base font-bold text-deodharForest flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-gheeGold" /> Shipping
+                </h3>
+                <p className="font-sans text-xs text-indianInk/70 leading-relaxed">
+                  Tracking number details, courier partner delays, transit exceptions, and delivery schedules.
+                </p>
+              </div>
+
+              {/* Returns & Refunds */}
+              <div className="bg-white border border-burnishedGold/15 rounded-lg p-6 space-y-3 shadow-sm hover:shadow-md transition-all duration-300">
+                <h3 className="font-serif text-base font-bold text-deodharForest flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-gheeGold" /> Returns & Refunds
+                </h3>
+                <p className="font-sans text-xs text-indianInk/70 leading-relaxed">
+                  Reporting damaged food containers within 24 hours, verification requirements, and UPI refund timelines.
+                </p>
+              </div>
+            </div>
           </div>
 
         </div>

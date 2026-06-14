@@ -39,6 +39,7 @@ export default function CheckoutPage() {
   const [state, setState] = useState("");
   const [pincode, setPincode] = useState("");
   const [email, setEmail] = useState("");
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const [validationErrors, setValidationErrors] = useState<Record<string, string>>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -129,6 +130,11 @@ export default function CheckoutPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setApiError(null);
+
+    if (!agreedToTerms) {
+      setApiError("You must agree to the Terms & Conditions, Privacy Policy, and Refund Policy to place an order.");
+      return;
+    }
 
     if (!validateForm()) return;
     if (!cart) {
@@ -464,10 +470,38 @@ export default function CheckoutPage() {
                     </div>
                   </div>
 
+                  {/* Checkout agreement checkbox */}
+                  <div className="flex items-start gap-2.5 pt-4 border-t border-burnishedGold/10">
+                    <input
+                      type="checkbox"
+                      id="checkoutTermsAgreement"
+                      checked={agreedToTerms}
+                      onChange={(e) => setAgreedToTerms(e.target.checked)}
+                      disabled={isSubmitting}
+                      required
+                      className="w-4 h-4 rounded text-deodharForest border-burnishedGold/30 focus:ring-0 outline-none mt-0.5 cursor-pointer shrink-0"
+                    />
+                    <label htmlFor="checkoutTermsAgreement" className="text-[11px] font-sans text-indianInk/70 leading-relaxed cursor-pointer select-none">
+                      I understand and agree to the{" "}
+                      <Link href="/terms-and-conditions" target="_blank" className="text-deodharForest font-bold underline hover:text-burnishedGold transition-colors">
+                        Terms & Conditions
+                      </Link>
+                      ,{" "}
+                      <Link href="/privacy-policy" target="_blank" className="text-deodharForest font-bold underline hover:text-burnishedGold transition-colors">
+                        Privacy Policy
+                      </Link>
+                      , and{" "}
+                      <Link href="/refund-cancellation-policy" target="_blank" className="text-deodharForest font-bold underline hover:text-burnishedGold transition-colors">
+                        Refund & Cancellation Policy
+                      </Link>
+                      . *
+                    </label>
+                  </div>
+
                   <button
                     type="submit"
-                    disabled={isSubmitting}
-                    className="w-full relative overflow-hidden py-4 bg-deodharForest text-richCream rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 border border-transparent hover:border-gheeGold hover:shadow-[0_6px_20px_rgba(15,61,46,0.2)] disabled:opacity-50 text-center flex items-center justify-center mt-6"
+                    disabled={isSubmitting || !agreedToTerms}
+                    className="w-full relative overflow-hidden py-4 bg-deodharForest text-richCream rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 border border-transparent hover:border-gheeGold hover:shadow-[0_6px_20px_rgba(15,61,46,0.2)] disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:border-transparent text-center flex items-center justify-center mt-6"
                   >
                     {isSubmitting ? (
                       <>
