@@ -21,7 +21,7 @@ export const defaultMetadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "/og-bharath.png?v=3",
+        url: "/og-bharath.png?v=5",
         width: 1200,
         height: 630,
         alt: "Bharath Delight Foods premium Indian foods",
@@ -34,7 +34,7 @@ export const defaultMetadata: Metadata = {
     title: "Bharath Delight Foods — Food Done Right.",
     description:
       "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
-    images: ["/og-bharath.png?v=3"],
+    images: ["/og-bharath.png?v=5"],
   },
   robots: {
     index: true,
