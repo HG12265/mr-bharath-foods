@@ -9,9 +9,9 @@ export const siteConfig = {
     "pub-media.mrbharathfoods.in",
   ],
   description:
-    "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for absolute purity, and trace-certified by batch.",
+    "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
   url: env.NEXT_PUBLIC_APP_URL,
-  ogImage: `${env.NEXT_PUBLIC_APP_URL}/images/og-default.jpg`,
+  ogImage: "/og-bharath.png?v=3",
   fssaiLicenseNumber: "12424999000123",
   twitterHandle: "",
   keywords: [

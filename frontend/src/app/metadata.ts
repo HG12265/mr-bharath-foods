@@ -3,38 +3,38 @@ import { siteConfig } from "@/config/site";
 import { env } from "@/lib/env";
 
 export const defaultMetadata: Metadata = {
-  title: {
-    default: `${siteConfig.name} — ${siteConfig.tagline}`,
-    template: `%s | ${siteConfig.name}`,
-  },
-  description: siteConfig.description,
+  metadataBase: new URL("https://bharath-delight-foods.vercel.app"),
+
+  title: "Bharath Delight Foods — Food Done Right.",
+  description:
+    "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
   keywords: siteConfig.keywords,
-  metadataBase: env.NEXT_PUBLIC_APP_URL ? new URL(env.NEXT_PUBLIC_APP_URL) : undefined,
   alternates: {
     canonical: "/",
   },
   openGraph: {
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    url: siteConfig.url,
-    siteName: siteConfig.name,
+    title: "Bharath Delight Foods — Food Done Right.",
+    description:
+      "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
+    url: "https://bharath-delight-foods.vercel.app/",
+    siteName: "Bharath Delight Foods",
+    type: "website",
     images: [
       {
-        url: siteConfig.ogImage,
+        url: "/og-bharath.png?v=3",
         width: 1200,
         height: 630,
-        alt: `${siteConfig.name} — Premium Regional Ghee`,
+        alt: "Bharath Delight Foods premium Indian foods",
       },
     ],
     locale: "en_IN",
-    type: "website",
   },
   twitter: {
     card: "summary_large_image",
-    title: `${siteConfig.name} — ${siteConfig.tagline}`,
-    description: siteConfig.description,
-    creator: siteConfig.twitterHandle,
-    images: [siteConfig.ogImage],
+    title: "Bharath Delight Foods — Food Done Right.",
+    description:
+      "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
+    images: ["/og-bharath.png?v=3"],
   },
   robots: {
     index: true,
