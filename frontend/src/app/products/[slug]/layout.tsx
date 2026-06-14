@@ -54,7 +54,9 @@ export async function generateMetadata({
 
     // OG Image: use first media asset public URL if available
     let ogImageUrl = siteConfig.ogImage;
-    if (product.media_ids && product.media_ids.length > 0) {
+    if (product.media_urls && product.media_urls.length > 0) {
+      ogImageUrl = product.media_urls[0];
+    } else if (product.media_ids && product.media_ids.length > 0) {
       try {
         const mediaRes = await fetch(
           `${API_URL}/api/v1/media/${product.media_ids[0]}`,

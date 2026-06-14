@@ -3,8 +3,10 @@ import { Product } from "@/types";
 
 /** Resolves a product's first image URL, with fallback to site OG image */
 export function resolveProductImageUrl(product: Product, apiBaseUrl: string): string {
-  // media_ids[0] resolves to the media asset endpoint — used as best-effort OG image
-  if (product.media_ids.length > 0) {
+  if (product.media_urls && product.media_urls.length > 0) {
+    return product.media_urls[0];
+  }
+  if (product.media_ids && product.media_ids.length > 0) {
     return `${apiBaseUrl}/api/v1/media/${product.media_ids[0]}/public-url`;
   }
   return siteConfig.ogImage;

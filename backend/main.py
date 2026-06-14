@@ -5,10 +5,10 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.v1.auth import router as auth_router
-from app.api.v1.contact import router as contact_router
 from app.api.v1.carts import router as carts_router
 from app.api.v1.categories import router as categories_router
 from app.api.v1.checkouts import router as checkouts_router
+from app.api.v1.contact import router as contact_router
 from app.api.v1.customers import router as customers_router
 from app.api.v1.dashboard import router as dashboard_router
 from app.api.v1.health import router as health_router
