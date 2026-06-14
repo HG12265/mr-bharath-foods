@@ -8,11 +8,12 @@ import PublicLayout from "@/components/layout/public-layout";
 import { useProducts } from "@/hooks/use-products";
 import { useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
-import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
+import { formatINR, optimizeCloudinaryUrl, getProductFallbackImage } from "@/lib/utils";
 import { Heart } from "lucide-react";
 import { useMediaAsset } from "@/hooks/use-media";
 
-function ShopProductImage({ mediaId, alt, fallbackSrc, index }: { mediaId?: string; alt: string; fallbackSrc: string; index: number }) {
+function ShopProductImage({ mediaId, alt, productNameOrSlug, index }: { mediaId?: string; alt: string; productNameOrSlug?: string; index: number }) {
+  const fallbackSrc = getProductFallbackImage(productNameOrSlug);
   const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
   const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
   const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : fallbackSrc);
@@ -122,7 +123,7 @@ export default function ShopPage() {
                       <ShopProductImage
                         mediaId={product.media_ids?.[0]}
                         alt={product.name}
-                        fallbackSrc={imageSrc}
+                        productNameOrSlug={product.slug}
                         index={index}
                       />
 

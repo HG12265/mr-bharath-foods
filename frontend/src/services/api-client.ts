@@ -6,10 +6,20 @@ import { Envelope, Token } from "../types";
 // Memory storage for access token
 let accessToken: string | null = null;
 let guestToken: string | null = null;
+let refreshFailed = false;
 
 export const getAccessToken = (): string | null => accessToken;
 export const setAccessToken = (token: string | null): void => {
   accessToken = token;
+  if (token) {
+    refreshFailed = false;
+  } else {
+    refreshFailed = true;
+  }
+};
+
+export const setRefreshFailed = (failed: boolean): void => {
+  refreshFailed = failed;
 };
 
 export const getGuestToken = (): string | null => {
@@ -95,6 +105,10 @@ apiClient.interceptors.response.use(
     // Only auto-refresh on 401 (Unauthorized) credentials expiry
     // Do not attempt to refresh on 403 (Forbidden) or other codes
     if (error.response?.status === 401 && !originalRequest.headers.get("X-Retry-Flag")) {
+      if (refreshFailed) {
+        return Promise.reject(error);
+      }
+
       // Avoid refresh loop or running refresh for login/auth setup requests
       const isAuthSetupUrl = 
         originalRequest.url?.includes("/auth/login") ||

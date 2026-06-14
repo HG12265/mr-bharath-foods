@@ -33,6 +33,7 @@ async def search(
     skip: int = Query(0, ge=0, description="Offset for pagination"),
     limit: int = Query(10, ge=1, le=100, description="Limit for pagination"),
     service: SearchService = Depends(get_search_service),
+    db: AsyncDatabase = Depends(get_db),  # type: ignore[type-arg]
 ) -> Envelope[Any]:
     """
     Search endpoint supporting product and category targets, pagination, and category filtering.
@@ -63,7 +64,12 @@ async def search(
             user_id=user_id,
             ip_address=ip_address,
         )
-        mapped_data = [map_product_response(prod) for prod in product_results]
+        from app.repositories.media_repository import MediaRepository
+        media_repo = MediaRepository(db)
+        import asyncio
+        mapped_data = await asyncio.gather(*[
+            map_product_response(prod, media_repo) for prod in product_results
+        ])
 
     # Calculate pagination meta
     page = (skip // limit) + 1 if limit > 0 else 1

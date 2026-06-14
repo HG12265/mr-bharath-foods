@@ -52,6 +52,7 @@ export const useMe = (options?: { enabled?: boolean; staleTime?: number }) => {
     queryKey: ["me"],
     queryFn: () => authService.getMe(),
     retry: false,
+    refetchOnWindowFocus: false,
     ...options,
   });
 };

@@ -6,5 +6,10 @@ export const useMediaAsset = (id: string, options?: { enabled?: boolean }) => {
     queryKey: ["media", id],
     queryFn: () => mediaService.getMediaAssetMetadata(id),
     enabled: options?.enabled !== undefined ? options.enabled && !!id : !!id,
+    retry: (failureCount, error: any) => {
+      if (error?.response?.status === 403 || error?.response?.status === 404) return false;
+      return failureCount < 1;
+    },
+    refetchOnWindowFocus: false,
   });
 };

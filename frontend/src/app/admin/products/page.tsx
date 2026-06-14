@@ -35,7 +35,7 @@ import { Product } from "@/types";
 function ProductImage({ mediaId, className }: { mediaId?: string; className?: string }) {
   const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
   const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
-  const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : "");
+  const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : "/images/product-placeholder.jpg");
   
   if (!mediaId) {
     return (
@@ -48,11 +48,11 @@ function ProductImage({ mediaId, className }: { mediaId?: string; className?: st
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={optimizeCloudinaryUrl(url, 100) || "https://placehold.co/100x100?text=Product"}
+      src={optimizeCloudinaryUrl(url, 100) || "/images/product-placeholder.jpg"}
       alt="Product preview"
       className={className || "w-10 h-10 object-cover rounded border border-burnishedGold/15"}
       onError={(e) => {
-        (e.target as HTMLImageElement).src = "https://placehold.co/100x100?text=Product";
+        (e.target as HTMLImageElement).src = "/images/product-placeholder.jpg";
       }}
     />
   );

@@ -48,7 +48,40 @@ def map_variant_response(var: ProductVariant) -> ProductVariantResponse:
     )
 
 
-def map_product_response(prod: Product) -> ProductResponse:
+async def map_product_response(prod: Product, media_repo: MediaRepository) -> ProductResponse:
+    resolved_media: list[str] = []
+    if prod.media_ids:
+        from bson import ObjectId
+        from bson.errors import InvalidId
+
+        valid_object_ids: list[ObjectId] = []
+        # Maintain order and fallback to original values
+        resolved_media = list(prod.media_ids)
+
+        for m_id in prod.media_ids:
+            try:
+                oid = ObjectId(m_id)
+                valid_object_ids.append(oid)
+            except InvalidId:
+                pass
+
+        if valid_object_ids:
+            cursor = media_repo.collection.find({
+                "_id": {"$in": valid_object_ids},
+                "is_deleted": {"$ne": True},
+                "status": "completed"
+            })
+            async for doc in cursor:
+                asset_id_str = str(doc["_id"])
+                public_url = doc.get("public_url")
+                asset_type = doc.get("asset_type")
+
+                public_types = {"product_image", "category_image", "blog_image", "banner_image"}
+                if public_url and asset_type in public_types:
+                    for i, orig_id in enumerate(resolved_media):
+                        if orig_id == asset_id_str:
+                            resolved_media[i] = public_url
+
     return ProductResponse(
         id=prod.id or "",
         name=prod.name,
@@ -56,7 +89,7 @@ def map_product_response(prod: Product) -> ProductResponse:
         description=prod.description,
         short_description=prod.short_description,
         category_id=prod.category_id,
-        media_ids=prod.media_ids,
+        media_ids=resolved_media,
         sourcing=SourcingDetailsSchema(
             region=prod.sourcing.region,
             story=prod.sourcing.story,
@@ -110,10 +143,14 @@ async def list_products(
         skip=skip,
         limit=limit
     )
+    import asyncio
+    mapped_products = await asyncio.gather(*[
+        map_product_response(p, service.media_repository) for p in products
+    ])
     return Envelope(
         success=True,
         message="Active products listed successfully.",
-        data=[map_product_response(p) for p in products]
+        data=mapped_products
     )
 
 
@@ -133,10 +170,14 @@ async def list_all_products_admin(
         skip=skip,
         limit=limit
     )
+    import asyncio
+    mapped_products = await asyncio.gather(*[
+        map_product_response(p, service.media_repository) for p in products
+    ])
     return Envelope(
         success=True,
         message="All products retrieved successfully for admin/warehouse.",
-        data=[map_product_response(p) for p in products]
+        data=mapped_products
     )
 
 
@@ -149,10 +190,11 @@ async def get_product_by_slug(
     Retrieves details of an active, non-deleted product by slug.
     """
     product = await service.get_product_by_slug(slug)
+    mapped_product = await map_product_response(product, service.media_repository)
     return Envelope(
         success=True,
         message="Product details retrieved successfully.",
-        data=map_product_response(product)
+        data=mapped_product
     )
 
 
@@ -164,7 +206,7 @@ async def create_product(
     payload: ProductCreate,
     current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
     service: ProductService = Depends(get_product_service),
-    db: AsyncDatabase = Depends(get_db)
+    db: AsyncDatabase = Depends(get_db)  # type: ignore[type-arg]
 ) -> Envelope[ProductResponse]:
     """
     Creates a new product catalog node. Requires admin role.
@@ -198,10 +240,11 @@ async def create_product(
         except Exception:
             pass
 
+    mapped_product = await map_product_response(product, service.media_repository)
     return Envelope(
         success=True,
         message="Product catalog listing registered successfully.",
-        data=map_product_response(product)
+        data=mapped_product
     )
 
 
@@ -212,7 +255,7 @@ async def update_product(
     payload: ProductUpdate,
     current_user: TokenData = Depends(require_role(UserRole.ADMIN)),
     service: ProductService = Depends(get_product_service),
-    db: AsyncDatabase = Depends(get_db)
+    db: AsyncDatabase = Depends(get_db)  # type: ignore[type-arg]
 ) -> Envelope[ProductResponse]:
     """
     Modifies product catalog attributes. Requires admin role.
@@ -249,10 +292,11 @@ async def update_product(
             except Exception:
                 pass
 
+    mapped_product = await map_product_response(product, service.media_repository)
     return Envelope(
         success=True,
         message="Product catalog parameters updated successfully.",
-        data=map_product_response(product)
+        data=mapped_product
     )
 
 
@@ -298,8 +342,9 @@ async def update_product_status(
         status=payload.status,
         ip_address=ip
     )
+    mapped_product = await map_product_response(product, service.media_repository)
     return Envelope(
         success=True,
         message=f"Product status revised to {payload.status} successfully.",
-        data=map_product_response(product)
+        data=mapped_product
     )

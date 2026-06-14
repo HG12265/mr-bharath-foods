@@ -33,6 +33,7 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
         }
       } catch {
         // No valid refresh token — user is a guest, that's fine
+        setAccessToken(null);
       } finally {
         if (!cancelled) {
           setIsReady(true);

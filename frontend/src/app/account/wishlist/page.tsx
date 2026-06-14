@@ -6,7 +6,8 @@ import Image from "next/image";
 import AccountShell from "@/components/features/account/account-shell";
 import { useWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { useAddToCart } from "@/hooks/use-cart";
-import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
+import { formatINR, optimizeCloudinaryUrl, getProductFallbackImage } from "@/lib/utils";
+import { useMediaAsset } from "@/hooks/use-media";
 import { 
   Loader2, 
   Trash2, 
@@ -16,6 +17,22 @@ import {
   AlertCircle,
   CheckCircle2
 } from "lucide-react";
+
+function WishlistProductImage({ mediaId, alt, productNameOrSlug }: { mediaId?: string; alt: string; productNameOrSlug?: string }) {
+  const fallbackSrc = getProductFallbackImage(productNameOrSlug);
+  const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
+  const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
+  const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : fallbackSrc);
+
+  return (
+    <Image
+      src={optimizeCloudinaryUrl(url, 600)}
+      alt={alt}
+      fill
+      className="object-cover object-center select-none"
+    />
+  );
+}
 
 export default function WishlistPage() {
   const { data: wishlistRes, isPending, isError, refetch } = useWishlist();
@@ -172,11 +189,10 @@ export default function WishlistPage() {
                 >
                   {/* Image & Header */}
                   <div className="relative w-full h-[180px] bg-richCream/10 border-b border-burnishedGold/10">
-                    <Image
-                      src={optimizeCloudinaryUrl(imageSrc, 600)}
+                    <WishlistProductImage
+                      mediaId={summary.media_ids?.[0]}
                       alt={summary.name}
-                      fill
-                      className="object-cover object-center select-none"
+                      productNameOrSlug={summary.slug}
                     />
                     
                     {/* Stock Status Badge */}

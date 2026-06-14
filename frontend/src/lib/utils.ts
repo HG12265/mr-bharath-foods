@@ -43,3 +43,17 @@ export function optimizeCloudinaryUrl(url: string, width: number): string {
   }
   return url;
 }
+
+/**
+ * Resolves the appropriate fallback image based on product name/slug.
+ */
+export function getProductFallbackImage(nameOrSlug?: string): string {
+  const normalized = (nameOrSlug || "").toLowerCase();
+  if (normalized.includes("rasipuram")) {
+    return "/images/rasipuram-ghee.jpg";
+  }
+  if (normalized.includes("uthukuli")) {
+    return "/images/uthukuli-ghee.jpg";
+  }
+  return "/images/product-placeholder.jpg";
+}

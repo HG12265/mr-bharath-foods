@@ -10,7 +10,7 @@ import { useAddToCart } from "@/hooks/use-cart";
 import { useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { useMediaAsset } from "@/hooks/use-media";
-import { formatINR } from "@/lib/utils";
+import { formatINR, getProductFallbackImage } from "@/lib/utils";
 import { siteConfig } from "@/config/site";
 import { ShieldCheck, Check, ArrowLeft, Plus, Minus, Loader2, Heart } from "lucide-react";
 
@@ -18,7 +18,8 @@ interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-function ProductDetailImage({ mediaId, alt, fallbackSrc }: { mediaId?: string; alt: string; fallbackSrc: string }) {
+function ProductDetailImage({ mediaId, alt, productNameOrSlug }: { mediaId?: string; alt: string; productNameOrSlug?: string }) {
+  const fallbackSrc = getProductFallbackImage(productNameOrSlug);
   const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
   const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
   const url = isUrl ? mediaId : ((!isError && mediaRes?.success && mediaRes?.data?.public_url) ? mediaRes.data.public_url : fallbackSrc);
@@ -243,7 +244,7 @@ export default function ProductDetailPage({ params }: PageProps) {
                 <ProductDetailImage
                   mediaId={product.media_ids?.[0]}
                   alt={product.name}
-                  fallbackSrc={imageSrc}
+                  productNameOrSlug={product.slug}
                 />
               </div>
             </div>
