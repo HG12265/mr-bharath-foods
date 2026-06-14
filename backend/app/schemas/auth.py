@@ -44,3 +44,9 @@ class UserResponse(BaseModel):
     role: UserRole
     personal_details: PersonalDetailsResponse
 
+
+class SessionResponse(BaseModel):
+    authenticated: bool
+    user: UserResponse | None = None
+
+

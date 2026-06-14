@@ -7,15 +7,23 @@ import { Envelope, Token } from "../types";
 let accessToken: string | null = null;
 let guestToken: string | null = null;
 let refreshFailed = false;
+let sessionAuthenticated = false;
 
 export const getAccessToken = (): string | null => accessToken;
 export const setAccessToken = (token: string | null): void => {
   accessToken = token;
   if (token) {
     refreshFailed = false;
+    sessionAuthenticated = true;
   } else {
     refreshFailed = true;
+    sessionAuthenticated = false;
   }
+};
+
+export const getSessionAuthenticated = (): boolean => sessionAuthenticated;
+export const setSessionAuthenticated = (auth: boolean): void => {
+  sessionAuthenticated = auth;
 };
 
 export const setRefreshFailed = (failed: boolean): void => {
@@ -105,7 +113,7 @@ apiClient.interceptors.response.use(
     // Only auto-refresh on 401 (Unauthorized) credentials expiry
     // Do not attempt to refresh on 403 (Forbidden) or other codes
     if (error.response?.status === 401 && !originalRequest.headers.get("X-Retry-Flag")) {
-      if (refreshFailed) {
+      if (refreshFailed || !sessionAuthenticated) {
         return Promise.reject(error);
       }
 
@@ -114,7 +122,8 @@ apiClient.interceptors.response.use(
         originalRequest.url?.includes("/auth/login") ||
         originalRequest.url?.includes("/auth/register") ||
         originalRequest.url?.includes("/auth/refresh") ||
-        originalRequest.url?.includes("/auth/otp");
+        originalRequest.url?.includes("/auth/otp") ||
+        originalRequest.url?.includes("/auth/me");
 
       if (isAuthSetupUrl) {
         setAccessToken(null);

@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProducts } from "@/hooks/use-products";
-import { useMe } from "@/hooks/use-auth";
+import { useSession } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { formatINR, optimizeCloudinaryUrl, getProductFallbackImage } from "@/lib/utils";
 import { 
@@ -45,8 +45,8 @@ export default function HomePage() {
   // Display only active featured products from the database
   const displayProducts = dbProducts.filter((product: any) => product.is_featured === true);
 
-  const { data: meData } = useMe();
-  const user = meData?.data;
+  const { data: sessionData } = useSession();
+  const user = sessionData?.data?.user;
   const isCustomer = user?.role === "customer";
   const router = useRouter();
 

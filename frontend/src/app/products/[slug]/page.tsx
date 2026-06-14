@@ -7,7 +7,7 @@ import { useRouter, notFound } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProductBySlug } from "@/hooks/use-products";
 import { useAddToCart } from "@/hooks/use-cart";
-import { useMe } from "@/hooks/use-auth";
+import { useSession } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { useMediaAsset } from "@/hooks/use-media";
 import { formatINR, getProductFallbackImage } from "@/lib/utils";
@@ -45,8 +45,8 @@ export default function ProductDetailPage({ params }: PageProps) {
   const [successMessage, setSuccessMessage] = useState("");
   const addToCartMutation = useAddToCart();
 
-  const { data: meData } = useMe();
-  const user = meData?.data;
+  const { data: sessionData } = useSession();
+  const user = sessionData?.data?.user;
   const isCustomer = user?.role === "customer";
   const router = useRouter();
 

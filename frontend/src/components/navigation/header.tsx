@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
-import { useMe, useLogout } from "@/hooks/use-auth";
+import { useSession, useLogout } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { siteConfig } from "@/config/site";
 import { Menu, X, User, ShoppingCart } from "lucide-react";
@@ -18,10 +18,10 @@ export const Header: React.FC = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const { openCart } = useCartDrawer();
 
-  const { data: userData } = useMe({
+  const { data: sessionData } = useSession({
     staleTime: 5 * 60 * 1000,
   });
-  const user = userData?.data;
+  const user = sessionData?.data?.user;
 
   const logoutMutation = useLogout();
   const handleLogout = () => {

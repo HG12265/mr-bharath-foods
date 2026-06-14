@@ -265,10 +265,9 @@ async def test_auth_me_anonymous_returns_401(mock_db: MagicMock) -> None:
 
 @pytest.mark.anyio
 async def test_product_media_resolution(mock_db: MagicMock) -> None:
-    from app.models.product import Product
-    from app.repositories.product_repository import ProductRepository
-    from app.repositories.media_repository import MediaRepository
     from app.api.v1.products import map_product_response
+    from app.repositories.media_repository import MediaRepository
+    from app.repositories.product_repository import ProductRepository
 
     # Mock product document
     product_doc = {
@@ -345,3 +344,65 @@ async def test_query_non_existent_media_returns_404(mock_db: MagicMock) -> None:
     app.dependency_overrides.clear()
     assert response.status_code == 404
     assert response.json()["success"] is False
+
+
+@pytest.mark.anyio
+async def test_get_session_guest(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: None
+
+    response = client.get("/api/v1/auth/session")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    res_data = response.json()
+    assert res_data["success"] is True
+    assert res_data["data"]["authenticated"] is False
+    assert res_data["data"]["user"] is None
+
+
+@pytest.mark.anyio
+async def test_get_session_authenticated(mock_db: MagicMock) -> None:
+    from app.core.dependencies import get_optional_user
+
+    mock_user = TokenData(
+        user_id="6a2d1180f8d9ad332876e001",
+        email="customer@bharathfoods.in",
+        role=UserRole.CUSTOMER
+    )
+
+    customer_doc = {
+        "_id": ObjectId("6a2d1180f8d9ad332876e001"),
+        "auth": {
+            "email": "customer@bharathfoods.in",
+            "phone": "+919876543210",
+            "role": "customer",
+            "password_hash": "...",
+        },
+        "personal_details": {
+            "first_name": "Gowtham",
+            "last_name": "Kumar"
+        },
+        "is_deleted": False
+    }
+
+    mock_db["customers"].find_one = AsyncMock(return_value=customer_doc)
+
+    app.dependency_overrides[get_db] = lambda: mock_db
+    app.dependency_overrides[get_optional_user] = lambda: mock_user
+
+    response = client.get("/api/v1/auth/session")
+    app.dependency_overrides.clear()
+
+    assert response.status_code == 200
+    res_data = response.json()
+    assert res_data["success"] is True
+    assert res_data["data"]["authenticated"] is True
+    assert res_data["data"]["user"]["id"] == "6a2d1180f8d9ad332876e001"
+    assert res_data["data"]["user"]["email"] == "customer@bharathfoods.in"
+    assert res_data["data"]["user"]["phone"] == "+919876543210"
+    assert res_data["data"]["user"]["role"] == "customer"
+    assert res_data["data"]["user"]["personal_details"]["first_name"] == "Gowtham"
+
+

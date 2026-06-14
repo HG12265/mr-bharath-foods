@@ -460,4 +460,10 @@ export interface Wishlist {
   items: WishlistItem[];
   created_at: string;
   updated_at: string;
-}
+}
+
+export interface Session {
+  authenticated: boolean;
+  user: User | null;
+}
+

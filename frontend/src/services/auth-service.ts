@@ -1,5 +1,5 @@
 import { apiClient, setAccessToken } from "./api-client";
-import { Envelope, Token, User } from "../types";
+import { Envelope, Token, User, Session } from "../types";
 
 export const authService = {
   async register(payload: any): Promise<Envelope<User>> {
@@ -32,6 +32,11 @@ export const authService = {
 
   async getMe(): Promise<Envelope<User>> {
     const response = await apiClient.get<Envelope<User>>("/api/v1/auth/me");
+    return response.data;
+  },
+
+  async getSession(): Promise<Envelope<Session>> {
+    const response = await apiClient.get<Envelope<Session>>("/api/v1/auth/session");
     return response.data;
   },
 };

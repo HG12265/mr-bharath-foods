@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import notificationService, { ListNotificationsParams } from "../services/notification-service";
-import { useMe } from "./use-auth";
+import { useMe, useSession } from "./use-auth";
 
 export const useNotifications = (params?: ListNotificationsParams) => {
-  const { data: meData } = useMe();
-  const isLoggedIn = !!meData?.data;
+  const { data: sessionData } = useSession();
+  const isLoggedIn = !!sessionData?.data?.user;
   return useQuery({
     queryKey: ["notifications", params],
     queryFn: () => notificationService.listMyNotifications(params),

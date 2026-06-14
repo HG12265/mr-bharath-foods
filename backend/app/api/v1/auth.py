@@ -2,7 +2,7 @@ import redis.asyncio as aioredis
 from fastapi import APIRouter, Depends, Request, Response, status
 from pymongo.asynchronous.database import AsyncDatabase
 
-from app.core.dependencies import get_current_user, get_db, get_redis
+from app.core.dependencies import get_current_user, get_db, get_optional_user, get_redis
 from app.core.exceptions import AuthenticationException
 from app.core.rate_limit import check_rate_limit
 from app.repositories.customer_repository import CustomerRepository
@@ -12,6 +12,7 @@ from app.schemas.auth import (
     OTPVerify,
     PersonalDetailsResponse,
     RegisterRequest,
+    SessionResponse,
     Token,
     TokenData,
     UserResponse,
@@ -213,6 +214,43 @@ async def logout(
     return Envelope(
         success=True,
         message="Session logged out successfully."
+    )
+
+@router.get("/session", response_model=Envelope[SessionResponse])
+async def get_session_info(
+    db: AsyncDatabase = Depends(get_db),          # type: ignore[type-arg]
+    current_user: TokenData | None = Depends(get_optional_user)
+) -> Envelope[SessionResponse]:
+    if not current_user:
+        return Envelope(
+            success=True,
+            message="Guest session retrieved.",
+            data=SessionResponse(authenticated=False, user=None)
+        )
+
+    repo = CustomerRepository(db)
+    customer = await repo.get_by_id(current_user.user_id)
+    if not customer:
+        return Envelope(
+            success=True,
+            message="Guest session retrieved.",
+            data=SessionResponse(authenticated=False, user=None)
+        )
+
+    user_data = UserResponse(
+        id=customer.id or "",
+        email=customer.auth.email,
+        phone=customer.auth.phone,
+        role=customer.auth.role,
+        personal_details=PersonalDetailsResponse(
+            first_name=customer.personal_details.first_name,
+            last_name=customer.personal_details.last_name
+        )
+    )
+    return Envelope(
+        success=True,
+        message="Authenticated session retrieved.",
+        data=SessionResponse(authenticated=True, user=user_data)
     )
 
 @router.get("/me", response_model=Envelope[UserResponse])

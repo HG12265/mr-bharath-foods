@@ -1,10 +1,10 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import wishlistService from "../services/wishlist-service";
-import { useMe } from "./use-auth";
+import { useSession } from "./use-auth";
 
 export const useWishlist = () => {
-  const { data: meData } = useMe();
-  const user = meData?.data;
+  const { data: sessionData } = useSession();
+  const user = sessionData?.data?.user;
   // Enable query only for customer users (do not fetch for guests)
   const isCustomer = !!user && user.role === "customer";
 

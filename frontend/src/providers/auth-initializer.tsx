@@ -22,6 +22,15 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     const tryRefresh = async () => {
+      const wasLoggedIn = typeof window !== "undefined" && localStorage.getItem("was_logged_in") === "true";
+      if (!wasLoggedIn) {
+        setAccessToken(null);
+        if (!cancelled) {
+          setIsReady(true);
+        }
+        return;
+      }
+
       try {
         const response = await axios.post<Envelope<Token>>(
           `${env.NEXT_PUBLIC_API_URL}/api/v1/auth/refresh`,
@@ -34,6 +43,9 @@ export function AuthInitializer({ children }: { children: React.ReactNode }) {
       } catch {
         // No valid refresh token — user is a guest, that's fine
         setAccessToken(null);
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("was_logged_in");
+        }
       } finally {
         if (!cancelled) {
           setIsReady(true);
