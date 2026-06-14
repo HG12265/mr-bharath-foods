@@ -1,5 +1,9 @@
-import React from "react";
+import { Metadata } from "next";
 import AccountLayoutClient from "./account-layout-client";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export const dynamic = "force-dynamic";
 

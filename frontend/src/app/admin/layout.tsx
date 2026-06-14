@@ -1,5 +1,9 @@
-import React from "react";
+import { Metadata } from "next";
 import AdminLayoutClient from "./admin-layout-client";
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 export const dynamic = "force-dynamic";
 

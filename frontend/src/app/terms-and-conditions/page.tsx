@@ -4,9 +4,14 @@ import Link from "next/link";
 import PublicLayout from "@/components/layout/public-layout";
 import { Scale, FileText, Info, AlertTriangle } from "lucide-react";
 
+import { siteConfig } from "@/config/site";
+
 export const metadata: Metadata = {
   title: "Terms & Conditions | Bharath Delight Foods",
   description: "Review our Terms and Conditions for using the website and placing orders at Bharath Delight Foods.",
+  alternates: {
+    canonical: `${siteConfig.url}/terms-and-conditions`,
+  },
 };
 
 export default function TermsAndConditionsPage() {

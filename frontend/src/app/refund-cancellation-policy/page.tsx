@@ -3,10 +3,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 import PublicLayout from "@/components/layout/public-layout";
 import { RefreshCw, ClipboardList, Ban, CreditCard, HelpCircle } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Refund & Cancellation Policy | Bharath Delight Foods",
   description: "Learn about order cancellation deadlines, eligibility for refunds/replacements, and refund timelines at Bharath Delight Foods.",
+  alternates: {
+    canonical: `${siteConfig.url}/refund-cancellation-policy`,
+  },
 };
 
 export default function RefundCancellationPolicyPage() {

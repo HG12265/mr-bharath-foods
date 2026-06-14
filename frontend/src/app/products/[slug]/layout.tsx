@@ -34,16 +34,18 @@ export async function generateMetadata({
 
     if (!product) throw new Error("No product data");
 
+    const firstVariant = product.variants?.[0];
+    const priceText = firstVariant ? ` starting from ₹${firstVariant.price}` : "";
+
     // Title: prefer product SEO meta_title, fallback to product name
     const title =
       product.seo?.meta_title ||
-      `${product.name} | Bharath Delight Foods`;
+      `${product.name}${priceText} | Bharath Delight Foods`;
 
     // Description: prefer SEO meta_description, fallback to short_description
     const description =
       product.seo?.meta_description ||
-      product.short_description ||
-      siteConfig.description;
+      `${product.short_description || product.description}${priceText}. Sourced responsibly.`;
 
     // Keywords: merge product SEO + tags + search_keywords
     const keywords: string[] = [

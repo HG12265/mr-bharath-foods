@@ -3,10 +3,14 @@ import { Metadata } from "next";
 import Link from "next/link";
 import PublicLayout from "@/components/layout/public-layout";
 import { Truck, Clock, MapPin, AlertCircle } from "lucide-react";
+import { siteConfig } from "@/config/site";
 
 export const metadata: Metadata = {
   title: "Shipping Policy | Bharath Delight Foods",
   description: "Learn about order verification, processing timelines, delivery durations, and tracking at Bharath Delight Foods.",
+  alternates: {
+    canonical: `${siteConfig.url}/shipping-policy`,
+  },
 };
 
 export default function ShippingPolicyPage() {

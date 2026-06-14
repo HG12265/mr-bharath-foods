@@ -169,6 +169,7 @@ export default function ProductDetailPage({ params }: PageProps) {
         name: product.name,
         description: product.short_description || product.description,
         url: `${siteConfig.url}/products/${slug}`,
+        image: product.media_urls?.[0] || `${siteConfig.url}/images/product-placeholder.jpg`,
         brand: { "@type": "Brand", name: siteConfig.name },
         sku: selectedVariant?.sku,
         offers: selectedVariant

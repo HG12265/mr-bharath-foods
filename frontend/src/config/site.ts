@@ -2,7 +2,7 @@ import { env } from "@/lib/env";
 
 export const siteConfig = {
   name: "Bharath Delight Foods",
-  tagline: "Selecting the Best to Serve the Best",
+  tagline: "Food Done Right.",
   mediaDomains: [
     "res.cloudinary.com",
     "pub-media.bharathdelightfoods.in",
@@ -11,7 +11,7 @@ export const siteConfig = {
   description:
     "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for absolute purity, and trace-certified by batch.",
   url: env.NEXT_PUBLIC_APP_URL,
-  ogImage: `${env.NEXT_PUBLIC_APP_URL}/og-image.jpg`,
+  ogImage: `${env.NEXT_PUBLIC_APP_URL}/images/og-default.jpg`,
   fssaiLicenseNumber: "12424999000123",
   twitterHandle: "",
   keywords: [
@@ -21,7 +21,7 @@ export const siteConfig = {
     "traditional ghee",
     "premium indian ghee",
     "lab verified ghee",
-    "fssai certified ghee",
+    "fssai licensed ghee",
     "buy ghee online",
     "Bharath Delight Foods",
   ],

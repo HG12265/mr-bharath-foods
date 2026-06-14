@@ -1,22 +1,27 @@
 import { MetadataRoute } from "next";
-import { siteConfig } from "@/config/site";
+import { env } from "@/lib/env";
 
 /**
  * Robots.txt generator.
  * Allows all public-facing pages, disallows private/admin routes.
  */
 export default function robots(): MetadataRoute.Robots {
+  const appUrl = env.NEXT_PUBLIC_APP_URL;
+
   return {
     rules: [
       {
         userAgent: "*",
         allow: "/",
         disallow: [
-          "/admin/",
-          "/account/",
-          "/checkout/",
-          "/order/",
-          "/api/",
+          "/admin",
+          "/account",
+          "/cart",
+          "/checkout",
+          "/login",
+          "/register",
+          "/order",
+          "/api",
         ],
       },
       {
@@ -25,6 +30,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: "/",
       },
     ],
-    sitemap: `${siteConfig.url}/sitemap.xml`,
+    sitemap: `${appUrl}/sitemap.xml`,
   };
 }

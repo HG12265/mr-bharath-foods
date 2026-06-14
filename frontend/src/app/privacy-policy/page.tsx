@@ -4,9 +4,14 @@ import Link from "next/link";
 import PublicLayout from "@/components/layout/public-layout";
 import { Shield, Lock, Eye, Mail } from "lucide-react";
 
+import { siteConfig } from "@/config/site";
+
 export const metadata: Metadata = {
   title: "Privacy Policy | Bharath Delight Foods",
   description: "Understand how we collect, handle, and secure your personal and order data at Bharath Delight Foods.",
+  alternates: {
+    canonical: `${siteConfig.url}/privacy-policy`,
+  },
 };
 
 export default function PrivacyPolicyPage() {

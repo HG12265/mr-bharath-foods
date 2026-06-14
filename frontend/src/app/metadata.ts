@@ -9,7 +9,7 @@ export const defaultMetadata: Metadata = {
   },
   description: siteConfig.description,
   keywords: siteConfig.keywords,
-  metadataBase: new URL(siteConfig.url),
+  metadataBase: env.NEXT_PUBLIC_APP_URL ? new URL(env.NEXT_PUBLIC_APP_URL) : undefined,
   alternates: {
     canonical: "/",
   },
@@ -47,13 +47,10 @@ export const defaultMetadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  // Search Console verification — stored in env only, never in DB
-  ...(env.NEXT_PUBLIC_GOOGLE_SC_TOKEN && {
-    verification: {
-      google: env.NEXT_PUBLIC_GOOGLE_SC_TOKEN,
-      ...(env.NEXT_PUBLIC_BING_WMT_TOKEN && {
-        other: { "msvalidate.01": env.NEXT_PUBLIC_BING_WMT_TOKEN },
-      }),
-    },
-  }),
+  verification: {
+    google: env.NEXT_PUBLIC_GOOGLE_SC_TOKEN || undefined,
+    ...(env.NEXT_PUBLIC_BING_WMT_TOKEN && {
+      other: { "msvalidate.01": env.NEXT_PUBLIC_BING_WMT_TOKEN },
+    }),
+  },
 };
