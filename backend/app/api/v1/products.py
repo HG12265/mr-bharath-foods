@@ -49,38 +49,8 @@ def map_variant_response(var: ProductVariant) -> ProductVariantResponse:
 
 
 async def map_product_response(prod: Product, media_repo: MediaRepository) -> ProductResponse:
-    resolved_media: list[str] = []
-    if prod.media_ids:
-        from bson import ObjectId
-        from bson.errors import InvalidId
-
-        valid_object_ids: list[ObjectId] = []
-        # Maintain order and fallback to original values
-        resolved_media = list(prod.media_ids)
-
-        for m_id in prod.media_ids:
-            try:
-                oid = ObjectId(m_id)
-                valid_object_ids.append(oid)
-            except InvalidId:
-                pass
-
-        if valid_object_ids:
-            cursor = media_repo.collection.find({
-                "_id": {"$in": valid_object_ids},
-                "is_deleted": {"$ne": True},
-                "status": "completed"
-            })
-            async for doc in cursor:
-                asset_id_str = str(doc["_id"])
-                public_url = doc.get("public_url")
-                asset_type = doc.get("asset_type")
-
-                public_types = {"product_image", "category_image", "blog_image", "banner_image"}
-                if public_url and asset_type in public_types:
-                    for i, orig_id in enumerate(resolved_media):
-                        if orig_id == asset_id_str:
-                            resolved_media[i] = public_url
+    from app.services.media_service import resolve_media_urls
+    resolved_urls = await resolve_media_urls(prod.media_ids, media_repo)
 
     return ProductResponse(
         id=prod.id or "",
@@ -89,7 +59,8 @@ async def map_product_response(prod: Product, media_repo: MediaRepository) -> Pr
         description=prod.description,
         short_description=prod.short_description,
         category_id=prod.category_id,
-        media_ids=resolved_media,
+        media_ids=prod.media_ids or [],
+        media_urls=resolved_urls,
         sourcing=SourcingDetailsSchema(
             region=prod.sourcing.region,
             story=prod.sourcing.story,

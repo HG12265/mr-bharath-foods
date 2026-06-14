@@ -220,3 +220,49 @@ class MediaService(BaseService[MediaAsset]):
         Tests connection to the S3/R2 storage layer.
         """
         return storage_manager.check_health()
+
+
+async def resolve_media_urls(media_ids: list[str] | None, media_repository: MediaRepository) -> list[str]:
+    """
+    Resolves list of media IDs to their public completed URLs.
+    """
+    if not media_ids:
+        return []
+
+    from bson import ObjectId
+    from bson.errors import InvalidId
+
+    valid_object_ids: list[ObjectId] = []
+    resolved_url_map = {}
+
+    for m_id in media_ids:
+        if m_id.startswith("http://") or m_id.startswith("https://") or m_id.startswith("/"):
+            resolved_url_map[m_id] = m_id
+        else:
+            try:
+                oid = ObjectId(m_id)
+                valid_object_ids.append(oid)
+            except InvalidId:
+                resolved_url_map[m_id] = m_id
+
+    if valid_object_ids:
+        cursor = media_repository.collection.find({
+            "_id": {"$in": valid_object_ids},
+            "is_deleted": {"$ne": True},
+            "status": "completed"
+        })
+        async for doc in cursor:
+            asset_id_str = str(doc["_id"])
+            public_url = doc.get("public_url")
+            asset_type = doc.get("asset_type")
+
+            public_types = {"product_image", "category_image", "blog_image", "banner_image"}
+            if public_url and asset_type in public_types:
+                resolved_url_map[asset_id_str] = public_url
+
+    resolved_urls = []
+    for m_id in media_ids:
+        resolved_urls.append(resolved_url_map.get(m_id, m_id))
+
+    return resolved_urls
+

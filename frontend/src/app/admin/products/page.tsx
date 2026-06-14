@@ -380,7 +380,7 @@ export default function AdminProductsPage() {
       short_description: formShortDesc.trim(),
       description: formDescription.trim(),
       category_id: formCategoryId,
-      media_ids: formMediaIds,
+      media_ids: formMediaIds.filter(id => /^[a-fA-F0-9]{24}$/.test(id)),
       sourcing: {
         region: formSourcingRegion.trim(),
         story: formSourcingStory.trim()
@@ -654,7 +654,7 @@ export default function AdminProductsPage() {
                         <React.Fragment key={p.id}>
                           <tr className="hover:bg-richCream/5 transition-colors">
                             <td className="px-4 py-3.5">
-                              <ProductImage mediaId={p.media_ids?.[0]} />
+                              <ProductImage mediaId={p.media_urls?.[0] || p.media_ids?.[0]} />
                             </td>
                             <td className="px-4 py-3.5">
                               <div className="font-bold text-deodharForest">{p.name}</div>

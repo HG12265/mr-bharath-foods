@@ -190,7 +190,7 @@ export default function WishlistPage() {
                   {/* Image & Header */}
                   <div className="relative w-full h-[180px] bg-richCream/10 border-b border-burnishedGold/10">
                     <WishlistProductImage
-                      mediaId={summary.media_ids?.[0]}
+                      mediaId={summary.media_urls?.[0] || summary.media_ids?.[0]}
                       alt={summary.name}
                       productNameOrSlug={summary.slug}
                     />

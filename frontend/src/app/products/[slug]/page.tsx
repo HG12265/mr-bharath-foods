@@ -242,7 +242,7 @@ export default function ProductDetailPage({ params }: PageProps) {
             <div className="lg:col-span-6 animate-fade-up">
               <div className="bg-white border border-burnishedGold/20 rounded-lg overflow-hidden shadow-[0_8px_30px_rgba(25,25,25,0.04)] aspect-square relative select-none">
                 <ProductDetailImage
-                  mediaId={product.media_ids?.[0]}
+                  mediaId={product.media_urls?.[0] || product.media_ids?.[0]}
                   alt={product.name}
                   productNameOrSlug={product.slug}
                 />

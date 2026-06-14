@@ -1,6 +1,6 @@
 from decimal import Decimal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, field_validator
 
 
 class SourcingDetailsSchema(BaseModel):
@@ -66,6 +66,18 @@ class ProductCreate(BaseModel):
     is_featured: bool = Field(False)
     status: str = Field("draft", description="draft, active, archived")
 
+    @field_validator("media_ids", mode="after")
+    @classmethod
+    def validate_media_ids(cls, v: list[str] | None) -> list[str] | None:
+        if v is None:
+            return None
+        import re
+        pattern = re.compile(r"^[a-fA-F0-9]{24}$")
+        for m_id in v:
+            if not pattern.match(m_id):
+                raise ValueError(f"media_ids must contain only valid 24-character hex ObjectIds. Invalid format: {m_id}")
+        return v
+
 
 class ProductUpdate(BaseModel):
     name: str | None = Field(None, min_length=2, max_length=100)
@@ -83,6 +95,18 @@ class ProductUpdate(BaseModel):
     is_featured: bool | None = Field(None)
     status: str | None = Field(None)
 
+    @field_validator("media_ids", mode="after")
+    @classmethod
+    def validate_media_ids(cls, v: list[str] | None) -> list[str] | None:
+        if v is None:
+            return None
+        import re
+        pattern = re.compile(r"^[a-fA-F0-9]{24}$")
+        for m_id in v:
+            if not pattern.match(m_id):
+                raise ValueError(f"media_ids must contain only valid 24-character hex ObjectIds. Invalid format: {m_id}")
+        return v
+
 
 class ProductStatusUpdate(BaseModel):
     status: str = Field(..., description="draft, active, archived")
@@ -96,6 +120,7 @@ class ProductResponse(BaseModel):
     short_description: str
     category_id: str
     media_ids: list[str]
+    media_urls: list[str] = Field(default_factory=list)
     sourcing: SourcingDetailsSchema
     attributes: list[ProductAttributeSchema]
     variants: list[ProductVariantResponse]

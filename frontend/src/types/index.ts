@@ -80,6 +80,7 @@ export interface Product {
   short_description: string;
   category_id: string;
   media_ids: string[];
+  media_urls?: string[];
   sourcing: SourcingDetails;
   attributes: ProductAttribute[];
   variants: ProductVariant[];
@@ -97,6 +98,7 @@ export interface CartProductSummary {
   name: string;
   slug: string;
   media_ids: string[];
+  media_urls?: string[];
   price: number;
   sku: string;
   stock_status: string;
@@ -440,6 +442,7 @@ export interface WishlistProductSummary {
   name: string;
   slug: string;
   media_ids: string[];
+  media_urls?: string[];
   price: number;
   sku: string;
   stock_status: "in_stock" | "out_of_stock";

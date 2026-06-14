@@ -189,10 +189,16 @@ class WishlistService(BaseService[Wishlist]):
             if not variant or not variant.is_active:
                 continue
 
+            from app.repositories.media_repository import MediaRepository
+            from app.services.media_service import resolve_media_urls
+            media_repo = MediaRepository(self.product_repository.db)
+            resolved_urls = await resolve_media_urls(product.media_ids, media_repo)
+
             summary = {
                 "name": product.name,
                 "slug": product.slug,
                 "media_ids": product.media_ids,
+                "media_urls": resolved_urls,
                 "price": variant.price,
                 "sku": variant.sku,
                 "stock_status": variant.stock_status,

@@ -11,6 +11,7 @@ class WishlistProductSummary(BaseModel):
     name: str
     slug: str
     media_ids: list[str] = Field(default_factory=list)
+    media_urls: list[str] = Field(default_factory=list)
     price: Decimal
     sku: str
     stock_status: str

@@ -420,6 +420,11 @@ class CartService(BaseService[Cart]):
             if not variant or not variant.is_active:
                 continue
 
+            from app.repositories.media_repository import MediaRepository
+            from app.services.media_service import resolve_media_urls
+            media_repo = MediaRepository(self.product_repository.db)
+            resolved_urls = await resolve_media_urls(product.media_ids, media_repo)
+
             # Check if variant price changed or snapshots are fresh, we still use the snapshot or dynamic?
             # Requirement says: "Use Decimal-safe pricing and summaries."
             # "Return product summary data for cart listing."
@@ -427,6 +432,7 @@ class CartService(BaseService[Cart]):
                 "name": product.name,
                 "slug": product.slug,
                 "media_ids": product.media_ids,
+                "media_urls": resolved_urls,
                 "price": variant.price,  # use current live price for listing
                 "sku": variant.sku,
                 "stock_status": variant.stock_status,

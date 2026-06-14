@@ -309,7 +309,7 @@ export default function HomePage() {
                     {/* Product Image Container */}
                     <div className="w-full h-[260px] md:h-[300px] border-b border-burnishedGold/15 relative overflow-hidden select-none bg-gradient-to-br from-gheeGold/5 to-richCream/10">
                       <HomeProductImage
-                        mediaId={product.media_ids?.[0]}
+                        mediaId={product.media_urls?.[0] || product.media_ids?.[0]}
                         alt={product.name}
                         productNameOrSlug={product.slug}
                       />

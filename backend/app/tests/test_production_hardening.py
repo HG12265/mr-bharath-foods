@@ -329,10 +329,15 @@ async def test_product_media_resolution(mock_db: MagicMock) -> None:
     # Call map_product_response to map the db product to response schema
     response_data = await map_product_response(product, media_repo)
 
-    # Check media_ids are mapped to resolved public_urls
+    # Check media_ids are kept as raw IDs
     assert len(response_data.media_ids) == 2
-    assert response_data.media_ids[0] == "https://res.cloudinary.com/test/rasipuram-ghee.jpg"
+    assert response_data.media_ids[0] == "6a2d1180f8d9ad332876e91b"
     assert response_data.media_ids[1] == "invalid_id_as_url_or_something"
+
+    # Check media_urls contains resolved public URLs
+    assert len(response_data.media_urls) == 2
+    assert response_data.media_urls[0] == "https://res.cloudinary.com/test/rasipuram-ghee.jpg"
+    assert response_data.media_urls[1] == "invalid_id_as_url_or_something"
 
 
 @pytest.mark.anyio
@@ -404,5 +409,21 @@ async def test_get_session_authenticated(mock_db: MagicMock) -> None:
     assert res_data["data"]["user"]["phone"] == "+919876543210"
     assert res_data["data"]["user"]["role"] == "customer"
     assert res_data["data"]["user"]["personal_details"]["first_name"] == "Gowtham"
+
+
+def test_product_update_rejects_url_media_ids() -> None:
+    from pydantic import ValidationError
+
+    from app.schemas.product import ProductUpdate
+
+    # Valid hex ObjectId strings should pass
+    update_model = ProductUpdate.model_validate({"media_ids": ["6a2d1180f8d9ad332876e91b"]})
+    assert update_model.media_ids == ["6a2d1180f8d9ad332876e91b"]
+
+    # Invalid string like a URL should be rejected
+    with pytest.raises(ValidationError) as exc_info:
+        ProductUpdate.model_validate({"media_ids": ["https://res.cloudinary.com/test/image.jpg"]})
+    assert "media_ids must contain only valid 24-character hex ObjectIds" in str(exc_info.value)
+
 
 
