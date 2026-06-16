@@ -92,7 +92,7 @@ export default function HomePage() {
       <div className="bg-richCream text-indianInk min-h-screen selection:bg-deodharForest/10">
         
         {/* SECTION 1: HERO SECTION */}
-        <section className="relative overflow-hidden w-full flex items-start md:items-center pt-[16svh] md:pt-0 min-h-[calc(100svh-72px)] h-[calc(100svh-72px)] md:min-h-[calc(100vh-var(--header-height))] md:h-[calc(100vh-var(--header-height))] border-b border-burnishedGold/25">
+        <section className="relative overflow-hidden w-full flex items-start md:items-center pt-[6svh] md:pt-0 min-h-[calc(100svh-72px)] h-[calc(100svh-72px)] md:min-h-[calc(100vh-var(--header-height))] md:h-[calc(100vh-var(--header-height))] border-b border-burnishedGold/25">
           {/* Background Image Container */}
           <div className="absolute inset-0 z-0 overflow-hidden">
             {/* Desktop Hero Image */}
@@ -132,30 +132,39 @@ export default function HomePage() {
 
           {/* Text Overlay Content */}
           <div className="relative z-20 w-full mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div className="max-w-[340px] sm:max-w-xl lg:max-w-2xl text-left md:-translate-y-8 min-[1440px]:translate-y-0 flex flex-col justify-center select-text drop-shadow-[0_1.5px_2px_rgba(0,0,0,0.55)] md:drop-shadow-none">
+            <div className="max-w-[310px] sm:max-w-xl lg:max-w-2xl text-left md:-translate-y-8 min-[1440px]:translate-y-0 flex flex-col justify-center select-text">
               
               {/* Eyebrow with motion-safe fade-up */}
-              <span className="text-[10px] sm:text-sm font-semibold uppercase tracking-[0.25em] text-[#D9A441] mb-3 md:mb-4 motion-safe:animate-fade-up block font-sans">
+              <span 
+                className="text-[10px] sm:text-sm font-semibold uppercase tracking-[0.25em] text-[#D9A441] mb-1.5 md:mb-4 motion-safe:animate-fade-up block font-sans"
+                style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.85)" }}
+              >
                 HERITAGE FOOD SELECTIONS
               </span>
 
               {/* Heading with motion-safe fade-up */}
-              <h1 className="font-serif text-[32px] sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-tight md:leading-[1.1] tracking-tight mb-4 md:mb-6 motion-safe:animate-fade-up">
+              <h1 
+                className="font-serif text-[30px] sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-tight md:leading-[1.1] tracking-tight mb-2 md:mb-6 motion-safe:animate-fade-up"
+                style={{ textShadow: "0 1.5px 3px rgba(0, 0, 0, 0.85)" }}
+              >
                 <span className="sr-only">Bharath Delight Foods — </span>
                 Selecting the <span className="text-[#D9A441]">Best</span><br />
                 to Serve the <span className="text-[#D9A441]">Best</span>
               </h1>
 
               {/* Description with motion-safe fade-up */}
-              <p className="font-sans text-sm sm:text-base md:text-lg mb-6 md:mb-8 max-w-md md:max-w-lg leading-relaxed text-[#FAF9F6]/90 motion-safe:animate-fade-up">
+              <p 
+                className="font-sans text-xs sm:text-base md:text-lg mb-4 md:mb-8 max-w-[310px] sm:max-w-md md:max-w-lg leading-relaxed text-[#FAF9F6]/90 motion-safe:animate-fade-up"
+                style={{ textShadow: "0 1px 2px rgba(0, 0, 0, 0.8)" }}
+              >
                 Bharath Delight Foods brings carefully selected Indian food products to families with a focus on quality, responsibility, and trust.
               </p>
 
               {/* Stacking Buttons with motion-safe fade-up */}
-              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3.5 md:gap-4 pt-2 w-full sm:w-auto motion-safe:animate-fade-up">
+              <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 md:gap-4 pt-1 w-full sm:w-auto motion-safe:animate-fade-up">
                 <Link
                   href="/shop"
-                  className="relative overflow-hidden group w-full sm:w-auto h-12 md:h-auto flex items-center justify-center px-8 py-3 md:py-4 bg-deodharForest text-warmIvory border border-gheeGold/40 hover:border-gheeGold rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 md:motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(217,164,65,0.25)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+                  className="relative overflow-hidden group w-full sm:w-auto h-12 md:h-auto flex items-center justify-center px-8 py-3.5 md:py-4 bg-deodharForest text-warmIvory border border-gheeGold/40 hover:border-gheeGold rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 md:motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(217,164,65,0.25)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
                 >
                   <span className="relative z-10">SHOP CATALOG</span>
                   <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-transparent via-white/10 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000 ease-out" />
@@ -163,7 +172,7 @@ export default function HomePage() {
 
                 <Link
                   href="/about"
-                  className="w-full sm:w-auto h-12 md:h-auto flex items-center justify-center px-8 py-3 md:py-4 border border-[rgba(255,255,255,0.45)] bg-[rgba(255,255,255,0.16)] text-white hover:border-[#D9A441] hover:text-[#D9A441] hover:bg-[rgba(255,255,255,0.25)] rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 md:motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
+                  className="w-full sm:w-auto h-12 md:h-auto flex items-center justify-center px-8 py-3.5 md:py-4 border border-[rgba(255,255,255,0.45)] bg-[rgba(255,255,255,0.16)] text-white hover:border-[#D9A441] hover:text-[#D9A441] hover:bg-[rgba(255,255,255,0.25)] rounded-[4px] font-sans text-xs font-bold tracking-[0.2em] uppercase transition-all duration-300 md:motion-safe:hover:-translate-y-0.5 hover:shadow-[0_4px_20px_rgba(255,255,255,0.15)] text-center focus-visible:ring-2 focus-visible:ring-burnishedGold outline-none"
                 >
                   LEARN OUR SELECTION PROCESS
                 </Link>
