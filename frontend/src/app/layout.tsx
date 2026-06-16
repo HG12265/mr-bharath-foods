@@ -24,8 +24,8 @@ export const metadata = defaultMetadata;
 const organizationJsonLd = {
   "@context": "https://schema.org",
   "@type": "Organization",
-  name: siteConfig.name,
-  url: siteConfig.url,
+  name: "Bharath Delight Foods",
+  url: `${siteConfig.url}/`,
   logo: {
     "@type": "ImageObject",
     url: `${siteConfig.url}/logo.png`,
@@ -45,8 +45,9 @@ const organizationJsonLd = {
 const webSiteJsonLd = {
   "@context": "https://schema.org",
   "@type": "WebSite",
-  name: siteConfig.name,
-  url: siteConfig.url,
+  name: "Bharath Delight Foods",
+  alternateName: ["Bharath Delight", "BDF"],
+  url: `${siteConfig.url}/`,
   description: siteConfig.description,
 };
 

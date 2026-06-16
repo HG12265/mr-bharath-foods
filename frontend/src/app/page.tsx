@@ -124,6 +124,7 @@ export default function HomePage() {
 
               {/* Heading with motion-safe fade-up */}
               <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-[1.1] tracking-tight mb-6 motion-safe:animate-fade-up">
+                <span className="sr-only">Bharath Delight Foods — </span>
                 Selecting the <span className="text-[#D9A441]">Best</span><br />
                 to Serve the <span className="text-[#D9A441]">Best</span>
               </h1>

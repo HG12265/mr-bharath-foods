@@ -49,7 +49,7 @@ export const Header: React.FC = () => {
           <Link href="/" className="flex items-center gap-4 select-none group py-1">
             <Image
               src="/logo.png"
-              alt="Bharath Delight Foods Logo"
+              alt="Bharath Delight Foods"
               width={56}
               height={56}
               priority

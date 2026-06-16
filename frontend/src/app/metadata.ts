@@ -4,8 +4,11 @@ import { env } from "@/lib/env";
 
 export const defaultMetadata: Metadata = {
   metadataBase: new URL("https://bharath-delight-foods.vercel.app"),
-
-  title: "Bharath Delight Foods — Food Done Right.",
+  applicationName: "Bharath Delight Foods",
+  title: {
+    default: "Bharath Delight Foods — Food Done Right.",
+    template: "%s | Bharath Delight Foods",
+  },
   description:
     "Expertly curated premium Indian foods. Sourced from heritage regions, laboratory-verified for purity, and trace-certified by batch.",
   keywords: siteConfig.keywords,
