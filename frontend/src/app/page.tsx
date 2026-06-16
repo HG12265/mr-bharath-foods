@@ -92,30 +92,52 @@ export default function HomePage() {
       <div className="bg-richCream text-indianInk min-h-screen selection:bg-deodharForest/10">
         
         {/* SECTION 1: HERO SECTION */}
-        <section className="relative overflow-hidden w-full flex items-center min-h-[calc(100vh-var(--header-height))] h-[calc(100vh-var(--header-height))] border-b border-burnishedGold/25">
+        <section className="relative overflow-hidden w-full flex items-start md:items-center pt-20 sm:pt-28 md:pt-0 min-h-[calc(100vh-var(--header-height))] h-[calc(100vh-var(--header-height))] border-b border-burnishedGold/25">
           {/* Background Image Container */}
           <div className="absolute inset-0 z-0 overflow-hidden">
-            <Image
-              src="/images/hero-bg.jpg"
-              alt="Selecting the Best to Serve the Best"
-              fill
-              priority
-              unoptimized
-              className="object-cover object-center max-lg:object-[60%_50%] max-md:object-[68%_50%] transition-transform duration-100 ease-out select-none pointer-events-none"
-              style={parallaxStyle}
-            />
-            {/* Left side dark gradient overlay for text readability */}
+            {/* Desktop Hero Image */}
+            <div className="hidden md:block absolute inset-0 z-0 overflow-hidden">
+              <Image
+                src="/images/home-hero-desktop.png"
+                alt="Selecting the Best to Serve the Best"
+                fill
+                priority
+                unoptimized
+                className="object-cover object-center transition-transform duration-100 ease-out select-none pointer-events-none"
+                style={parallaxStyle}
+              />
+            </div>
+            {/* Mobile Hero Image */}
+            <div className="block md:hidden absolute inset-0 z-0 overflow-hidden">
+              <Image
+                src="/images/home-hero-mobile.png"
+                alt="Selecting the Best to Serve the Best"
+                fill
+                priority
+                unoptimized
+                className="object-cover object-center select-none pointer-events-none"
+              />
+            </div>
+
+            {/* Desktop gradient overlay (left to right) */}
             <div 
-              className="absolute inset-0 z-10 pointer-events-none select-none"
+              className="hidden md:block absolute inset-0 z-10 pointer-events-none select-none"
               style={{
                 background: 'linear-gradient(90deg, rgba(0,0,0,0.55) 0%, rgba(0,0,0,0.35) 30%, rgba(0,0,0,0.05) 60%, rgba(0,0,0,0) 100%)'
+              }}
+            />
+            {/* Mobile gradient overlay for text readability (top to bottom) */}
+            <div 
+              className="md:hidden absolute inset-0 z-10 pointer-events-none select-none"
+              style={{
+                background: 'linear-gradient(180deg, rgba(0,0,0,0.65) 0%, rgba(0,0,0,0.4) 45%, rgba(0,0,0,0) 85%)'
               }}
             />
           </div>
 
           {/* Text Overlay Content */}
           <div className="relative z-20 w-full mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="max-w-[290px] sm:max-w-xl lg:max-w-2xl text-left md:-translate-y-8 min-[1440px]:translate-y-0 flex flex-col justify-center select-text">
+            <div className="max-w-[340px] sm:max-w-xl lg:max-w-2xl text-left md:-translate-y-8 min-[1440px]:translate-y-0 flex flex-col justify-center select-text">
               
               {/* Eyebrow with motion-safe fade-up */}
               <span className="text-xs sm:text-sm font-semibold uppercase tracking-[0.25em] text-[#D9A441] mb-4 motion-safe:animate-fade-up block font-sans">
@@ -123,7 +145,7 @@ export default function HomePage() {
               </span>
 
               {/* Heading with motion-safe fade-up */}
-              <h1 className="font-serif text-4xl sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-[1.1] tracking-tight mb-6 motion-safe:animate-fade-up">
+              <h1 className="font-serif text-3xl sm:text-5xl md:text-6xl min-[1440px]:text-[72px] font-semibold text-[#FAF9F6] leading-[1.1] tracking-tight mb-6 motion-safe:animate-fade-up">
                 <span className="sr-only">Bharath Delight Foods — </span>
                 Selecting the <span className="text-[#D9A441]">Best</span><br />
                 to Serve the <span className="text-[#D9A441]">Best</span>
