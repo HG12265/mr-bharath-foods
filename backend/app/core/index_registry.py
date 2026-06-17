@@ -36,9 +36,35 @@ async def initialize_indexes(db: AsyncDatabase) -> None:  # type: ignore[type-ar
         await db[COLLECTION_PRODUCTS].create_index([("category_id", ASCENDING)])
         await db[COLLECTION_PRODUCTS].create_index([("status", ASCENDING)])
         await db[COLLECTION_PRODUCTS].create_index([("is_deleted", ASCENDING)])
+        await db[COLLECTION_PRODUCTS].create_index([("is_featured", ASCENDING)])
+        await db[COLLECTION_PRODUCTS].create_index([("created_at", DESCENDING)])
+        await db[COLLECTION_PRODUCTS].create_index([("name", ASCENDING)])
+        await db[COLLECTION_PRODUCTS].create_index([("min_price", ASCENDING)])
         logger.info("Products indexes initialized.")
     except Exception as exc:
         logger.error(f"Error creating products indexes: {exc}")
+
+    # One-time migration/backfill of min_price and display_price
+    try:
+        cursor = db[COLLECTION_PRODUCTS].find({"min_price": {"$exists": False}, "is_deleted": {"$ne": True}})
+        async for doc in cursor:
+            variants = doc.get("variants", [])
+            active_prices = []
+            for v in variants:
+                if v.get("is_active", True):
+                    price_val = v.get("price")
+                    if price_val is not None:
+                        active_prices.append(float(str(price_val)))
+            if active_prices:
+                m_price = min(active_prices)
+                from bson.decimal128 import Decimal128
+                await db[COLLECTION_PRODUCTS].update_one(
+                    {"_id": doc["_id"]},
+                    {"$set": {"min_price": Decimal128(str(m_price)), "display_price": Decimal128(str(m_price))}}
+                )
+        logger.info("Product min_price/display_price migration completed.")
+    except Exception as exc:
+        logger.error(f"Error migrating product prices: {exc}")
 
     # 3. Orders
     try:

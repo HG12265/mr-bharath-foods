@@ -130,5 +130,15 @@ class ProductResponse(BaseModel):
     search_keywords: list[str]
     is_featured: bool
     status: str
+    min_price: Decimal
+    display_price: Decimal
     created_at: str
     updated_at: str
+
+
+class ProductListResponse(BaseModel):
+    products: list[ProductResponse]
+    total_count: int
+    page: int
+    limit: int
+    has_more: bool

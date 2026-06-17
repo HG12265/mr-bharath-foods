@@ -76,7 +76,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     });
     if (res.ok) {
       const json = await res.json();
-      const products: Array<{ slug: string; updated_at: string }> = json?.data || [];
+      const products: Array<{ slug: string; updated_at: string }> = Array.isArray(json?.data)
+        ? json.data
+        : (json?.data?.products || []);
       productRoutes = products
         .filter((p) => p.slug)
         .map((p) => ({

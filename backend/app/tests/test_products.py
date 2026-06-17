@@ -29,6 +29,7 @@ def mock_db() -> MagicMock:
             coll.find_one = AsyncMock(return_value=None)
             coll.find_one_and_update = AsyncMock(return_value=None)
             coll.update_many = AsyncMock()
+            coll.count_documents = AsyncMock(return_value=0)
             collections[key] = coll
         return collections[key]
     db.__getitem__.side_effect = get_mock_collection
@@ -240,6 +241,7 @@ def test_public_list_visibility(
     mock_cursor.sort = MagicMock(return_value=mock_cursor)
     mock_cursor.__aiter__.return_value = [product_doc]
     mock_db["products"].find = MagicMock(return_value=mock_cursor)
+    mock_db["products"].count_documents = AsyncMock(return_value=1)
 
     app.dependency_overrides[get_db] = lambda: mock_db
 
@@ -249,5 +251,6 @@ def test_public_list_visibility(
     assert response.status_code == 200
     json_data = response.json()
     assert json_data["success"] is True
-    assert len(json_data["data"]) == 1
-    assert json_data["data"][0]["name"] == "Active Cow Ghee"
+    assert len(json_data["data"]["products"]) == 1
+    assert json_data["data"]["products"][0]["name"] == "Active Cow Ghee"
+    assert json_data["data"]["total_count"] == 1

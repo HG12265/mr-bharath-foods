@@ -51,15 +51,27 @@ class ProductService(BaseService[Product]):
     async def list_public_products(
         self,
         category_id: str | None = None,
+        category_slug: str | None = None,
+        search: str | None = None,
+        sort: str | None = None,
         is_featured: bool | None = None,
         skip: int = 0,
-        limit: int = 100
-    ) -> list[Product]:
+        limit: int = 12
+    ) -> tuple[list[Product], int]:
         """
-        Retrieves active, non-deleted products.
+        Retrieves active, non-deleted products with filters, search, sort, and pagination.
         """
+        if category_slug and not category_id:
+            category = await self.category_repository.get_by_slug(category_slug)
+            if category:
+                category_id = category.id
+            else:
+                return [], 0
+
         return await self.product_repository.get_active_products(
             category_id=category_id,
+            search=search,
+            sort=sort,
             is_featured=is_featured,
             skip=skip,
             limit=limit
@@ -181,6 +193,10 @@ class ProductService(BaseService[Product]):
             for attr in request.attributes
         ]
 
+        from decimal import Decimal
+        active_prices = [v.price for v in variants_to_create if v.is_active]
+        min_price = min(active_prices) if active_prices else Decimal("0.0")
+
         new_product = Product(
             name=request.name.strip(),
             slug=slug,
@@ -196,7 +212,9 @@ class ProductService(BaseService[Product]):
             tags=[t.strip() for t in request.tags] if request.tags else [],
             search_keywords=[k.strip() for k in request.search_keywords] if request.search_keywords else [],
             is_featured=request.is_featured,
-            status=request.status
+            status=request.status,
+            min_price=min_price,
+            display_price=min_price
         )
 
         inserted = await self.product_repository.insert(new_product)
@@ -331,6 +349,11 @@ class ProductService(BaseService[Product]):
                     }
                 )
             update_data["variants"] = variants_to_update
+            from decimal import Decimal
+            active_prices: list[Decimal] = [Decimal(str(v["price"])) for v in variants_to_update if v["is_active"]]
+            min_price: Decimal = min(active_prices) if active_prices else Decimal("0.0")
+            update_data["min_price"] = min_price
+            update_data["display_price"] = min_price
 
         if request.tags is not None:
             update_data["tags"] = [t.strip() for t in request.tags]

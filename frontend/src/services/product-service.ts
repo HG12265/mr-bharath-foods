@@ -3,14 +3,25 @@ import { Envelope, Product } from "../types";
 
 export interface ListProductsParams {
   category_id?: string;
+  category_slug?: string;
   is_featured?: boolean;
-  skip?: number;
+  search?: string;
+  sort?: string;
+  page?: number;
   limit?: number;
 }
 
+export interface ProductListResponse {
+  products: Product[];
+  total_count: number;
+  page: number;
+  limit: number;
+  has_more: boolean;
+}
+
 export const productService = {
-  async listProducts(params?: ListProductsParams): Promise<Envelope<Product[]>> {
-    const response = await apiClient.get<Envelope<Product[]>>("/api/v1/products", { params });
+  async listProducts(params?: ListProductsParams): Promise<Envelope<ProductListResponse>> {
+    const response = await apiClient.get<Envelope<ProductListResponse>>("/api/v1/products", { params });
     return response.data;
   },
 

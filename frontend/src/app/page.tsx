@@ -40,7 +40,7 @@ function HomeProductImage({ mediaId, alt, productNameOrSlug }: { mediaId?: strin
 
 export default function HomePage() {
   const { data: productsData, isPending: isLoadingProducts } = useProducts({ is_featured: true, limit: 4 });
-  const dbProducts = productsData?.data || [];
+  const dbProducts = Array.isArray(productsData?.data) ? productsData.data : (productsData?.data?.products || []);
 
   // Display only active featured products from the database
   const displayProducts = dbProducts.filter((product: any) => product.is_featured === true);

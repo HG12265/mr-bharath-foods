@@ -13,6 +13,7 @@ from app.schemas.common import Envelope
 from app.schemas.product import (
     ProductAttributeSchema,
     ProductCreate,
+    ProductListResponse,
     ProductRatingsSchema,
     ProductResponse,
     ProductStatusUpdate,
@@ -90,6 +91,8 @@ async def map_product_response(prod: Product, media_repo: MediaRepository) -> Pr
         search_keywords=prod.search_keywords,
         is_featured=prod.is_featured,
         status=prod.status,
+        min_price=prod.min_price,
+        display_price=prod.display_price,
         created_at=prod.created_at.isoformat(),
         updated_at=prod.updated_at.isoformat()
     )
@@ -97,19 +100,29 @@ async def map_product_response(prod: Product, media_repo: MediaRepository) -> Pr
 
 # --- Public Endpoints ---
 
-@router.get("", response_model=Envelope[list[ProductResponse]])
+@router.get("", response_model=Envelope[ProductListResponse])
 async def list_products(
     category_id: str | None = None,
+    category_slug: str | None = None,
+    search: str | None = None,
+    sort: str | None = None,
     is_featured: bool | None = None,
-    skip: int = 0,
-    limit: int = 100,
+    page: int = 1,
+    limit: int = 12,
     service: ProductService = Depends(get_product_service)
-) -> Envelope[list[ProductResponse]]:
+) -> Envelope[ProductListResponse]:
     """
-    Retrieves a list of active, non-deleted products. Supports category and featured filtering and pagination.
+    Retrieves a list of active, non-deleted products. Supports category, search, sorting and pagination.
     """
-    products = await service.list_public_products(
+    limit = min(max(limit, 1), 48)
+    page = max(page, 1)
+    skip = (page - 1) * limit
+
+    products, total_count = await service.list_public_products(
         category_id=category_id,
+        category_slug=category_slug,
+        search=search,
+        sort=sort,
         is_featured=is_featured,
         skip=skip,
         limit=limit
@@ -118,10 +131,19 @@ async def list_products(
     mapped_products = await asyncio.gather(*[
         map_product_response(p, service.media_repository) for p in products
     ])
+
+    has_more = (skip + len(mapped_products)) < total_count
+
     return Envelope(
         success=True,
         message="Active products listed successfully.",
-        data=mapped_products
+        data=ProductListResponse(
+            products=list(mapped_products),
+            total_count=total_count,
+            page=page,
+            limit=limit,
+            has_more=has_more
+        )
     )
 
 

@@ -62,5 +62,7 @@ class Product(MongoBaseModel):
     status: str = "draft"  # draft, active, archived
     is_deleted: bool = False
     deleted_at: datetime | None = None
+    min_price: Decimal = Decimal("0.0")
+    display_price: Decimal = Decimal("0.0")
     created_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
     updated_at: datetime = Field(default_factory=lambda: datetime.now(UTC))
