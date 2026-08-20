@@ -1,34 +1,47 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { useRouter, usePathname } from "next/navigation";
 import { useSession, useLogout } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { siteConfig } from "@/config/site";
-import { Menu, X, User, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { Menu, X, User, ShoppingCart, ShoppingBag } from "lucide-react";
 import MobileNav from "./mobile-nav";
 import { useCartDrawer } from "@/providers/cart-drawer-provider";
+
+/* Navigation items matching the reference design */
+const NAV_LINKS = [
+  { title: "Home", href: "/" },
+  { title: "About Us", href: "/about" },
+  { title: "Products", href: "/shop" },
+  { title: "Our Promise", href: "/trust" },
+  { title: "Contact Us", href: "/contact" },
+];
 
 export const Header: React.FC = () => {
   const router = useRouter();
   const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [dropdownOpen, setDropdownOpen] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
   const { openCart } = useCartDrawer();
 
-  const { data: sessionData } = useSession({
-    staleTime: 5 * 60 * 1000,
-  });
+  /* Scroll detection for subtle shadow */
+  useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 8);
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
+
+  const { data: sessionData } = useSession({ staleTime: 5 * 60 * 1000 });
   const user = sessionData?.data?.user;
 
   const logoutMutation = useLogout();
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => {
-        router.push("/");
-      },
+      onSuccess: () => router.push("/"),
     });
   };
 
@@ -37,46 +50,56 @@ export const Header: React.FC = () => {
 
   return (
     <>
-      <header 
-        className="sticky top-0 z-40 w-full text-indianInk backdrop-blur-[12px] shadow-sm transition-shadow duration-300"
-        style={{
-          background: "rgba(255, 247, 232, 0.88)",
-          borderBottom: "1px solid rgba(217, 164, 65, 0.18)",
-        }}
+      <header
+        className={`sticky top-0 z-40 w-full bg-white transition-shadow duration-300 ${
+          isScrolled ? "shadow-[0_2px_16px_rgba(30,53,47,0.09)]" : "shadow-none"
+        }`}
+        style={{ borderBottom: "1px solid rgba(196,154,69,0.15)" }}
       >
-        <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 h-[var(--header-height)] flex items-center justify-between">
-          
-          <Link href="/" className="flex items-center gap-4 select-none group py-1">
+        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex items-center justify-between relative">
+
+          {/* ── Logo (Left) ───────────────────────────────── */}
+          <Link
+            href="/"
+            className="flex items-center gap-2.5 select-none group py-1 shrink-0 z-10"
+          >
+            {/* BD Monogram Logo */}
             <Image
-              src="/logo.png"
-              alt="Bharath Delight Foods"
-              width={56}
-              height={56}
+              src="/images/logo.png"
+              alt="Bharath Delight"
+              width={42}
+              height={42}
+              className="transition-transform duration-300 group-hover:scale-105"
               priority
-              className="h-14 w-auto object-contain mix-blend-multiply transition-transform duration-300 group-hover:scale-105"
             />
-            <div className="flex flex-col justify-center border-l border-[#C89B3C]/25 pl-4">
-              <span className="font-serif text-lg sm:text-xl font-bold tracking-tight text-[#0F3D2E] leading-none">
-                BHARATH DELIGHT FOODS
+            <div className="flex flex-col leading-none">
+              <span className="font-serif text-[20px] font-bold text-[#1E352F] tracking-wide">
+                Bharath
               </span>
-              <span className="text-[9px] uppercase tracking-[0.25em] text-[#C89B3C] font-bold mt-1.5">
-                FOOD DONE RIGHT.
+              <span className="font-script text-[22px] text-[#C49A45] font-medium leading-none -mt-0.5">
+                Delight
+              </span>
+              <span className="text-[8px] font-sans font-semibold tracking-[0.14em] text-[#C49A45]/70 uppercase mt-0.5">
+                Authenticity in Every Delight
               </span>
             </div>
           </Link>
 
-          {/* Navigation Links (Center) */}
-          <nav className="hidden md:flex items-center gap-8">
-            {siteConfig.nav.main.map((item) => {
-              const isActive = pathname === item.href;
+          {/* ── Nav Links (Center — absolutely positioned) ── */}
+          <nav className="hidden md:flex items-center gap-7 lg:gap-10 absolute left-1/2 -translate-x-1/2">
+            {NAV_LINKS.map((item) => {
+              const isActive =
+                item.href === "/"
+                  ? pathname === "/"
+                  : pathname.startsWith(item.href);
               return (
                 <Link
                   key={item.title}
                   href={item.href}
-                  className={`text-xs uppercase font-sans font-semibold tracking-widest transition-all duration-150 ${
-                    isActive 
-                      ? "text-[#0F3D2E] border-b-2 border-[#D9A441] pb-0.5" 
-                      : "text-[#0F3D2E]/75 hover:text-[#0F3D2E]"
+                  className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
+                    isActive
+                      ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
+                      : "text-[#1E352F]/65 hover:text-[#1E352F]"
                   }`}
                 >
                   {item.title}
@@ -86,10 +109,10 @@ export const Header: React.FC = () => {
             {user && (
               <Link
                 href="/account"
-                className={`text-xs uppercase font-sans font-semibold tracking-widest transition-all duration-150 ${
+                className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
                   pathname.startsWith("/account")
-                    ? "text-[#0F3D2E] border-b-2 border-[#D9A441] pb-0.5" 
-                    : "text-[#0F3D2E]/75 hover:text-[#0F3D2E]"
+                    ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
+                    : "text-[#1E352F]/65 hover:text-[#1E352F]"
                 }`}
               >
                 My Account
@@ -97,98 +120,88 @@ export const Header: React.FC = () => {
             )}
           </nav>
 
-          {/* Actions Portal (Right) */}
-          <div className="hidden md:flex items-center gap-4">
-            {/* Cart Icon Button */}
+          {/* ── Right Actions ─────────────────────────────── */}
+          <div className="hidden md:flex items-center gap-3 shrink-0 z-10">
+            {/* Cart Icon */}
             <button
               onClick={openCart}
-              className="relative p-2 text-[#0F3D2E] hover:text-[#D9A441] transition-colors mr-2 outline-none"
+              className="relative p-2 text-[#1E352F] hover:text-[#C49A45] transition-colors outline-none"
               aria-label="Shopping Cart"
             >
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-gheeGold text-deodharForest text-[9px] font-sans font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center border border-white shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-[#C49A45] text-white text-[9px] font-bold rounded-full w-[17px] h-[17px] flex items-center justify-center border border-white shadow-sm">
                   {cartItemCount}
                 </span>
               )}
             </button>
 
-            {/* Account Dropdown */}
+            {/* Account / CTA */}
             {user ? (
               <div className="relative">
                 <button
                   onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 border border-deodharForest/10 hover:border-burnishedGold rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase text-deodharForest hover:text-burnishedGold transition-all duration-300"
+                  className="flex items-center gap-2 px-4 py-2 border border-[#1E352F]/20 hover:border-[#C49A45] rounded-full font-sans text-xs font-semibold text-[#1E352F] hover:text-[#C49A45] transition-all duration-200"
                 >
                   <User className="w-3.5 h-3.5" />
                   <span>{user.personal_details?.first_name}</span>
                 </button>
-                
                 {dropdownOpen && (
                   <>
-                    <div 
-                      className="fixed inset-0 z-30" 
-                      onClick={() => setDropdownOpen(false)}
-                    />
-                    <div className="absolute right-0 mt-2 w-48 bg-white border border-burnishedGold/30 rounded-[4px] shadow-md py-1 z-40 overflow-hidden">
+                    <div className="fixed inset-0 z-30" onClick={() => setDropdownOpen(false)} />
+                    <div className="absolute right-0 mt-2 w-44 bg-white border border-[#C49A45]/25 rounded-lg shadow-lg py-1 z-40">
                       <Link
                         href="/account"
                         onClick={() => setDropdownOpen(false)}
-                        className="block w-full px-4 py-2.5 text-left font-sans text-xs font-semibold tracking-widest uppercase text-deodharForest hover:bg-richCream transition-colors duration-150 border-b border-burnishedGold/10"
+                        className="block px-4 py-2.5 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] border-b border-[#C49A45]/10 transition-colors"
                       >
                         My Account
                       </Link>
                       <button
-                        onClick={() => {
-                          setDropdownOpen(false);
-                          handleLogout();
-                        }}
+                        onClick={() => { setDropdownOpen(false); handleLogout(); }}
                         disabled={logoutMutation.isPending}
-                        className="block w-full px-4 py-2.5 text-left font-sans text-xs font-semibold tracking-widest uppercase text-deodharForest hover:bg-warmSaffron hover:text-white transition-colors duration-150 disabled:opacity-50"
+                        className="block w-full px-4 py-2.5 text-left text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] transition-colors disabled:opacity-50"
                       >
-                        {logoutMutation.isPending ? "Signing Out..." : "Sign Out"}
+                        {logoutMutation.isPending ? "Signing Out…" : "Sign Out"}
                       </button>
                     </div>
                   </>
                 )}
               </div>
             ) : (
+              /* Primary CTA — "Explore Products" matching reference */
               <Link
-                href="/login"
-                className="flex items-center gap-2 px-5 py-2.5 bg-deodharForest text-richCream border border-transparent hover:border-burnishedGold hover:shadow-[0_4px_12px_rgba(15,61,46,0.15)] rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-300"
+                href="/shop"
+                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E352F] text-white rounded-full font-sans text-[13px] font-semibold hover:bg-[#355E3B] hover:shadow-[0_4px_14px_rgba(30,53,47,0.25)] transition-all duration-300"
               >
-                <User className="w-3.5 h-3.5 text-gheeGold" />
-                <span>Sign In</span>
+                <ShoppingBag className="w-4 h-4" />
+                <span>Explore Products</span>
               </Link>
             )}
           </div>
 
-          {/* Mobile hamburger menu (Right) */}
-          <div className="flex md:hidden items-center gap-3">
-            {/* Cart Icon Button on mobile */}
+          {/* ── Mobile actions ────────────────────────────── */}
+          <div className="flex md:hidden items-center gap-2 z-10">
             <button
               onClick={openCart}
-              className="relative p-2 text-[#0F3D2E] hover:text-[#D9A441] transition-colors outline-none"
+              className="relative p-2 text-[#1E352F] hover:text-[#C49A45] transition-colors outline-none"
               aria-label="Shopping Cart"
             >
               <ShoppingCart className="w-5 h-5" />
               {cartItemCount > 0 && (
-                <span className="absolute -top-1.5 -right-1.5 bg-gheeGold text-deodharForest text-[9px] font-sans font-bold rounded-full w-[18px] h-[18px] flex items-center justify-center border border-white shadow-sm">
+                <span className="absolute -top-1 -right-1 bg-[#C49A45] text-white text-[9px] font-bold rounded-full w-[17px] h-[17px] flex items-center justify-center border border-white shadow-sm">
                   {cartItemCount}
                 </span>
               )}
             </button>
-
-
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 text-deodharForest hover:text-burnishedGold focus:outline-none transition-colors"
+              className="p-2 text-[#1E352F] hover:text-[#C49A45] focus:outline-none transition-colors"
               aria-label="Toggle menu"
             >
-              {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
           </div>
-
         </div>
       </header>
 

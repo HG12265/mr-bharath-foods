@@ -11,9 +11,10 @@ const CartDrawer = dynamic(() => import("../features/cart/cart-drawer"), {
 
 interface PublicLayoutProps {
   children: React.ReactNode;
+  hideFooter?: boolean;
 }
 
-export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
+export const PublicLayout: React.FC<PublicLayoutProps> = ({ children, hideFooter = false }) => {
   return (
     <div className="flex flex-col min-h-screen bg-richCream text-indianInk">
       {/* Shared sticky Header */}
@@ -28,7 +29,7 @@ export const PublicLayout: React.FC<PublicLayoutProps> = ({ children }) => {
       </main>
 
       {/* Shared Footer */}
-      <Footer />
+      {!hideFooter && <Footer />}
     </div>
   );
 };

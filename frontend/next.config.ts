@@ -38,6 +38,13 @@ const nextConfig: NextConfig = {
   images: {
     remotePatterns,
   },
+  webpack: (config, { dev }) => {
+    if (dev) {
+      // Disable Webpack filesystem caching in development to avoid OneDrive lock conflicts
+      config.cache = false;
+    }
+    return config;
+  },
 };
 
 // eslint-disable-next-line @typescript-eslint/no-require-imports

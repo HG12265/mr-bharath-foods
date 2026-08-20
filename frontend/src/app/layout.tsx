@@ -1,4 +1,4 @@
-import { Cormorant_Garamond, Outfit } from "next/font/google";
+import { Cormorant_Garamond, Outfit, Dancing_Script } from "next/font/google";
 import { defaultMetadata } from "./metadata";
 import { AppProvider } from "@/providers/app-provider";
 import { siteConfig } from "@/config/site";
@@ -15,6 +15,13 @@ const fontSans = Outfit({
   subsets: ["latin"],
   weight: ["300", "400", "500", "600", "700"],
   variable: "--font-sans",
+  display: "swap",
+});
+
+const fontScript = Dancing_Script({
+  subsets: ["latin"],
+  weight: ["400", "500", "600", "700"],
+  variable: "--font-script",
   display: "swap",
 });
 
@@ -62,7 +69,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fontSerif.variable} ${fontSans.variable}`}
+      className={`${fontSerif.variable} ${fontSans.variable} ${fontScript.variable}`}
       suppressHydrationWarning
     >
       <body className="min-h-screen bg-background text-foreground font-sans antialiased">

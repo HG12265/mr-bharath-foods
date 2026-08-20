@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/hooks/use-auth";
 import { siteConfig } from "@/config/site";
+import Image from "next/image";
 import { X, User, LogIn, ChevronRight, LogOut } from "lucide-react";
 
 interface MobileNavProps {
@@ -38,9 +39,20 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
       {/* Drawer */}
       <div className="relative w-full max-w-[300px] h-full bg-richCream text-indianInk p-6 shadow-2xl flex flex-col justify-between z-10 transition-transform duration-300 border-l border-burnishedGold/15 animate-slide-in">
         <div>
-          {/* Header */}
+          {/* Header with BD Logo */}
           <div className="flex items-center justify-between pb-6 border-b border-burnishedGold/15">
-            <span className="font-serif text-lg font-bold text-deodharForest">Menu</span>
+            <div className="flex items-center gap-2">
+              <Image
+                src="/images/logo.png"
+                alt="Bharath Delight"
+                width={32}
+                height={32}
+              />
+              <div className="flex flex-col leading-none">
+                <span className="font-serif text-[15px] font-bold text-deodharForest">Bharath</span>
+                <span className="font-script text-[16px] text-[#C49A45] font-medium leading-none -mt-0.5">Delight</span>
+              </div>
+            </div>
             <button 
               onClick={onClose}
               className="p-1 hover:text-burnishedGold text-deodharForest transition-colors"

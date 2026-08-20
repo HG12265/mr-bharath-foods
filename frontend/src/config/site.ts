@@ -32,9 +32,11 @@ export const siteConfig = {
   nav: {
     main: [
       { title: "Home", href: "/" },
-      { title: "Shop", href: "/shop" },
-      { title: "Trust", href: "/about" },
-      { title: "Contact", href: "/contact" },
+      { title: "About Us", href: "/about" },
+      { title: "Products", href: "/shop" },
+      { title: "Quality", href: "/trust" },
+      { title: "Our Promise", href: "/trust" },
+      { title: "Contact Us", href: "/contact" },
     ],
     footer: [
       {
