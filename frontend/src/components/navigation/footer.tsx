@@ -131,6 +131,8 @@ export const Footer: React.FC = () => {
                 { label: "Products", href: "/shop" },
                 { label: "Our Promise", href: "/trust" },
                 { label: "Contact Us", href: "/contact" },
+                { label: "My Profile", href: "/account" },
+                { label: "My Orders", href: "/account/orders" },
               ].map((item, idx) => (
                 <li key={idx}>
                   <Link

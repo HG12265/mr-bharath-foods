@@ -52,7 +52,8 @@ export const LoginForm: React.FC = () => {
             if (role === "admin" || role === "warehouse") {
               router.push("/admin");
             } else {
-              router.push("/");
+              const redirectUrl = (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("redirect")) || "/account";
+              router.push(redirectUrl);
             }
           } else {
             setApiError(res.message || "Invalid credentials. Please try again.");

@@ -25,7 +25,7 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireAuth = tr
         if (role === "admin" || role === "warehouse") {
           router.push("/admin");
         } else {
-          router.push("/");
+          router.push("/account");
         }
       }
     }

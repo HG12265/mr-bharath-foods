@@ -1,12 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useLogout } from "@/hooks/use-auth";
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
-import { X, User, LogIn, ChevronRight, LogOut } from "lucide-react";
+import { X, User, LogIn, ChevronRight, LogOut, Package, Heart, UserPlus, ShieldCheck } from "lucide-react";
 
 interface MobileNavProps {
   isOpen: boolean;
@@ -26,10 +26,30 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
     });
   };
 
+  const panelRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (!isOpen) return;
+    const previousFocus = document.activeElement as HTMLElement | null;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    panelRef.current?.querySelector<HTMLButtonElement>("button")?.focus();
+    const handleKey = (event: KeyboardEvent) => {
+      if (event.key === "Escape") onClose();
+      if (event.key !== "Tab") return;
+      const items = panelRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled])');
+      if (!items?.length) return;
+      const first = items[0], last = items[items.length - 1];
+      if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+      if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+    };
+    document.addEventListener("keydown", handleKey);
+    return () => { document.body.style.overflow = previousOverflow; document.removeEventListener("keydown", handleKey); previousFocus?.focus(); };
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   return (
-    <div className="fixed inset-0 z-50 md:hidden flex justify-end">
+    <div className="brand-mobile-menu fixed inset-0 z-50 xl:hidden flex justify-end">
       {/* Overlay Backdrop */}
       <div 
         className="absolute inset-0 bg-indianInk/40 backdrop-blur-sm transition-opacity duration-300"
@@ -37,16 +57,16 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
       />
 
       {/* Drawer */}
-      <div className="relative w-full max-w-[300px] h-full bg-richCream text-indianInk p-6 shadow-2xl flex flex-col justify-between z-10 transition-transform duration-300 border-l border-burnishedGold/15 animate-slide-in">
+      <div ref={panelRef} id="mobile-navigation" role="dialog" aria-modal="true" aria-label="Navigation menu" className="relative w-full max-w-[360px] h-full bg-richCream text-indianInk p-6 shadow-2xl flex flex-col justify-between z-10 transition-transform duration-300 border-l border-burnishedGold/15 animate-slide-in overflow-y-auto">
         <div>
           {/* Header with BD Logo */}
-          <div className="flex items-center justify-between pb-6 border-b border-burnishedGold/15">
+          <div className="flex items-center justify-between pb-5 border-b border-burnishedGold/15">
             <div className="flex items-center gap-2">
               <Image
                 src="/images/logo.png"
                 alt="Bharath Delight"
-                width={32}
-                height={32}
+                width={34}
+                height={34}
               />
               <div className="flex flex-col leading-none">
                 <span className="font-serif text-[15px] font-bold text-deodharForest">Bharath</span>
@@ -62,79 +82,155 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
             </button>
           </div>
 
-          {/* Nav Links */}
-          <nav className="mt-8 flex flex-col gap-5">
+          {/* User Welcome Banner if logged in */}
+          {user && (
+            <div className="mt-4 p-3 bg-white/80 border border-burnishedGold/20 rounded-lg shadow-sm">
+              <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#C49A45]">
+                Namaskaram
+              </p>
+              <p className="text-sm font-serif font-bold text-deodharForest truncate">
+                {user.personal_details?.first_name || "Valued"} {user.personal_details?.last_name || "Customer"}
+              </p>
+              <p className="text-[11px] text-indianInk/60 truncate font-sans">
+                {user.email || user.phone}
+              </p>
+            </div>
+          )}
+
+          {/* Main Nav Links */}
+          <nav className="mt-6 flex flex-col gap-3.5">
+            <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-indianInk/40 mb-1">
+              Menu
+            </p>
             {siteConfig.nav.main.map((item) => (
               <Link
                 key={item.title}
                 href={item.href}
                 onClick={onClose}
-                className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2.5 border-b border-burnishedGold/10 transition-colors duration-150"
+                className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2 border-b border-burnishedGold/10 transition-colors duration-150"
               >
                 <span>{item.title}</span>
-                <ChevronRight className="w-4 h-4 text-burnishedGold" />
+                <ChevronRight className="w-4 h-4 text-burnishedGold/60" />
               </Link>
             ))}
 
-            {/* Cart Link */}
+            {/* Account section if logged in */}
             {user && (
-              <Link
-                href="/account"
-                onClick={onClose}
-                className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2.5 border-b border-burnishedGold/10 transition-colors duration-150"
-              >
-                <span>My Account</span>
-                <ChevronRight className="w-4 h-4 text-burnishedGold" />
-              </Link>
+              <>
+                <p className="text-[10px] font-sans font-bold uppercase tracking-widest text-indianInk/40 mt-3 mb-1">
+                  My Account
+                </p>
+                <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2 border-b border-burnishedGold/10 transition-colors duration-150"
+                >
+                  <div className="flex items-center gap-2">
+                    <User className="w-3.5 h-3.5 text-[#C49A45]" />
+                    <span>My Profile</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-burnishedGold/60" />
+                </Link>
+
+                <Link
+                  href="/account/orders"
+                  onClick={onClose}
+                  className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2 border-b border-burnishedGold/10 transition-colors duration-150"
+                >
+                  <div className="flex items-center gap-2">
+                    <Package className="w-3.5 h-3.5 text-[#C49A45]" />
+                    <span>My Orders</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-burnishedGold/60" />
+                </Link>
+
+                <Link
+                  href="/account/wishlist"
+                  onClick={onClose}
+                  className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2 border-b border-burnishedGold/10 transition-colors duration-150"
+                >
+                  <div className="flex items-center gap-2">
+                    <Heart className="w-3.5 h-3.5 text-[#C49A45]" />
+                    <span>Wishlist</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 text-burnishedGold/60" />
+                </Link>
+              </>
             )}
 
+            {user?.role === "admin" && (
+              <Link href="/admin" onClick={onClose} className="flex items-center gap-2 py-3 text-sm font-semibold text-deodharForest border-b border-burnishedGold/10">
+                <ShieldCheck className="w-4 h-4 text-burnishedGold" /> Admin Portal
+              </Link>
+            )}
             <Link
               href="/cart"
               onClick={onClose}
-              className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2.5 border-b border-burnishedGold/10 transition-colors duration-150"
+              className="flex items-center justify-between text-xs uppercase font-semibold tracking-widest text-indianInk/85 hover:text-deodharForest pb-2 border-b border-burnishedGold/10 transition-colors duration-150"
             >
-              <span>Cart</span>
-              <ChevronRight className="w-4 h-4 text-burnishedGold" />
+              <span>Shopping Cart</span>
+              <ChevronRight className="w-4 h-4 text-burnishedGold/60" />
             </Link>
           </nav>
         </div>
 
-        {/* Footer Area */}
-        <div className="mt-auto pt-6 border-t border-burnishedGold/15 flex flex-col gap-4">
+        {/* Footer Area with Action Buttons */}
+        <div className="mt-8 pt-5 border-t border-burnishedGold/15 flex flex-col gap-3">
           {user ? (
             <div className="flex flex-col gap-2 w-full">
-              <Link
-                href="/account"
-                onClick={onClose}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-deodharForest text-richCream border border-transparent rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm text-center"
-              >
-                <User className="w-4 h-4 text-gheeGold" />
-                <span>My Account</span>
-              </Link>
+              <div className="grid grid-cols-2 gap-2">
+                <Link
+                  href="/account"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-deodharForest text-richCream border border-transparent rounded-[4px] font-sans text-[11px] font-semibold tracking-wider uppercase transition-all duration-200 shadow-sm text-center"
+                >
+                  <User className="w-3.5 h-3.5 text-gheeGold" />
+                  <span>Profile</span>
+                </Link>
+                <Link
+                  href="/account/orders"
+                  onClick={onClose}
+                  className="flex items-center justify-center gap-1.5 py-2.5 bg-[#FAF9F6] border border-burnishedGold/30 text-deodharForest rounded-[4px] font-sans text-[11px] font-semibold tracking-wider uppercase transition-all duration-200 shadow-sm text-center"
+                >
+                  <Package className="w-3.5 h-3.5 text-burnishedGold" />
+                  <span>Orders</span>
+                </Link>
+              </div>
+
               <button
                 onClick={() => {
                   onClose();
                   handleLogout();
                 }}
                 disabled={logoutMutation.isPending}
-                className="flex items-center justify-center gap-2 w-full py-3 bg-warmSaffron/5 border border-warmSaffron/15 hover:border-warmSaffron rounded-[4px] font-sans text-xs font-semibold tracking-widest text-warmSaffron uppercase transition-all duration-200 disabled:opacity-50"
+                className="flex items-center justify-center gap-2 w-full py-2.5 bg-rose-50 border border-rose-200 hover:border-rose-400 rounded-[4px] font-sans text-xs font-semibold tracking-widest text-rose-600 uppercase transition-all duration-200 disabled:opacity-50 mt-1"
               >
-                <LogOut className="w-4 h-4 text-warmSaffron" />
-                <span>{logoutMutation.isPending ? "Signing Out..." : `Sign Out`}</span>
+                <LogOut className="w-4 h-4 text-rose-600" />
+                <span>{logoutMutation.isPending ? "Signing Out..." : "Sign Out / Logout"}</span>
               </button>
             </div>
           ) : (
-            <Link
-              href="/login"
-              onClick={onClose}
-              className="flex items-center justify-center gap-2 w-full py-3 bg-deodharForest text-richCream border border-transparent hover:border-burnishedGold rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm"
-            >
-              <LogIn className="w-4 h-4 text-gheeGold" />
-              <span>Sign In</span>
-            </Link>
+            <div className="flex flex-col gap-2 w-full">
+              <Link
+                href="/login"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-3 bg-deodharForest text-richCream border border-transparent hover:border-burnishedGold rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm"
+              >
+                <LogIn className="w-4 h-4 text-gheeGold" />
+                <span>Sign In / Login</span>
+              </Link>
+              <Link
+                href="/register"
+                onClick={onClose}
+                className="flex items-center justify-center gap-2 w-full py-2.5 bg-white text-deodharForest border border-burnishedGold/30 hover:border-burnishedGold rounded-[4px] font-sans text-xs font-semibold tracking-widest uppercase transition-all duration-200 shadow-sm"
+              >
+                <UserPlus className="w-4 h-4 text-burnishedGold" />
+                <span>Create Account</span>
+              </Link>
+            </div>
           )}
 
-          <p className="text-[9px] text-center text-indianInk/55 font-sans tracking-widest uppercase">
+          <p className="text-[9px] text-center text-indianInk/55 font-sans tracking-widest uppercase mt-1">
             © 2026 Bharath Delight Foods
           </p>
         </div>

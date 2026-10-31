@@ -3,11 +3,23 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, usePathname } from "next/navigation";
-import { useSession, useLogout } from "@/hooks/use-auth";
+import { useSession, useLogout, useMe } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
-import { Menu, X, User, ShoppingCart, ShoppingBag } from "lucide-react";
+import { 
+  Menu, 
+  X, 
+  User, 
+  ShoppingCart, 
+  ShoppingBag, 
+  LogIn, 
+  LogOut, 
+  Package, 
+  ChevronDown,
+  Heart,
+  ShieldCheck
+} from "lucide-react";
 import MobileNav from "./mobile-nav";
 import { useCartDrawer } from "@/providers/cart-drawer-provider";
 
@@ -28,6 +40,8 @@ export const Header: React.FC = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const { openCart } = useCartDrawer();
 
+  useEffect(() => { setMobileMenuOpen(false); setDropdownOpen(false); }, [pathname]);
+
   /* Scroll detection for subtle shadow */
   useEffect(() => {
     const handleScroll = () => setIsScrolled(window.scrollY > 8);
@@ -36,12 +50,15 @@ export const Header: React.FC = () => {
   }, []);
 
   const { data: sessionData } = useSession({ staleTime: 5 * 60 * 1000 });
-  const user = sessionData?.data?.user;
+  const { data: meData } = useMe({ staleTime: 5 * 60 * 1000 });
+  const user = sessionData?.data?.user || meData?.data;
 
   const logoutMutation = useLogout();
   const handleLogout = () => {
     logoutMutation.mutate(undefined, {
-      onSuccess: () => router.push("/"),
+      onSuccess: () => {
+        router.push("/");
+      },
     });
   };
 
@@ -51,12 +68,12 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`sticky top-0 z-40 w-full bg-white transition-shadow duration-300 ${
+        className={`brand-header sticky top-0 z-40 w-full bg-white transition-shadow duration-300 ${
           isScrolled ? "shadow-[0_2px_16px_rgba(30,53,47,0.09)]" : "shadow-none"
         }`}
         style={{ borderBottom: "1px solid rgba(196,154,69,0.15)" }}
       >
-        <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex items-center justify-between relative">
+        <div className="brand-header__inner w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex items-center justify-between relative">
 
           {/* ── Logo (Left) ───────────────────────────────── */}
           <Link
@@ -86,7 +103,7 @@ export const Header: React.FC = () => {
           </Link>
 
           {/* ── Nav Links (Center — absolutely positioned) ── */}
-          <nav className="hidden md:flex items-center gap-7 lg:gap-10 absolute left-1/2 -translate-x-1/2">
+          <nav aria-label="Main navigation" className="brand-header__nav hidden xl:flex items-center">
             {NAV_LINKS.map((item) => {
               const isActive =
                 item.href === "/"
@@ -107,25 +124,37 @@ export const Header: React.FC = () => {
               );
             })}
             {user && (
-              <Link
-                href="/account"
-                className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
-                  pathname.startsWith("/account")
-                    ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
-                    : "text-[#1E352F]/65 hover:text-[#1E352F]"
-                }`}
-              >
-                My Account
-              </Link>
+              <>
+                <Link
+                  href="/account"
+                  className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
+                    pathname === "/account"
+                      ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
+                      : "text-[#1E352F]/65 hover:text-[#1E352F]"
+                  }`}
+                >
+                  My Profile
+                </Link>
+                <Link
+                  href="/account/orders"
+                  className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
+                    pathname.startsWith("/account/orders")
+                      ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
+                      : "text-[#1E352F]/65 hover:text-[#1E352F]"
+                  }`}
+                >
+                  My Orders
+                </Link>
+              </>
             )}
           </nav>
 
           {/* ── Right Actions ─────────────────────────────── */}
-          <div className="hidden md:flex items-center gap-3 shrink-0 z-10">
+          <div className="brand-header__actions hidden xl:flex items-center gap-2.5 shrink-0 z-10">
             {/* Cart Icon */}
             <button
               onClick={openCart}
-              className="relative p-2 text-[#1E352F] hover:text-[#C49A45] transition-colors outline-none"
+              className="relative p-2 text-[#1E352F] hover:text-[#C49A45] transition-colors outline-none mr-1"
               aria-label="Shopping Cart"
             >
               <ShoppingCart className="w-5 h-5" />
@@ -136,52 +165,137 @@ export const Header: React.FC = () => {
               )}
             </button>
 
-            {/* Account / CTA */}
+            {/* Account / Auth CTA */}
             {user ? (
-              <div className="relative">
-                <button
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 px-4 py-2 border border-[#1E352F]/20 hover:border-[#C49A45] rounded-full font-sans text-xs font-semibold text-[#1E352F] hover:text-[#C49A45] transition-all duration-200"
-                >
-                  <User className="w-3.5 h-3.5" />
-                  <span>{user.personal_details?.first_name}</span>
-                </button>
-                {dropdownOpen && (
-                  <>
-                    <div className="fixed inset-0 z-30" onClick={() => setDropdownOpen(false)} />
-                    <div className="absolute right-0 mt-2 w-44 bg-white border border-[#C49A45]/25 rounded-lg shadow-lg py-1 z-40">
-                      <Link
-                        href="/account"
-                        onClick={() => setDropdownOpen(false)}
-                        className="block px-4 py-2.5 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] border-b border-[#C49A45]/10 transition-colors"
-                      >
-                        My Account
-                      </Link>
-                      <button
-                        onClick={() => { setDropdownOpen(false); handleLogout(); }}
-                        disabled={logoutMutation.isPending}
-                        className="block w-full px-4 py-2.5 text-left text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] transition-colors disabled:opacity-50"
-                      >
-                        {logoutMutation.isPending ? "Signing Out…" : "Sign Out"}
-                      </button>
+              <div className="flex items-center gap-2">
+                {/* User Dropdown Button */}
+                <div className="relative">
+                  <button
+                    onClick={() => setDropdownOpen(!dropdownOpen)}
+                    className="flex items-center gap-2 px-3.5 py-2 border border-[#1E352F]/20 hover:border-[#C49A45] rounded-full font-sans text-xs font-semibold text-[#1E352F] hover:text-[#C49A45] transition-all duration-200 bg-white shadow-sm"
+                  >
+                    <div className="w-5 h-5 rounded-full bg-[#1E352F]/10 flex items-center justify-center text-[#1E352F]">
+                      <User className="w-3 h-3" />
                     </div>
-                  </>
-                )}
+                    <span className="max-w-[110px] truncate">
+                      {user.personal_details?.first_name || "Account"}
+                    </span>
+                    <ChevronDown className={`w-3.5 h-3.5 text-[#1E352F]/50 transition-transform duration-200 ${dropdownOpen ? "rotate-180" : ""}`} />
+                  </button>
+
+                  {dropdownOpen && (
+                    <>
+                      <div className="fixed inset-0 z-30" onClick={() => setDropdownOpen(false)} />
+                      <div className="absolute right-0 mt-2 w-56 bg-white border border-[#C49A45]/25 rounded-xl shadow-xl py-1 z-40 animate-fade-up overflow-hidden">
+                        {/* User Greeting Card */}
+                        <div className="px-4 py-2.5 border-b border-[#C49A45]/15 bg-[#FAF9F6]">
+                          <p className="text-[10px] font-sans font-bold uppercase tracking-wider text-[#C49A45]">
+                            Signed In
+                          </p>
+                          <p className="text-xs font-bold text-[#1E352F] truncate">
+                            {user.personal_details?.first_name || "Valued"} {user.personal_details?.last_name || "Customer"}
+                          </p>
+                          <p className="text-[11px] text-[#1E352F]/60 truncate font-sans">
+                            {user.email || user.phone}
+                          </p>
+                        </div>
+
+                        {/* Menu Items */}
+                        <div className="py-1">
+                          <Link
+                            href="/account"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] hover:text-[#C49A45] transition-colors"
+                          >
+                            <User className="w-4 h-4 text-[#C49A45]" />
+                            <span>My Profile</span>
+                          </Link>
+
+                          <Link
+                            href="/account/orders"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] hover:text-[#C49A45] transition-colors"
+                          >
+                            <Package className="w-4 h-4 text-[#C49A45]" />
+                            <span>My Orders</span>
+                          </Link>
+
+                          <Link
+                            href="/account/wishlist"
+                            onClick={() => setDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] hover:text-[#C49A45] transition-colors"
+                          >
+                            <Heart className="w-4 h-4 text-[#C49A45]" />
+                            <span>Wishlist</span>
+                          </Link>
+
+                          {user.role === "admin" && (
+                            <Link
+                              href="/admin"
+                              onClick={() => setDropdownOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#1E352F] hover:bg-[#FAF8F3] hover:text-[#C49A45] transition-colors"
+                            >
+                              <ShieldCheck className="w-4 h-4 text-[#C49A45]" />
+                              <span>Admin Portal</span>
+                            </Link>
+                          )}
+                        </div>
+
+                        {/* Dropdown Logout */}
+                        <div className="border-t border-[#C49A45]/15 pt-1 pb-1 bg-red-50/20">
+                          <button
+                            onClick={() => {
+                              setDropdownOpen(false);
+                              handleLogout();
+                            }}
+                            disabled={logoutMutation.isPending}
+                            className="flex items-center gap-2.5 w-full px-4 py-2 text-left text-xs font-medium text-rose-600 hover:bg-rose-50 transition-colors disabled:opacity-50"
+                          >
+                            <LogOut className="w-4 h-4 text-rose-600" />
+                            <span>{logoutMutation.isPending ? "Signing Out…" : "Logout"}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </>
+                  )}
+                </div>
+
+                {/* Direct Logout Button */}
+                <button
+                  onClick={handleLogout}
+                  disabled={logoutMutation.isPending}
+                  title="Logout"
+                  className="inline-flex items-center gap-1.5 px-3 py-2 border border-rose-200/80 hover:border-rose-300 bg-rose-50/40 hover:bg-rose-50 text-rose-600 rounded-full font-sans text-xs font-semibold transition-all duration-200 disabled:opacity-50 shadow-sm"
+                >
+                  <LogOut className="w-3.5 h-3.5" />
+                  <span className="hidden lg:inline">Logout</span>
+                </button>
               </div>
             ) : (
-              /* Primary CTA — "Explore Products" matching reference */
-              <Link
-                href="/shop"
-                className="inline-flex items-center gap-2 px-5 py-2.5 bg-[#1E352F] text-white rounded-full font-sans text-[13px] font-semibold hover:bg-[#355E3B] hover:shadow-[0_4px_14px_rgba(30,53,47,0.25)] transition-all duration-300"
-              >
-                <ShoppingBag className="w-4 h-4" />
-                <span>Explore Products</span>
-              </Link>
+              <div className="flex items-center gap-2.5">
+                {/* Login Button */}
+                <Link
+                  href="/login"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 border border-[#1E352F]/25 hover:border-[#C49A45] text-[#1E352F] hover:text-[#C49A45] rounded-full font-sans text-xs font-semibold transition-all duration-200 bg-white hover:bg-[#FAF9F6] shadow-sm"
+                >
+                  <LogIn className="w-3.5 h-3.5 text-[#C49A45]" />
+                  <span>Login</span>
+                </Link>
+
+                {/* Explore Products / Shop Button */}
+                <Link
+                  href="/shop"
+                  className="inline-flex items-center gap-2 px-4 py-2 bg-[#1E352F] text-white rounded-full font-sans text-xs font-semibold hover:bg-[#355E3B] hover:shadow-[0_4px_14px_rgba(30,53,47,0.25)] transition-all duration-300"
+                >
+                  <ShoppingBag className="w-3.5 h-3.5" />
+                  <span>Explore Products</span>
+                </Link>
+              </div>
             )}
           </div>
 
           {/* ── Mobile actions ────────────────────────────── */}
-          <div className="flex md:hidden items-center gap-2 z-10">
+          <div className="brand-header__mobile flex xl:hidden items-center gap-2 z-10">
             <button
               onClick={openCart}
               className="relative p-2 text-[#1E352F] hover:text-[#C49A45] transition-colors outline-none"
@@ -197,7 +311,9 @@ export const Header: React.FC = () => {
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 text-[#1E352F] hover:text-[#C49A45] focus:outline-none transition-colors"
-              aria-label="Toggle menu"
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
+              aria-controls="mobile-navigation"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>

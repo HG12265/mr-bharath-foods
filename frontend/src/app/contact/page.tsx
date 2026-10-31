@@ -1,5 +1,6 @@
 "use client";
 
+import PageBanner from "@/components/brand/page-banner";
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -119,39 +120,8 @@ export default function ContactPage() {
         {/* ══════════════════════════════════════════════════
             HERO SECTION — 2-col: Text Left, Product Image Right
         ══════════════════════════════════════════════════ */}
-        <section className="relative bg-[#FFF7E8] border-b border-burnishedGold/15 min-h-[380px] md:h-[420px] flex items-center overflow-hidden">
-          {/* Background right-side hero image with gradient overlay */}
-          <div className="absolute inset-0 z-0">
-            <div className="absolute right-0 top-0 bottom-0 w-full md:w-[60%] h-full z-0 select-none pointer-events-none hidden md:block">
-              <Image
-                src="/images/promise-hero-jars.png"
-                alt="Bharath Delight Ghee Jars"
-                fill
-                priority
-                unoptimized
-                className="object-cover object-center"
-              />
-              {/* Fade overlay blending image into #FFF7E8 */}
-              <div 
-                className="absolute inset-y-0 left-0 w-[240px] z-10"
-                style={{
-                  background: "linear-gradient(90deg, #FFF7E8 0%, rgba(255, 247, 232, 0) 100%)"
-                }}
-              />
-            </div>
-            {/* Mobile image fallback */}
-            <div className="absolute inset-0 z-0 opacity-15 md:hidden">
-              <Image
-                src="/images/promise-hero-jars.png"
-                alt="Bharath Delight Ghee Jars Mobile"
-                fill
-                unoptimized
-                className="object-cover object-center"
-              />
-            </div>
-          </div>
-
-          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+        <PageBanner variant="inner" image="/images/promise-hero-jars.png" alt="Bharath Delight Uthukuli and Rasipuram ghee">
+<div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
               {/* Tag line */}
               <div className="flex items-center gap-3 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
@@ -177,7 +147,7 @@ export default function ContactPage() {
               </div>
             </div>
           </div>
-        </section>
+        </PageBanner>
 
         {/* ══════════════════════════════════════════════════
             4 INFO CARDS SECTION — Reduced Spacing & Compact Layout

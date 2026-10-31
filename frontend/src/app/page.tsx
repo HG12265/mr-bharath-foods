@@ -1,5 +1,6 @@
 "use client";
 
+import PageBanner from "@/components/brand/page-banner";
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -135,73 +136,46 @@ export default function HomePage() {
       <div className="bg-[#FAF8F3] text-[#222222] min-h-screen">
 
         {/* ══════════════════════════════════════════════════
-            HERO SECTION
+            HERO SECTION — Matching Image 1 Reference Design
         ══════════════════════════════════════════════════ */}
-        <section className="relative overflow-hidden w-full min-h-[calc(100svh-var(--header-height))] md:min-h-[calc(100vh-var(--header-height))] border-b border-[#C49A45]/15 flex items-center bg-[#FAF8F3]">
+        <PageBanner variant="home" image="/images/home-hero-desktop.png" alt="Family sharing a meal with Bharath Delight products">
+<div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex items-center py-14 sm:py-16 lg:py-20">
+            <div className="max-w-[340px] sm:max-w-[400px] lg:max-w-[420px] xl:max-w-[440px] flex flex-col gap-4 sm:gap-5">
 
-          {/* Background Image */}
-          <div className="absolute inset-0 z-0 overflow-hidden">
-            <Image
-              src="/images/home-hero-desktop.png"
-              alt="Bharath Delight Family"
-              fill
-              priority
-              quality={90}
-              className="object-cover object-right select-none pointer-events-none"
-              style={parallaxStyle}
-            />
-            {/* Cream left-to-right gradient overlay */}
-            <div
-              className="absolute inset-0 z-10 pointer-events-none select-none"
-              style={{
-                background: "linear-gradient(90deg, #FAF8F3 0%, rgba(250,248,243,0.85) 20%, rgba(250,248,243,0.5) 45%, rgba(250,248,243,0) 70%)",
-              }}
-            />
-          </div>
-
-          {/* Hero Content */}
-          <div className="relative z-20 w-full max-w-[1400px] mx-auto px-4 sm:px-8 lg:px-16 flex items-center py-16 md:py-0 min-h-[inherit]">
-            <div className="max-w-[360px] sm:max-w-[500px] lg:max-w-[520px] flex flex-col gap-5">
-
-              {/* Label */}
-              <div className="animate-fade-in">
-                <SectionLabel text="Welcome to Bharath Delight" />
-              </div>
-
-              {/* Heading */}
-              <h1 className="font-serif text-[38px] sm:text-[52px] lg:text-[60px] font-bold text-[#1E352F] leading-[1.08] tracking-tight animate-fade-up">
+              {/* Heading — Exactly matching Image 1 */}
+              <h1 className="font-serif text-[42px] sm:text-[50px] lg:text-[58px] xl:text-[64px] font-bold text-[#1E352F] leading-[1.08] tracking-[-0.015em] animate-fade-up">
                 The Trust <br />
                 Behind Every <br />
-                <span className="text-[#C49A45]">Family Table</span>
+                <span className="text-[#B8860B]">Family Table</span>
               </h1>
 
-              {/* Description */}
-              <p className="font-sans text-sm sm:text-[15px] text-[#1E352F]/80 leading-relaxed animate-fade-up animate-delay-100">
+              {/* Description — Formatted width matching Image 1 */}
+              <p className="font-sans text-[13.5px] sm:text-[14.5px] lg:text-[15px] text-[#2C3E38] leading-[1.65] font-normal animate-fade-up animate-delay-100 max-w-[410px]">
                 We believe every family deserves food they can trust. That's why Bharath Delight is committed to delivering products that bring together quality, authenticity, and care in every choice.
               </p>
 
               {/* Script tagline */}
               <div
-                className="font-script text-2xl sm:text-[30px] text-[#1E352F] animate-fade-up animate-delay-200"
+                className="font-script text-[26px] sm:text-[30px] lg:text-[32px] text-[#1E352F] font-medium leading-none animate-fade-up animate-delay-200"
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 Authenticity in Every Delight.
               </div>
 
-              {/* CTA */}
-              <div className="animate-fade-up animate-delay-300">
+              {/* CTA Button — Rounded rectangle (rounded-lg) matching Image 1 */}
+              <div className="animate-fade-up animate-delay-300 pt-1">
                 <Link
                   href="/shop"
-                  className="inline-flex items-center gap-3 px-7 py-3.5 bg-[#1E352F] text-white rounded-full font-sans text-[13px] font-semibold hover:bg-[#355E3B] hover:shadow-[0_6px_20px_rgba(30,53,47,0.3)] transition-all duration-300 group"
+                  className="inline-flex items-center gap-2.5 px-6 py-3.5 bg-[#16302B] hover:bg-[#23493E] text-white rounded-lg font-sans text-[14px] font-semibold transition-all duration-200 shadow-sm hover:shadow group w-fit"
                 >
                   <span>Explore Products</span>
-                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                  <ArrowRight className="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
                 </Link>
               </div>
 
             </div>
           </div>
-        </section>
+        </PageBanner>
 
         {/* ══════════════════════════════════════════════════
             TRUST / BRAND PROMISE SECTION
