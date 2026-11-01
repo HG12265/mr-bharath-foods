@@ -6,16 +6,16 @@ import { useRouter, usePathname } from "next/navigation";
 import { useMe, useLogout } from "@/hooks/use-auth";
 import { useNotifications } from "@/hooks/use-notifications";
 import AuthGuard from "@/components/features/auth/auth-guard";
-import { 
-  LayoutDashboard, 
-  ShoppingBag, 
-  CreditCard, 
-  Truck, 
-  Package, 
-  MessageSquare, 
-  Settings, 
-  LogOut, 
-  ShieldAlert, 
+import {
+  LayoutDashboard,
+  ShoppingBag,
+  CreditCard,
+  Truck,
+  Package,
+  MessageSquare,
+  Settings,
+  LogOut,
+  ShieldAlert,
   Menu,
   User,
   Bell,
@@ -104,10 +104,10 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
 
   return (
     <div className="min-h-screen bg-[#FAF9F6] text-indianInk flex flex-col lg:flex-row font-sans">
-      
+
       {/* Sidebar (Desktop) */}
       <aside className="hidden lg:flex flex-col w-64 bg-deodharForest text-richCream shrink-0 border-r border-burnishedGold/10">
-        
+
         {/* Logo/Header */}
         <div className="h-16 flex items-center justify-between px-6 border-b border-burnishedGold/10 bg-deodharForest/95">
           <Link href="/admin" className="flex items-center gap-2">
@@ -143,11 +143,10 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.title}
                 href={item.href}
-                className={`group flex items-center justify-between px-4 py-3.5 text-xs font-bold uppercase tracking-wider rounded transition-all duration-300 hover:translate-x-1 border-l-4 ${
-                  isActive 
-                    ? "bg-[#072118] text-richCream border-gheeGold shadow-[inset_0_0_8px_rgba(0,0,0,0.6),_0_0_12px_rgba(217,164,65,0.2)]" 
+                className={`group flex items-center justify-between px-4 py-3.5 text-xs font-bold uppercase tracking-wider rounded transition-all duration-300 hover:translate-x-1 border-l-4 ${isActive
+                    ? "bg-[#072118] text-richCream border-gheeGold shadow-[inset_0_0_8px_rgba(0,0,0,0.6),_0_0_12px_rgba(217,164,65,0.2)]"
                     : "text-richCream/80 border-transparent hover:bg-richCream/10 hover:text-richCream"
-                }`}
+                  }`}
               >
                 <div className="flex items-center gap-3">
                   <Icon className={`w-4 h-4 shrink-0 transition-colors group-hover:text-gheeGold ${isActive ? "text-gheeGold" : "text-gheeGold/70"}`} />
@@ -173,7 +172,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
 
       {/* Header and Mobile nav */}
       <div className="flex-1 flex flex-col min-w-0 overflow-x-hidden">
-        
+
         {/* Mobile Header / Top Bar */}
         <header className="lg:hidden h-16 bg-deodharForest text-richCream flex items-center justify-between px-4 border-b border-burnishedGold/10 shrink-0">
           <Link href="/admin" className="font-serif font-bold text-sm text-gheeGold tracking-widest uppercase">
@@ -203,11 +202,10 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
               <Link
                 key={item.title}
                 href={item.href}
-                className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 border rounded-[4px] font-sans text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${
-                  isActive 
-                    ? "bg-gheeGold text-deodharForest border-transparent" 
+                className={`flex items-center gap-1.5 shrink-0 px-3 py-1.5 border rounded-[4px] font-sans text-[10px] font-bold tracking-widest uppercase transition-all duration-200 ${isActive
+                    ? "bg-gheeGold text-deodharForest border-transparent"
                     : "bg-deodharForest text-richCream/80 border-burnishedGold/15 hover:border-burnishedGold/30"
-                }`}
+                  }`}
               >
                 <Icon className={`w-3.5 h-3.5 ${isActive ? "text-deodharForest" : "text-gheeGold"}`} />
                 <span>{item.title}</span>
@@ -224,7 +222,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
             </span>
           </div>
           <div className="flex items-center gap-6">
-            
+
             {/* Notifications icon */}
             <Link href="/admin/orders" className="relative p-1.5 hover:bg-[#FAF9F6] rounded-full text-indianInk/60 hover:text-deodharForest transition-colors" title="Notifications">
               <Bell className="w-5 h-5 text-burnishedGold" />
@@ -235,10 +233,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
               )}
             </Link>
 
-            {/* Theme Toggle Icon (UI only) */}
-            <div className="p-1.5 hover:bg-[#FAF9F6] rounded-full text-indianInk/60 cursor-pointer" title="Switch Theme (UI Only)">
-              <Moon className="w-5 h-5 text-burnishedGold" />
-            </div>
+
 
             {/* Profile Pill */}
             <div className="flex items-center gap-3 pl-4 border-l border-burnishedGold/15">
