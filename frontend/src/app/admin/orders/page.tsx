@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from "react";
+import Link from "next/link";
 import { formatINR, optimizeCloudinaryUrl } from "@/lib/utils";
 import { useMe } from "@/hooks/use-auth";
 import { useAdminOrders, useAdminUpdateOrderStatus } from "@/hooks/use-orders";
@@ -31,7 +32,9 @@ import {
   ShieldCheck,
   PlusCircle,
   Info,
-  FileText
+  FileText,
+  FileSpreadsheet,
+  Download
 } from "lucide-react";
 
 export default function AdminOrdersPage() {
@@ -62,6 +65,51 @@ export default function AdminOrdersPage() {
   // Invoice states
   const [isViewingInvoice, setIsViewingInvoice] = useState(false);
   const [viewInvoiceError, setViewInvoiceError] = useState<string | null>(null);
+
+  // Export states
+  const [isExportingPDF, setIsExportingPDF] = useState(false);
+  const [isExportingExcel, setIsExportingExcel] = useState(false);
+  const [exportNotice, setExportNotice] = useState<string | null>(null);
+
+  const handleExportOrders = async (format: "pdf" | "excel") => {
+    if (format === "pdf") setIsExportingPDF(true);
+    else setIsExportingExcel(true);
+    setExportNotice(null);
+
+    try {
+      const blob = await orderService.exportOrdersReport({
+        format,
+        status: selectedStatus !== "all" ? selectedStatus : undefined,
+      });
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const ext = format === "pdf" ? "pdf" : "xlsx";
+      const statusSlug = selectedStatus.replace(/_/g, "-");
+      const dateSlug = new Date().toISOString().slice(0, 10);
+      link.setAttribute("download", `bharath-delight-orders-${statusSlug}-${dateSlug}.${ext}`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (err: any) {
+      console.error("Export error:", err);
+      let msg = "Failed to generate report. Please try again.";
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json?.message) msg = json.message;
+        } catch {}
+      } else if (err?.response?.data?.message) {
+        msg = err.response.data.message;
+      }
+      setExportNotice(msg);
+    } finally {
+      setIsExportingPDF(false);
+      setIsExportingExcel(false);
+    }
+  };
 
   const orders = useMemo(() => ordersRes?.data || [], [ordersRes]);
 
@@ -260,7 +308,7 @@ export default function AdminOrdersPage() {
         }
       `}</style>
 
-      {/* Title & Refresh */}
+      {/* Title & Actions */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#C49A45]/15 pb-4">
         <div>
           <h1 className="font-serif text-3xl font-bold text-[#1E352F]">
@@ -272,15 +320,66 @@ export default function AdminOrdersPage() {
               : "Administration: Complete administrative access over payment approvals and status overrides."}
           </p>
         </div>
-        <button
-          onClick={() => refetch()}
-          disabled={isRefetching}
-          className="flex items-center justify-center gap-2 px-4 py-2 border border-[#C49A45]/30 hover:border-[#C49A45] bg-white text-[#1E352F] font-sans text-xs font-bold uppercase tracking-widest rounded transition disabled:opacity-50"
-        >
-          <RefreshCw className={`w-3.5 h-3.5 ${isRefetching ? "animate-spin" : ""}`} />
-          Refresh Registry
-        </button>
+        <div className="flex flex-wrap items-center gap-2">
+          {/* Quick PDF Report */}
+          <button
+            onClick={() => handleExportOrders("pdf")}
+            disabled={isExportingPDF || isPending}
+            className="flex items-center gap-1.5 px-3 py-2 bg-[#0F3D2E] hover:bg-[#15543F] text-richCream font-sans text-xs font-bold uppercase tracking-wider rounded shadow-sm transition disabled:opacity-50"
+            title="Download PDF report for current view"
+          >
+            {isExportingPDF ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-[#C49A45]" />
+            ) : (
+              <FileText className="w-3.5 h-3.5 text-[#C49A45]" />
+            )}
+            <span>PDF Report</span>
+          </button>
+
+          {/* Quick Excel Report */}
+          <button
+            onClick={() => handleExportOrders("excel")}
+            disabled={isExportingExcel || isPending}
+            className="flex items-center gap-1.5 px-3 py-2 bg-[#1B5E20] hover:bg-[#2E7D32] text-white font-sans text-xs font-bold uppercase tracking-wider rounded shadow-sm transition disabled:opacity-50"
+            title="Download Excel spreadsheet for current view"
+          >
+            {isExportingExcel ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin text-white" />
+            ) : (
+              <FileSpreadsheet className="w-3.5 h-3.5 text-emerald-200" />
+            )}
+            <span>Excel (.xlsx)</span>
+          </button>
+
+          {/* Dedicated Reports Center Link */}
+          <Link
+            href="/admin/reports"
+            className="flex items-center gap-1 px-3 py-2 border border-[#C49A45]/30 hover:border-[#C49A45] bg-[#FAF9F6] text-[#1E352F] font-sans text-xs font-bold uppercase tracking-wider rounded transition hover:bg-[#FAF9F6]/80"
+            title="Open Advanced Reports & Operations Analytics Center"
+          >
+            <span>All Reports →</span>
+          </Link>
+
+          <button
+            onClick={() => refetch()}
+            disabled={isRefetching}
+            className="flex items-center justify-center gap-1.5 px-3 py-2 border border-[#C49A45]/30 hover:border-[#C49A45] bg-white text-[#1E352F] font-sans text-xs font-bold uppercase tracking-widest rounded transition disabled:opacity-50"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isRefetching ? "animate-spin" : ""}`} />
+            <span>Refresh</span>
+          </button>
+        </div>
       </div>
+
+      {/* Export Notice */}
+      {exportNotice && (
+        <div className="p-3 bg-red-50 border border-red-200 text-red-900 rounded flex items-center justify-between text-xs font-sans">
+          <span>{exportNotice}</span>
+          <button onClick={() => setExportNotice(null)} className="p-1 hover:bg-red-100 rounded">
+            <X className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      )}
 
       {/* Search & Filters */}
       <div className="bg-white border border-[#C49A45]/15 rounded p-4 space-y-4 shadow-sm">

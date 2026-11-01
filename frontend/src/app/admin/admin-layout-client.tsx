@@ -22,7 +22,8 @@ import {
   Moon,
   Sun,
   Tags,
-  FolderTree
+  FolderTree,
+  FileSpreadsheet
 } from "lucide-react";
 
 export default function AdminLayoutClient({ children }: { children: React.ReactNode }) {
@@ -89,6 +90,7 @@ function AdminRoleGuard({ children }: { children: React.ReactNode }) {
   const allNavItems = [
     { title: "Dashboard", href: "/admin", icon: LayoutDashboard, roles: ["admin", "warehouse"] },
     { title: "Orders", href: "/admin/orders", icon: ShoppingBag, roles: ["admin", "warehouse"] },
+    { title: "Reports", href: "/admin/reports", icon: FileSpreadsheet, roles: ["admin", "warehouse"] },
     { title: "Products", href: "/admin/products", icon: Tags, roles: ["admin", "warehouse"] },
     { title: "Categories", href: "/admin/categories", icon: FolderTree, roles: ["admin"] },
     { title: "Payments", href: "/admin/payments", icon: CreditCard, roles: ["admin"] },

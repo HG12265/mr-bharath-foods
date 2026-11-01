@@ -99,6 +99,103 @@ async def get_my_order_history(
     )
 
 
+@admin_router.get("/reports/export")
+async def export_admin_orders_report(
+    format: str = "pdf",
+    status: str | None = None,
+    start_date: str | None = None,
+    end_date: str | None = None,
+    current_user: TokenData = Depends(require_role(UserRole.WAREHOUSE)),
+    service: OrderService = Depends(get_order_service),
+    db: AsyncDatabase = Depends(get_db),
+) -> Any:
+    """
+    Generates and downloads orders reports in PDF or Excel (.xlsx) formats.
+    Supports filtering by status (delivered, pending, paid, etc.) and date range.
+    """
+    from datetime import datetime
+    from fastapi.responses import Response
+
+    from app.repositories.settings_repository import SettingsRepository
+    from app.services.report_service import ReportService
+    from app.services.settings_service import SettingsService
+
+    parsed_start = None
+    parsed_end = None
+    if start_date:
+        try:
+            parsed_start = datetime.fromisoformat(start_date.replace("Z", "+00:00"))
+        except Exception:
+            pass
+    if end_date:
+        try:
+            parsed_end = datetime.fromisoformat(end_date.replace("Z", "+00:00"))
+        except Exception:
+            pass
+
+    all_orders = await service.order_repository.find({}, skip=0, limit=5000)
+    all_orders.sort(key=lambda x: x.created_at, reverse=True)
+
+    filtered_orders = ReportService.filter_orders(
+        all_orders,
+        status=status,
+        start_date=parsed_start,
+        end_date=parsed_end,
+    )
+
+    settings_repo = SettingsRepository(db)
+    settings_service = SettingsService(settings_repo, service.audit_service)
+    settings_doc = await settings_service.get_or_create_default_settings()
+    brand_name = settings_doc.brand_name or "Bharath Delight Foods"
+
+    status_label = (status or "all").replace("_", " ").title()
+    filter_label = f"Status: {status_label}"
+    if start_date and end_date:
+        filter_label += f" ({start_date[:10]} to {end_date[:10]})"
+    elif start_date:
+        filter_label += f" (from {start_date[:10]})"
+    elif end_date:
+        filter_label += f" (until {end_date[:10]})"
+
+    now_slug = datetime.now().strftime("%Y%m%d_%H%M%S")
+    clean_status = (status or "all").lower().replace(" ", "_")
+
+    if format.lower() in ("excel", "xlsx"):
+        excel_buffer = ReportService.generate_excel_report(
+            filtered_orders,
+            filter_label=filter_label,
+            brand_name=brand_name,
+        )
+        filename = f"orders_report_{clean_status}_{now_slug}.xlsx"
+        headers = {
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Type": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        }
+        return Response(
+            content=excel_buffer.getvalue(),
+            media_type="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+            headers=headers,
+        )
+    else:
+        pdf_buffer = ReportService.generate_pdf_report(
+            filtered_orders,
+            filter_label=filter_label,
+            brand_name=brand_name,
+        )
+        filename = f"orders_report_{clean_status}_{now_slug}.pdf"
+        headers = {
+            "Content-Disposition": f'attachment; filename="{filename}"',
+            "Content-Type": "application/pdf",
+            "Access-Control-Expose-Headers": "Content-Disposition",
+        }
+        return Response(
+            content=pdf_buffer.getvalue(),
+            media_type="application/pdf",
+            headers=headers,
+        )
+
+
 @router.get("/{id}", response_model=Envelope[OrderResponse])
 async def get_order_by_id(
     id: str,

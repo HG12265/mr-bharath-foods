@@ -50,6 +50,24 @@ export const orderService = {
     });
     return response.data;
   },
+
+  async exportOrdersReport(params: {
+    format: "pdf" | "excel";
+    status?: string;
+    startDate?: string;
+    endDate?: string;
+  }): Promise<Blob> {
+    const response = await apiClient.get("/api/v1/admin/orders/reports/export", {
+      params: {
+        format: params.format,
+        status: params.status && params.status !== "all" ? params.status : undefined,
+        start_date: params.startDate || undefined,
+        end_date: params.endDate || undefined,
+      },
+      responseType: "blob",
+    });
+    return response.data;
+  },
 };
 
 export default orderService;
