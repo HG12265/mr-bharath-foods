@@ -195,6 +195,7 @@ function ShopContent() {
   const urlPage = parseInt(searchParams.get("page") || "1", 10);
 
   // States
+  const [selectedCategory, setSelectedCategory] = useState(urlCategory);
   const [searchInput, setSearchInput] = useState(urlSearch);
   const [page, setPage] = useState(urlPage);
   const [productsList, setProductsList] = useState<Product[]>([]);
@@ -205,10 +206,28 @@ function ShopContent() {
     setPage(urlPage);
   }, [urlPage]);
 
+  // Sync category with URL
+  useEffect(() => {
+    setSelectedCategory(urlCategory);
+  }, [urlCategory]);
+
   // Sync input text with URL search
   useEffect(() => {
     setSearchInput(urlSearch);
   }, [urlSearch]);
+
+  // Handle browser Back / Forward buttons without full page reloads
+  useEffect(() => {
+    const handlePopState = () => {
+      const sp = new URLSearchParams(window.location.search);
+      setSelectedCategory(sp.get("category") || "");
+      setSearchInput(sp.get("search") || "");
+      setPage(parseInt(sp.get("page") || "1", 10));
+    };
+
+    window.addEventListener("popstate", handlePopState);
+    return () => window.removeEventListener("popstate", handlePopState);
+  }, []);
 
   // Fetch Categories
   const { data: categoriesRes } = useCategories();
@@ -216,7 +235,7 @@ function ShopContent() {
 
   // Fetch Products
   const { data: productsRes, isPending: isLoadingProducts } = useProducts({
-    category_slug: urlCategory || undefined,
+    category_slug: selectedCategory || undefined,
     search: urlSearch || undefined,
     sort: urlSort,
     page: page,
@@ -253,9 +272,10 @@ function ShopContent() {
   const addToWishlistMutation = useAddToWishlist();
   const removeFromWishlistMutation = useRemoveFromWishlist();
 
-  // URL updating helper
+  // URL updating helper (uses window.history.pushState so Next.js doesn't reset scroll to top in production)
   const updateUrl = (newParams: { category?: string; search?: string; sort?: string; page?: number }) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const currentSearch = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+    const params = new URLSearchParams(currentSearch);
     
     if (newParams.category !== undefined) {
       if (newParams.category) params.set("category", newParams.category);
@@ -277,7 +297,11 @@ function ShopContent() {
 
     const queryString = params.toString();
     const targetUrl = queryString ? `/shop?${queryString}` : "/shop";
-    router.push(targetUrl, { scroll: false });
+    if (typeof window !== "undefined") {
+      window.history.pushState(null, "", targetUrl);
+    } else {
+      router.push(targetUrl, { scroll: false });
+    }
   };
 
   // Debounce search input
@@ -295,7 +319,7 @@ function ShopContent() {
     const doScroll = () => {
       const el = document.getElementById("product-catalog");
       if (el) {
-        const headerOffset = 80;
+        const headerOffset = 90;
         const elementPosition = el.getBoundingClientRect().top;
         const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
         window.scrollTo({
@@ -307,19 +331,29 @@ function ShopContent() {
 
     doScroll();
     setTimeout(doScroll, 80);
+    setTimeout(doScroll, 250);
   };
 
   const handleCategorySelect = (slug: string) => {
     setMobileFilterOpen(false);
+    setSelectedCategory(slug);
     updateUrl({ category: slug });
   };
 
-  const handleCategoryCardClick = (slug: string) => {
+  const handleCategoryCardClick = (slug: string, e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     handleCategorySelect(slug);
     scrollToCatalog();
   };
 
-  const handleExploreAllCollections = () => {
+  const handleExploreAllCollections = (e?: React.MouseEvent) => {
+    if (e) {
+      e.preventDefault();
+      e.stopPropagation();
+    }
     handleCategorySelect("");
     scrollToCatalog();
   };
@@ -336,6 +370,7 @@ function ShopContent() {
   const clearAllFilters = () => {
     setSearchInput("");
     setMobileFilterOpen(false);
+    setSelectedCategory("");
     updateUrl({ category: "", search: "" });
   };
 
@@ -455,10 +490,8 @@ function ShopContent() {
                     {/* CTA Button */}
                     {hasProducts ? (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCategoryCardClick(cat.slug);
-                        }}
+                        type="button"
+                        onClick={(e) => handleCategoryCardClick(cat.slug, e)}
                         className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto"
                       >
                         Explore Collection <ArrowRight className="w-3.5 h-3.5" />
@@ -481,8 +514,8 @@ function ShopContent() {
               ].map((cat, idx) => (
                 <div
                   key={idx}
-                  onClick={() => {
-                    if (cat.available) handleCategoryCardClick(cat.slug);
+                  onClick={(e) => {
+                    if (cat.available) handleCategoryCardClick(cat.slug, e);
                   }}
                   className={`bg-[#FAF9F6] border border-burnishedGold/15 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col ${
                     cat.available ? "cursor-pointer" : ""
@@ -495,10 +528,8 @@ function ShopContent() {
                     <h3 className="font-serif text-base font-bold text-deodharForest mb-2">{cat.title}</h3>
                     {cat.available ? (
                       <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleCategoryCardClick(cat.slug);
-                        }}
+                        type="button"
+                        onClick={(e) => handleCategoryCardClick(cat.slug, e)}
                         className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto"
                       >
                         Explore Collection <ArrowRight className="w-3.5 h-3.5" />
@@ -517,6 +548,7 @@ function ShopContent() {
           {/* Explore All Collections Button */}
           <div className="mt-12 text-center">
             <button
+              type="button"
               onClick={handleExploreAllCollections}
               className="inline-flex items-center gap-3 px-8 py-3.5 bg-deodharForest hover:bg-[#25423b] text-richCream font-sans text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 border border-burnishedGold/30 group"
             >
@@ -600,9 +632,10 @@ function ShopContent() {
           {/* Mobile Category Chips */}
           <div className="md:hidden overflow-x-auto whitespace-nowrap pb-4 mb-4 -mx-4 px-4 scrollbar-none flex gap-2">
             <button
+              type="button"
               onClick={() => handleCategorySelect("")}
               className={`px-4 py-1.5 rounded-full text-xs font-sans font-semibold uppercase tracking-wider transition-all border ${
-                !urlCategory
+                !selectedCategory
                   ? "bg-deodharForest text-richCream border-deodharForest"
                   : "bg-white text-deodharForest border-burnishedGold/20 hover:border-burnishedGold/45"
               }`}
@@ -612,9 +645,10 @@ function ShopContent() {
             {categories.map((cat) => (
               <button
                 key={cat.id}
+                type="button"
                 onClick={() => handleCategorySelect(cat.slug)}
                 className={`px-4 py-1.5 rounded-full text-xs font-sans font-semibold uppercase tracking-wider transition-all border ${
-                  urlCategory === cat.slug
+                  selectedCategory === cat.slug
                     ? "bg-deodharForest text-richCream border-deodharForest"
                     : "bg-white text-deodharForest border-burnishedGold/20 hover:border-burnishedGold/45"
                 }`}
@@ -633,9 +667,10 @@ function ShopContent() {
               </h2>
               <nav className="flex flex-col gap-1.5">
                 <button
+                  type="button"
                   onClick={() => handleCategorySelect("")}
                   className={`w-full text-left px-3 py-2 text-xs font-sans font-semibold tracking-wider uppercase rounded-lg transition-colors ${
-                    !urlCategory
+                    !selectedCategory
                       ? "bg-deodharForest text-richCream"
                       : "text-indianInk/75 hover:bg-[#FAF9F6] hover:text-deodharForest"
                   }`}
@@ -645,9 +680,10 @@ function ShopContent() {
                 {categories.map((cat) => (
                   <button
                     key={cat.id}
+                    type="button"
                     onClick={() => handleCategorySelect(cat.slug)}
                     className={`w-full text-left px-3 py-2 text-xs font-sans font-semibold tracking-wider uppercase rounded-lg transition-colors ${
-                      urlCategory === cat.slug
+                      selectedCategory === cat.slug
                         ? "bg-deodharForest text-richCream"
                         : "text-indianInk/75 hover:bg-[#FAF9F6] hover:text-deodharForest"
                     }`}
@@ -942,9 +978,10 @@ function ShopContent() {
               </div>
               <nav className="flex flex-col gap-2">
                 <button
+                  type="button"
                   onClick={() => handleCategorySelect("")}
                   className={`w-full text-left px-4 py-2.5 text-xs font-sans font-semibold tracking-wider uppercase rounded-lg transition-colors ${
-                    !urlCategory
+                    !selectedCategory
                       ? "bg-deodharForest text-richCream"
                       : "bg-white text-indianInk/75 border border-burnishedGold/15 hover:bg-[#FAF9F6]"
                   }`}
@@ -954,9 +991,10 @@ function ShopContent() {
                 {categories.map((cat) => (
                   <button
                     key={cat.id}
+                    type="button"
                     onClick={() => handleCategorySelect(cat.slug)}
                     className={`w-full text-left px-4 py-2.5 text-xs font-sans font-semibold tracking-wider uppercase rounded-lg transition-colors ${
-                      urlCategory === cat.slug
+                      selectedCategory === cat.slug
                         ? "bg-deodharForest text-richCream"
                         : "bg-white text-indianInk/75 border border-burnishedGold/15 hover:bg-[#FAF9F6]"
                     }`}
@@ -968,6 +1006,7 @@ function ShopContent() {
             </div>
 
             <button
+              type="button"
               onClick={clearAllFilters}
               className="w-full py-3 bg-[#FAF9F6] border border-burnishedGold/20 text-deodharForest rounded-lg font-sans text-xs font-bold tracking-wider uppercase hover:bg-white"
             >
