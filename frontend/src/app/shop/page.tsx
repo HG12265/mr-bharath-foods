@@ -223,6 +223,11 @@ function ShopContent() {
     limit: 12
   });
 
+  // Current products to render: for page 1, always use productsRes.data.products directly when available
+  const displayedProducts = (page === 1 && productsRes?.data?.products !== undefined)
+    ? productsRes.data.products
+    : productsList;
+
   // Handle accumulative list appending
   useEffect(() => {
     if (productsRes?.success && productsRes?.data) {
@@ -261,24 +266,19 @@ function ShopContent() {
       else params.delete("search");
     }
     if (newParams.sort !== undefined) {
-      params.set("sort", newParams.sort);
+      if (newParams.sort && newParams.sort !== "featured") params.set("sort", newParams.sort);
+      else params.delete("sort");
     }
-    if (newParams.page !== undefined) {
+    if (newParams.page !== undefined && newParams.page > 1) {
       params.set("page", newParams.page.toString());
     } else {
-      // Reset page to 1 on filter/search/sort change
-      params.set("page", "1");
+      params.delete("page");
     }
 
     const queryString = params.toString();
     const targetUrl = queryString ? `/shop?${queryString}` : "/shop";
     router.push(targetUrl, { scroll: false });
   };
-
-  // Reset product list on filter/search/sort change for fresh state
-  useEffect(() => {
-    setProductsList([]);
-  }, [urlCategory, urlSearch, urlSort]);
 
   // Debounce search input
   useEffect(() => {
@@ -336,7 +336,7 @@ function ShopContent() {
   const clearAllFilters = () => {
     setSearchInput("");
     setMobileFilterOpen(false);
-    router.push("/shop", { scroll: false });
+    updateUrl({ category: "", search: "" });
   };
 
   const totalProducts = productsRes?.data?.total_count || 0;
@@ -577,7 +577,7 @@ function ShopContent() {
 
               {/* Product count text */}
               <div className="text-[11px] font-sans font-semibold tracking-wider text-indianInk/50 uppercase">
-                {productsList.length > 0 ? `Showing ${productsList.length} of ${totalProducts} products` : "0 products"}
+                {displayedProducts.length > 0 ? `Showing ${displayedProducts.length} of ${totalProducts} products` : "0 products"}
               </div>
 
               {/* Sort Dropdown */}
@@ -660,9 +660,9 @@ function ShopContent() {
 
             {/* Product Grid Area */}
             <div className="col-span-1 md:col-span-3">
-              {isLoadingProducts && productsList.length === 0 ? (
+              {isLoadingProducts && displayedProducts.length === 0 ? (
                 <ShopLoadingSkeleton />
-              ) : productsList.length === 0 ? (
+              ) : displayedProducts.length === 0 ? (
                 <div className="bg-white border border-burnishedGold/15 rounded-xl p-16 text-center shadow-sm max-w-xl mx-auto animate-fade-up">
                   <SlidersHorizontal className="w-12 h-12 text-burnishedGold/40 mx-auto mb-4" />
                   <h3 className="font-serif text-xl font-bold text-deodharForest">
@@ -681,7 +681,7 @@ function ShopContent() {
               ) : (
                 <div className="space-y-12">
                   <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
-                    {productsList.map((product, index) => {
+                    {displayedProducts.map((product, index) => {
                       const priceValue = product.variants?.[0]?.price || 0;
                       const volumeText = product.variants?.[0]?.volume_weight || "250ml";
                       const regionName = product.sourcing?.region || "Tamil Nadu";
