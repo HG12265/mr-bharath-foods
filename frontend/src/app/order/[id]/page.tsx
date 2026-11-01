@@ -73,7 +73,19 @@ export default function OrderDetailsPage() {
       link.remove();
       window.URL.revokeObjectURL(url);
     } catch (err: any) {
-      setDownloadInvoiceError("Failed to download invoice. Please try again.");
+      let errorMessage = "Failed to download invoice. Please try again.";
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json?.message) errorMessage = json.message;
+        } catch {
+          // fallback
+        }
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      }
+      setDownloadInvoiceError(errorMessage);
     } finally {
       setIsDownloadingInvoice(false);
     }

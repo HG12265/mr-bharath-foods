@@ -208,11 +208,21 @@ export default function AdminOrdersPage() {
       window.open(url, "_blank");
     } catch (err: any) {
       console.error("Failed to fetch invoice:", err);
-      setViewInvoiceError(
-        err?.response?.data?.message || 
-        err?.message || 
-        "Failed to load invoice. Please try again."
-      );
+      let errorMsg = "Failed to load invoice. Please try again.";
+      if (err?.response?.data instanceof Blob) {
+        try {
+          const text = await err.response.data.text();
+          const json = JSON.parse(text);
+          if (json?.message) errorMsg = json.message;
+        } catch {
+          // fallback
+        }
+      } else if (err?.response?.data?.message) {
+        errorMsg = err.response.data.message;
+      } else if (err?.message) {
+        errorMsg = err.message;
+      }
+      setViewInvoiceError(errorMsg);
     } finally {
       setIsViewingInvoice(false);
     }

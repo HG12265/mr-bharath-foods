@@ -167,7 +167,7 @@ async def get_order_invoice(
     Enforces that the customer can only access their own order, while admin/warehouse can access it.
     Only allowed if payment_status is 'paid'.
     """
-    from fastapi.responses import StreamingResponse
+    from fastapi.responses import Response, StreamingResponse
 
     from app.core.exceptions import BaseAppException
     from app.repositories.settings_repository import SettingsRepository
@@ -229,10 +229,14 @@ async def get_order_invoice(
         "Access-Control-Expose-Headers": "Content-Disposition",
     }
 
-    return StreamingResponse(pdf_buffer, media_type="application/pdf", headers=headers)
+    return Response(
+        content=pdf_buffer.getvalue(),
+        media_type="application/pdf",
+        headers=headers,
+    )
 
 
-# --- ADMIN ROUTER ENDPOINTS ---
+# --- ADMIN RO UTER ENDPOINTS ---
 
 
 @admin_router.get("/", response_model=Envelope[list[OrderResponse]])
