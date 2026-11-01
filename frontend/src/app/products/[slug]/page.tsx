@@ -7,7 +7,7 @@ import { useRouter, notFound } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useProductBySlug } from "@/hooks/use-products";
 import { useAddToCart } from "@/hooks/use-cart";
-import { useSession } from "@/hooks/use-auth";
+import { useSession, useMe } from "@/hooks/use-auth";
 import { useWishlist, useAddToWishlist, useRemoveFromWishlist } from "@/hooks/use-wishlist";
 import { useMediaAsset } from "@/hooks/use-media";
 import { formatINR, getProductFallbackImage } from "@/lib/utils";
@@ -46,8 +46,9 @@ export default function ProductDetailPage({ params }: PageProps) {
   const addToCartMutation = useAddToCart();
 
   const { data: sessionData } = useSession();
-  const user = sessionData?.data?.user;
-  const isCustomer = user?.role === "customer";
+  const { data: meData } = useMe();
+  const user = sessionData?.data?.user || meData?.data;
+  const isCustomer = user?.role === "customer" || !!user;
   const router = useRouter();
 
   const { data: wishlistRes } = useWishlist();
@@ -112,8 +113,8 @@ export default function ProductDetailPage({ params }: PageProps) {
   const isWishlisted = variantId ? wishlistItems.some((item: any) => item.variant_id === variantId) : false;
 
   const handleToggleWishlist = () => {
-    if (!isCustomer) {
-      router.push("/login");
+    if (!user) {
+      router.push(`/login?redirect=/products/${slug}`);
       return;
     }
     if (!productId || !variantId) return;
@@ -126,6 +127,10 @@ export default function ProductDetailPage({ params }: PageProps) {
   };
 
   const handleAddToCart = () => {
+    if (!user) {
+      router.push(`/login?redirect=/products/${slug}`);
+      return;
+    }
     if (isCartDisabled) return;
     addToCartMutation.mutate(
       {

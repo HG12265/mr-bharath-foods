@@ -107,7 +107,9 @@ export const RegisterForm: React.FC = () => {
               {
                 onSuccess: (loginRes) => {
                   if (loginRes.success) {
-                    router.push("/account");
+                    const redirectParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("redirect") : null;
+                    const targetUrl = (redirectParam && redirectParam !== "/account") ? redirectParam : "/shop";
+                    router.push(targetUrl);
                   } else {
                     setApiError("Account created successfully, but automatic login failed. Please sign in manually.");
                   }

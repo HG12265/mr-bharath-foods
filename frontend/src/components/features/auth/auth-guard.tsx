@@ -25,7 +25,9 @@ export const AuthGuard: React.FC<AuthGuardProps> = ({ children, requireAuth = tr
         if (role === "admin" || role === "warehouse") {
           router.push("/admin");
         } else {
-          router.push("/account");
+          const redirectParam = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("redirect") : null;
+          const targetUrl = (redirectParam && redirectParam !== "/account") ? redirectParam : "/shop";
+          router.push(targetUrl);
         }
       }
     }
