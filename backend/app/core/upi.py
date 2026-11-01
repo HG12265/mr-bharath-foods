@@ -2,7 +2,7 @@ import urllib.parse
 from decimal import Decimal
 
 
-def generate_upi_link(upi_id: str, amount: Decimal, order_number: str, payee_name: str = "Bharath Delight Foods") -> str:
+def generate_upi_link(upi_id: str, amount: Decimal, order_number: str, payee_name: str = "Bharath") -> str:
     """
     Generates a UPI deep link in the format:
     upi://pay?pa=<UPI_ID>&pn=<payee_name>&am=<amount>&cu=INR&tn=<order_number>

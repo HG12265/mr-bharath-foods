@@ -21,7 +21,7 @@ class Settings(BaseSettings):
     DATABASE_NAME: str = "mr_bharath_foods"
 
     REDIS_URL: str
-    UPI_ID: str = "mrbharathfoods@upi"  # TODO: Update after new UPI ID is created
+    UPI_ID: str = "bharaththambidurai@oksbi"
 
     # Production Hardening Configurations
     ENVIRONMENT: str = "development"
