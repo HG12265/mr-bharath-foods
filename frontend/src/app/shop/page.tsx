@@ -34,6 +34,34 @@ function ShopProductImage({ mediaId, alt, productNameOrSlug, index }: { mediaId?
   );
 }
 
+function ShopCategoryImage({
+  mediaId,
+  slug,
+  alt,
+}: {
+  mediaId?: string;
+  slug: string;
+  alt: string;
+}) {
+  const fallbackSrc = CATEGORY_IMAGES[slug] || "/images/category-ghee.png";
+  const isUrl = mediaId && (mediaId.startsWith("http://") || mediaId.startsWith("https://") || mediaId.startsWith("/"));
+  const { data: mediaRes, isError } = useMediaAsset(isUrl ? "" : (mediaId || ""), { enabled: !!mediaId && !isUrl });
+  const url = isUrl
+    ? mediaId
+    : (!isError && mediaRes?.success && mediaRes?.data?.public_url)
+      ? mediaRes.data.public_url
+      : fallbackSrc;
+
+  return (
+    <Image
+      src={optimizeCloudinaryUrl(url, 600)}
+      alt={alt}
+      fill
+      className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
+    />
+  );
+}
+
 function LeafDivider({ className }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-2 ${className ?? ""}`}>
@@ -95,6 +123,8 @@ const CATEGORY_IMAGES: Record<string, string> = {
   "spices-masalas": "/images/category-spices.png",
   "oils": "/images/category-oils.png",
   "natural-oils": "/images/category-oils.png",
+  "pure-honey": "/images/category-jaggery.png",
+  "energy-bar": "/images/category-more.png",
 };
 
 const CATEGORY_DISPLAY: Record<string, { title: string; desc: string; iconPath: string }> = {
@@ -107,6 +137,16 @@ const CATEGORY_DISPLAY: Record<string, { title: string; desc: string; iconPath: 
     title: "Ghee Collection",
     desc: "Rich in tradition and cherished for generations, our ghee collection brings authentic taste and quality to everyday cooking.",
     iconPath: "M12 3v1m0 16v1m8.66-15.66l-.71.71M4.05 19.95l-.71.71M21 12h-1M4 12H3m15.66 7.66l-.71-.71M4.05 4.05l-.71-.71M16 12a4 4 0 11-8 0 4 4 0 018 0z",
+  },
+  "pure-honey": {
+    title: "Pure Honey",
+    desc: "Naturally sourced golden honey with a rich aroma, smooth texture, and authentic sweetness for everyday wellness.",
+    iconPath: "M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z",
+  },
+  "energy-bar": {
+    title: "Energy Bar",
+    desc: "A wholesome, nutrient-rich snack crafted with natural ingredients to provide quick energy and lasting nourishment anytime.",
+    iconPath: "M13 10V3L4 14h7v7l9-11h-7z",
   },
   "jaggery": {
     title: "Traditional Sweeteners",
@@ -332,9 +372,20 @@ function ShopContent() {
           {/* Category Cards Grid */}
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
             {categories.length > 0 ? categories.map((cat, idx) => {
-              const imgSrc = CATEGORY_IMAGES[cat.slug] || "/images/category-ghee.png";
-              const display = CATEGORY_DISPLAY[cat.slug] || { title: cat.name, desc: cat.description || "Premium products for your kitchen.", iconPath: "" };
-              const isGhee = cat.slug.includes("ghee");
+              const display = {
+                title: CATEGORY_DISPLAY[cat.slug]?.title || cat.name,
+                desc: cat.description || CATEGORY_DISPLAY[cat.slug]?.desc || "Premium products for your kitchen.",
+                iconPath: CATEGORY_DISPLAY[cat.slug]?.iconPath || "",
+              };
+              const hasProducts = productsList.some((p) => p.category_id === cat.id) || cat.slug.includes("ghee") || cat.slug === "energy-bar";
+
+              const handleCategoryCardClick = () => {
+                handleCategorySelect(cat.slug);
+                const el = document.getElementById("product-catalog");
+                if (el) {
+                  el.scrollIntoView({ behavior: "smooth" });
+                }
+              };
 
               return (
                 <div
@@ -344,11 +395,10 @@ function ShopContent() {
                 >
                   {/* Category Image */}
                   <div className="relative w-full h-[200px] overflow-hidden bg-richCream/40">
-                    <Image
-                      src={imgSrc}
+                    <ShopCategoryImage
+                      mediaId={cat.image_id}
+                      slug={cat.slug}
                       alt={display.title}
-                      fill
-                      className="object-cover object-center group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
 
@@ -367,15 +417,15 @@ function ShopContent() {
                     </p>
 
                     {/* CTA Button */}
-                    {isGhee ? (
+                    {hasProducts ? (
                       <button
-                        onClick={() => handleCategorySelect(cat.slug)}
-                        className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start"
+                        onClick={handleCategoryCardClick}
+                        className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto"
                       >
                         Explore Collection <ArrowRight className="w-3.5 h-3.5" />
                       </button>
                     ) : (
-                      <span className="inline-flex items-center gap-2 px-5 py-2 border border-[#C49A45]/40 text-[#C49A45] rounded-full font-sans text-[11px] font-semibold self-start">
+                      <span className="inline-flex items-center gap-2 px-5 py-2 border border-[#C49A45]/40 text-[#C49A45] rounded-full font-sans text-[11px] font-semibold self-start mt-auto">
                         Coming Soon
                       </span>
                     )}
@@ -416,7 +466,7 @@ function ShopContent() {
       {/* ═══════════════════════════════════════════════════════
           PRODUCT CATALOG — Search/Filter/Sort + Grid
           ═══════════════════════════════════════════════════════ */}
-      <section className="py-16 bg-[#FAF9F6] border-b border-burnishedGold/10">
+      <section id="product-catalog" className="py-16 bg-[#FAF9F6] border-b border-burnishedGold/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-10">
             <SectionLabel text="OUR PRODUCTS" />
