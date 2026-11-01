@@ -155,6 +155,7 @@ class EmailService:
         html_content: str,
         attachments: list[dict[str, Any]] | None = None,
         order_id: str | None = None,
+        bcc_admin: bool = True,
     ) -> bool:
         """
         Performs POST request to Brevo Transactional Email REST endpoint.
@@ -178,12 +179,15 @@ class EmailService:
                     "name": attach["name"]
                 })
 
-        payload = {
+        payload: dict[str, Any] = {
             "sender": {"name": sender_name, "email": sender_email},
             "to": [{"email": to_email, "name": to_name}],
             "subject": subject,
             "htmlContent": html_content,
         }
+        admin_email = settings.ADMIN_EMAIL or settings.BREVO_SENDER_EMAIL
+        if bcc_admin and admin_email and admin_email.strip().lower() != to_email.strip().lower():
+            payload["bcc"] = [{"email": admin_email.strip(), "name": "Admin"}]
         if brevo_attachments:
             payload["attachment"] = brevo_attachments
 
@@ -200,7 +204,7 @@ class EmailService:
                 target_collection="orders",
                 user_id="system",
                 target_id=order_id,
-                details={"to": to_email, "subject": subject, "mock": True}
+                metadata={"to": to_email, "subject": subject, "mock": True}
             )
             return True
 
@@ -220,7 +224,7 @@ class EmailService:
                         target_collection="orders",
                         user_id="system",
                         target_id=order_id,
-                        details={"to": to_email, "subject": subject, "brevo_message_id": response.json().get("messageId")}
+                        metadata={"to": to_email, "subject": subject, "brevo_message_id": response.json().get("messageId")}
                     )
                     return True
                 else:
@@ -230,7 +234,7 @@ class EmailService:
                         target_collection="orders",
                         user_id="system",
                         target_id=order_id,
-                        details={"to": to_email, "subject": subject, "error": error_msg}
+                        metadata={"to": to_email, "subject": subject, "error": error_msg}
                     )
                     return False
         except Exception as exc:
@@ -239,7 +243,7 @@ class EmailService:
                 target_collection="orders",
                 user_id="system",
                 target_id=order_id,
-                details={"to": to_email, "subject": subject, "error": str(exc)}
+                metadata={"to": to_email, "subject": subject, "error": str(exc)}
             )
             return False
 
@@ -485,5 +489,126 @@ class EmailService:
             to_name="Admin — Bharath Delight Foods",
             subject=subject,
             html_content=html_body,
+        )
+
+    async def send_new_order_admin_notification(
+        self,
+        order: Order,
+        payment: Any,
+        media: Any = None,
+    ) -> bool:
+        """
+        Sends an alert email to the Admin when a customer places an order
+        and submits their UPI payment screenshot proof.
+        """
+        admin_email = settings.ADMIN_EMAIL or settings.BREVO_SENDER_EMAIL or "bharathdelightfoods@gmail.com"
+        cust_name = f"{order.customer_snapshot.first_name or ''} {order.customer_snapshot.last_name or ''}".strip()
+        if not cust_name:
+            cust_name = order.shipping_address_snapshot.full_name
+
+        subject = f"🔔 New Order Received: #{order.order_number} (₹{order.pricing.grand_total:,.2f}) — Payment Proof Submitted"
+
+        # Construct items rows
+        items_rows = ""
+        for item in order.items:
+            items_rows += f"""
+            <tr>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee;">
+                    <b>{item.product_name}</b><br/>
+                    <small style="color: #666;">Variant: {item.variant_title} × {item.quantity}</small>
+                </td>
+                <td style="padding: 8px 0; border-bottom: 1px solid #eee; text-align: right;">
+                    ₹{item.line_total:,.2f}
+                </td>
+            </tr>
+            """
+
+        proof_html = ""
+        if media and getattr(media, "public_url", None):
+            proof_html = f"""
+            <div style="margin: 20px 0; padding: 15px; background: #FFFDF0; border: 1px solid #E8D8A0; border-radius: 6px; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #0F3D2E; font-weight: bold;">Customer has uploaded UPI payment proof:</p>
+                <a href="{media.public_url}" target="_blank" class="btn" style="background-color: #C89B3C; border-color: #C89B3C;">
+                    View Payment Screenshot ↗
+                </a>
+            </div>
+            """
+
+        admin_dashboard_url = f"{settings.FRONTEND_ORIGIN}/admin/payments"
+
+        content_html = f"""
+        <div class="h2">🔔 New Order & Payment Proof Received!</div>
+        <p>A new customer order has been placed and payment screenshot proof has been uploaded. Please review the payment proof and approve the order in the Admin Dashboard.</p>
+
+        <div class="details-box">
+            <h4 style="margin-top:0; color:#0F3D2E;">Order Summary</h4>
+            <table>
+                <tr>
+                    <th>Order Number:</th>
+                    <td><b>#{order.order_number}</b></td>
+                </tr>
+                <tr>
+                    <th>Grand Total:</th>
+                    <td><b style="color: #0F3D2E; font-size: 15px;">₹{order.pricing.grand_total:,.2f}</b></td>
+                </tr>
+                <tr>
+                    <th>Customer Name:</th>
+                    <td>{cust_name}</td>
+                </tr>
+                <tr>
+                    <th>Customer Email:</th>
+                    <td><a href="mailto:{order.customer_snapshot.email}" style="color:#0F3D2E;">{order.customer_snapshot.email}</a></td>
+                </tr>
+                <tr>
+                    <th>Customer Phone:</th>
+                    <td>{order.customer_snapshot.phone or order.shipping_address_snapshot.phone}</td>
+                </tr>
+                <tr>
+                    <th>Shipping Address:</th>
+                    <td>
+                        {order.shipping_address_snapshot.full_name}<br/>
+                        {order.shipping_address_snapshot.address_line1}{', ' + order.shipping_address_snapshot.address_line2 if order.shipping_address_snapshot.address_line2 else ''}<br/>
+                        {order.shipping_address_snapshot.city}, {order.shipping_address_snapshot.state} - {order.shipping_address_snapshot.pincode}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="details-box">
+            <h4 style="margin-top:0; color:#0F3D2E;">Items Ordered</h4>
+            <table style="width: 100%;">
+                {items_rows}
+                <tr>
+                    <td style="padding-top: 10px; font-weight: bold;">Subtotal:</td>
+                    <td style="padding-top: 10px; font-weight: bold; text-align: right;">₹{order.pricing.subtotal:,.2f}</td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 4px; font-weight: bold;">Shipping Fee:</td>
+                    <td style="padding-top: 4px; font-weight: bold; text-align: right;">₹{order.pricing.shipping_fee:,.2f}</td>
+                </tr>
+                <tr>
+                    <td style="padding-top: 8px; font-size: 15px; font-weight: bold; border-top: 1px solid #0F3D2E;">Total Amount:</td>
+                    <td style="padding-top: 8px; font-size: 15px; font-weight: bold; text-align: right; color: #0F3D2E; border-top: 1px solid #0F3D2E;">₹{order.pricing.grand_total:,.2f}</td>
+                </tr>
+            </table>
+        </div>
+
+        {proof_html}
+
+        <p style="text-align: center; margin-top: 30px;">
+            <a href="{admin_dashboard_url}" class="btn">
+                Open Admin Payments Dashboard
+            </a>
+        </p>
+        """
+
+        html_body = self._get_base_template("New Order Received", content_html)
+        return await self.send_transactional_email(
+            to_email=admin_email,
+            to_name="Bharath Delight Admin",
+            subject=subject,
+            html_content=html_body,
+            order_id=order.id,
+            bcc_admin=False,
         )
 

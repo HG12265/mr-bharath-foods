@@ -253,6 +253,20 @@ class PaymentService(BaseService[Payment]):
                 ip_address=ip_address,
             )
 
+        # Send alert email to Admin about the new order & submitted payment proof
+        try:
+            from app.services.email_service import EmailService
+            email_service = EmailService(self.audit_service)
+            await email_service.send_new_order_admin_notification(
+                order=order,
+                payment=updated,
+                media=media,
+            )
+        except Exception as exc:
+            import structlog
+            logger = structlog.get_logger()
+            logger.error(f"Failed to send admin new order notification email: {exc!s}")
+
         return updated
 
     async def verify_payment_proof_admin(
