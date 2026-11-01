@@ -223,7 +223,6 @@
 .brand-header__mobile button{width:44px;height:44px;display:grid;place-items:center}
 .brand-mobile-menu a,.brand-mobile-menu button{min-height:44px}
 .brand-mobile-menu [role="dialog"]{padding-bottom:max(24px,env(safe-area-inset-bottom));overscroll-behavior:contain}
-@media(min-width:1280px){.brand-header:has(.brand-header__nav>a:nth-child(6)) .brand-header__inner{flex-wrap:wrap;height:auto;min-height:112px;padding-block:12px;gap:12px 24px}.brand-header:has(.brand-header__nav>a:nth-child(6)) .brand-header__nav{order:3;width:100%;justify-content:center;padding-top:8px;border-top:1px solid #c49a4526}.brand-header:has(.brand-header__nav>a:nth-child(6)) .brand-header__actions{margin-left:auto}}
 @media(min-width:768px) and (max-width:1023px){.reference-banner__container{padding:44px 32px}.reference-banner{min-height:460px}.reference-banner__content{width:48%}.reference-banner__content h1{font-size:39px}.reference-banner__content p{font-size:14px;line-height:1.7}.reference-banner--home{min-height:540px}.reference-banner--home .reference-banner__content{width:48%}.reference-banner--home .reference-banner__content h1{font-size:46px}.reference-banner--about{min-height:560px}}
 @media(max-width:767px){
  .reference-banner,.reference-banner--home,.reference-banner--about{display:flex;flex-direction:column;align-items:stretch;min-height:0}

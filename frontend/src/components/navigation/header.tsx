@@ -73,7 +73,7 @@ export const Header: React.FC = () => {
         }`}
         style={{ borderBottom: "1px solid rgba(196,154,69,0.15)" }}
       >
-        <div className="brand-header__inner w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex items-center justify-between relative">
+        <div className="brand-header__inner w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex flex-nowrap items-center justify-between relative">
 
           {/* ── Logo (Left) ───────────────────────────────── */}
           <Link
@@ -123,30 +123,6 @@ export const Header: React.FC = () => {
                 </Link>
               );
             })}
-            {user && (
-              <>
-                <Link
-                  href="/account"
-                  className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
-                    pathname === "/account"
-                      ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
-                      : "text-[#1E352F]/65 hover:text-[#1E352F]"
-                  }`}
-                >
-                  My Profile
-                </Link>
-                <Link
-                  href="/account/orders"
-                  className={`relative font-sans text-[14px] font-medium tracking-wide transition-colors duration-150 pb-0.5 ${
-                    pathname.startsWith("/account/orders")
-                      ? "text-[#1E352F] after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2px] after:bg-[#1E352F] after:rounded-full"
-                      : "text-[#1E352F]/65 hover:text-[#1E352F]"
-                  }`}
-                >
-                  My Orders
-                </Link>
-              </>
-            )}
           </nav>
 
           {/* ── Right Actions ─────────────────────────────── */}
