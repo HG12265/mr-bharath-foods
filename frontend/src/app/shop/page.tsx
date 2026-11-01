@@ -127,6 +127,8 @@ const CATEGORY_IMAGES: Record<string, string> = {
   "energy-bar": "/images/category-more.png",
 };
 
+const AVAILABLE_CATEGORIES = new Set(["pure-ghee", "ghee", "energy-bar"]);
+
 const CATEGORY_DISPLAY: Record<string, { title: string; desc: string; iconPath: string }> = {
   "pure-ghee": {
     title: "Ghee Collection",
@@ -268,8 +270,15 @@ function ShopContent() {
       params.set("page", "1");
     }
 
-    router.push(`/shop?${params.toString()}`, { scroll: false });
+    const queryString = params.toString();
+    const targetUrl = queryString ? `/shop?${queryString}` : "/shop";
+    router.push(targetUrl, { scroll: false });
   };
+
+  // Reset product list on filter/search/sort change for fresh state
+  useEffect(() => {
+    setProductsList([]);
+  }, [urlCategory, urlSearch, urlSort]);
 
   // Debounce search input
   useEffect(() => {
@@ -282,9 +291,37 @@ function ShopContent() {
     return () => clearTimeout(handler);
   }, [searchInput]);
 
+  const scrollToCatalog = () => {
+    const doScroll = () => {
+      const el = document.getElementById("product-catalog");
+      if (el) {
+        const headerOffset = 80;
+        const elementPosition = el.getBoundingClientRect().top;
+        const offsetPosition = elementPosition + window.pageYOffset - headerOffset;
+        window.scrollTo({
+          top: offsetPosition,
+          behavior: "smooth"
+        });
+      }
+    };
+
+    doScroll();
+    setTimeout(doScroll, 80);
+  };
+
   const handleCategorySelect = (slug: string) => {
     setMobileFilterOpen(false);
     updateUrl({ category: slug });
+  };
+
+  const handleCategoryCardClick = (slug: string) => {
+    handleCategorySelect(slug);
+    scrollToCatalog();
+  };
+
+  const handleExploreAllCollections = () => {
+    handleCategorySelect("");
+    scrollToCatalog();
   };
 
   const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
@@ -377,20 +414,19 @@ function ShopContent() {
                 desc: cat.description || CATEGORY_DISPLAY[cat.slug]?.desc || "Premium products for your kitchen.",
                 iconPath: CATEGORY_DISPLAY[cat.slug]?.iconPath || "",
               };
-              const hasProducts = productsList.some((p) => p.category_id === cat.id) || cat.slug.includes("ghee") || cat.slug === "energy-bar";
-
-              const handleCategoryCardClick = () => {
-                handleCategorySelect(cat.slug);
-                const el = document.getElementById("product-catalog");
-                if (el) {
-                  el.scrollIntoView({ behavior: "smooth" });
-                }
-              };
+              const hasProducts = AVAILABLE_CATEGORIES.has(cat.slug) || cat.slug.includes("ghee") || cat.slug.includes("energy");
 
               return (
                 <div
                   key={cat.id}
-                  className="bg-[#FAF9F6] border border-burnishedGold/15 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col"
+                  onClick={() => {
+                    if (hasProducts) {
+                      handleCategoryCardClick(cat.slug);
+                    }
+                  }}
+                  className={`bg-[#FAF9F6] border border-burnishedGold/15 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col ${
+                    hasProducts ? "cursor-pointer" : ""
+                  }`}
                   style={{ animationDelay: `${idx * 80}ms` }}
                 >
                   {/* Category Image */}
@@ -419,7 +455,10 @@ function ShopContent() {
                     {/* CTA Button */}
                     {hasProducts ? (
                       <button
-                        onClick={handleCategoryCardClick}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryCardClick(cat.slug);
+                        }}
                         className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto"
                       >
                         Explore Collection <ArrowRight className="w-3.5 h-3.5" />
@@ -435,21 +474,35 @@ function ShopContent() {
             }) : (
               /* Fallback static categories */
               [
-                { title: "Ghee Collection", img: "/images/category-ghee.png", available: true },
-                { title: "Traditional Sweeteners", img: "/images/category-jaggery.png", available: false },
-                { title: "Premium Spices", img: "/images/category-spices.png", available: false },
-                { title: "Natural Oils", img: "/images/category-oils.png", available: false },
+                { title: "Ghee Collection", slug: "pure-ghee", img: "/images/category-ghee.png", available: true },
+                { title: "Traditional Sweeteners", slug: "traditional-sweeteners", img: "/images/category-jaggery.png", available: false },
+                { title: "Premium Spices", slug: "spices", img: "/images/category-spices.png", available: false },
+                { title: "Natural Oils", slug: "oils", img: "/images/category-oils.png", available: false },
               ].map((cat, idx) => (
-                <div key={idx} className="bg-[#FAF9F6] border border-burnishedGold/15 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+                <div
+                  key={idx}
+                  onClick={() => {
+                    if (cat.available) handleCategoryCardClick(cat.slug);
+                  }}
+                  className={`bg-[#FAF9F6] border border-burnishedGold/15 rounded-xl overflow-hidden hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col ${
+                    cat.available ? "cursor-pointer" : ""
+                  }`}
+                >
                   <div className="relative w-full h-[200px] overflow-hidden bg-richCream/40">
                     <Image src={cat.img} alt={cat.title} fill className="object-cover object-center group-hover:scale-105 transition-transform duration-500" />
                   </div>
                   <div className="p-5 flex flex-col flex-grow">
                     <h3 className="font-serif text-base font-bold text-deodharForest mb-2">{cat.title}</h3>
                     {cat.available ? (
-                      <Link href="/shop?category=pure-ghee" className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleCategoryCardClick(cat.slug);
+                        }}
+                        className="inline-flex items-center gap-2 px-5 py-2 bg-deodharForest text-white rounded-full font-sans text-[11px] font-semibold hover:bg-[#355E3B] transition-all duration-200 self-start mt-auto"
+                      >
                         Explore Collection <ArrowRight className="w-3.5 h-3.5" />
-                      </Link>
+                      </button>
                     ) : (
                       <span className="inline-flex items-center gap-2 px-5 py-2 border border-[#C49A45]/40 text-[#C49A45] rounded-full font-sans text-[11px] font-semibold self-start mt-auto">
                         Coming Soon
@@ -460,13 +513,24 @@ function ShopContent() {
               ))
             )}
           </div>
+
+          {/* Explore All Collections Button */}
+          <div className="mt-12 text-center">
+            <button
+              onClick={handleExploreAllCollections}
+              className="inline-flex items-center gap-3 px-8 py-3.5 bg-deodharForest hover:bg-[#25423b] text-richCream font-sans text-xs sm:text-sm font-semibold tracking-wider uppercase rounded-full shadow-md hover:shadow-lg transition-all duration-300 hover:-translate-y-0.5 border border-burnishedGold/30 group"
+            >
+              Explore All Collections
+              <ArrowRight className="w-4 h-4 text-[#C49A45] transition-transform group-hover:translate-x-1" />
+            </button>
+          </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════════════════
           PRODUCT CATALOG — Search/Filter/Sort + Grid
           ═══════════════════════════════════════════════════════ */}
-      <section id="product-catalog" className="py-16 bg-[#FAF9F6] border-b border-burnishedGold/10">
+      <section id="product-catalog" className="scroll-mt-20 py-16 bg-[#FAF9F6] border-b border-burnishedGold/10">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
           <div className="text-center max-w-xl mx-auto mb-10">
             <SectionLabel text="OUR PRODUCTS" />
