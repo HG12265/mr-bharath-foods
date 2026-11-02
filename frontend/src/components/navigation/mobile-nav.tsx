@@ -51,7 +51,7 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
   return (
     <div className="brand-mobile-menu fixed inset-0 z-50 xl:hidden flex justify-end">
       {/* Overlay Backdrop */}
-      <div 
+      <div
         className="absolute inset-0 bg-indianInk/40 backdrop-blur-sm transition-opacity duration-300"
         onClick={onClose}
       />
@@ -61,19 +61,16 @@ export const MobileNav: React.FC<MobileNavProps> = ({ isOpen, onClose, user }) =
         <div>
           {/* Header with BD Logo */}
           <div className="flex items-center justify-between pb-5 border-b border-burnishedGold/15">
-            <div className="flex items-center gap-2">
+            <Link href="/" onClick={onClose} className="flex items-center select-none" aria-label="Bharath Delight">
               <Image
                 src="/images/logo.png"
                 alt="Bharath Delight"
-                width={34}
-                height={34}
+                width={140}
+                height={46}
+                className="h-10 w-auto object-contain"
               />
-              <div className="flex flex-col leading-none">
-                <span className="font-serif text-[15px] font-bold text-deodharForest">Bharath</span>
-                <span className="font-script text-[16px] text-[#C49A45] font-medium leading-none -mt-0.5">Delight</span>
-              </div>
-            </div>
-            <button 
+            </Link>
+            <button
               onClick={onClose}
               className="p-1 hover:text-burnishedGold text-deodharForest transition-colors"
               aria-label="Close menu"

@@ -239,9 +239,7 @@
  .reference-banner--home .reference-banner__media{height:clamp(250px,66vw,420px)}
  .reference-banner--about .reference-banner__image{object-position:center 40%}
  .brand-header__inner{gap:10px}
- .brand-header__inner>a>div>span:last-child{font-size:7px;letter-spacing:.08em}
  .brand-header__inner>a{gap:8px}
- .brand-header__inner>a>img{width:34px;height:34px}
  .brand-header__mobile{gap:0}
 }
 @media(max-width:359px){.reference-banner__container{padding-inline:20px}.reference-banner__content h1{font-size:32px}.reference-banner--home .reference-banner__content h1{font-size:38px}.brand-header__inner{padding-inline:12px}.brand-header__inner>a>div>span:last-child{max-width:135px;letter-spacing:0}.brand-header__mobile button{width:40px}}

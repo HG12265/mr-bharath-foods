@@ -19,8 +19,8 @@ function CrownDivider({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-2 py-0.5 select-none text-[#C49A45] ${className}`}>
       <div className="w-8 h-[1.5px] bg-[#C49A45]" />
-      <svg 
-        viewBox="18 8 64 42" 
+      <svg
+        viewBox="18 8 64 42"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
         style={{ height: '11px', width: 'auto' }}
@@ -63,22 +63,17 @@ export const Footer: React.FC = () => {
           {/* Col 1: Brand & Logo */}
           <div className="space-y-4">
             <div>
-              <div className="flex items-center gap-2.5 mb-2">
-                <Image
-                  src="/images/logo.png"
-                  alt="Bharath Delight Logo"
-                  width={42}
-                  height={42}
-                  className="brightness-110 shrink-0"
-                />
-                <div className="font-serif">
-                  <p className="text-[22px] font-bold leading-none text-white tracking-tight">Bharath</p>
-                  <p className="font-script text-[22px] text-[#C49A45] leading-none -mt-0.5" style={{ fontFamily: "'Dancing Script', cursive" }}>Delight</p>
+              <Link href="/" className="inline-block mb-3 select-none group" aria-label="Bharath Delight Home">
+                <div className="bg-white rounded-lg p-2 inline-flex items-center shadow-sm transition-transform duration-200 group-hover:scale-105">
+                  <Image
+                    src="/images/logo.png"
+                    alt="Bharath Delight - Authenticity in Every Delight"
+                    width={160}
+                    height={52}
+                    className="h-12 w-auto object-contain"
+                  />
                 </div>
-              </div>
-              <p className="text-[9px] font-sans font-bold tracking-[0.16em] text-[#C49A45]/80 uppercase mt-1">
-                Authenticity in Every Delight
-              </p>
+              </Link>
             </div>
 
             <p className="text-xs text-white/75 leading-relaxed font-light max-w-xs">
@@ -89,25 +84,31 @@ export const Footer: React.FC = () => {
             <div className="flex items-center gap-3 pt-1">
               {[
                 { label: "Facebook", icon: <span className="text-sm font-bold font-sans">f</span> },
-                { label: "Instagram", icon: (
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                    <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                  </svg>
-                )},
-                { label: "LinkedIn", icon: (
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                    <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                    <rect x="2" y="9" width="4" height="12" />
-                    <circle cx="4" cy="4" r="2" />
-                  </svg>
-                )},
-                { label: "YouTube", icon: (
-                  <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                  </svg>
-                )},
+                {
+                  label: "Instagram", icon: (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                      <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                      <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                    </svg>
+                  )
+                },
+                {
+                  label: "LinkedIn", icon: (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                      <rect x="2" y="9" width="4" height="12" />
+                      <circle cx="4" cy="4" r="2" />
+                    </svg>
+                  )
+                },
+                {
+                  label: "YouTube", icon: (
+                    <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
+                      <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                    </svg>
+                  )
+                },
               ].map((s) => (
                 <Link
                   key={s.label}
