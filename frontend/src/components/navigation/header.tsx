@@ -90,8 +90,8 @@ export const Header: React.FC = () => {
               priority
             />
 
-            {/* Tagline Lockup with Gold Arc */}
-            <div className="flex flex-col justify-center leading-none select-none">
+            {/* Tagline Lockup with Gold Arc - Hidden on mobile, visible on desktop/tablet */}
+            <div className="hidden sm:flex flex-col justify-center leading-none select-none">
               <span className="font-serif italic font-semibold text-[14px] sm:text-[16px] lg:text-[17px] text-[#16382B] tracking-tight">
                 Authenticity in
               </span>
