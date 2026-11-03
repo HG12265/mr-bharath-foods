@@ -43,7 +43,12 @@ export default function TrustPage() {
         {/* ══════════════════════════════════════════════════
             HERO SECTION — A Promise Built on Trust
         ══════════════════════════════════════════════════ */}
-        <PageBanner variant="inner" image="/images/promise-hero-jars.png" alt="Bharath Delight ghee jars, prepared with care">
+        <PageBanner
+          variant="inner"
+          image="/images/promise-contact-banner.png"
+          alt="Bharath Delight Goodness of Tradition, Happiness for Every Family"
+          imageClassName="!object-right"
+        >
 <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             {/* Left text content area */}
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">

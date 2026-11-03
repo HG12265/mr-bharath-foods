@@ -120,7 +120,12 @@ export default function ContactPage() {
         {/* ══════════════════════════════════════════════════
             HERO SECTION — 2-col: Text Left, Product Image Right
         ══════════════════════════════════════════════════ */}
-        <PageBanner variant="inner" image="/images/promise-hero-jars.png" alt="Bharath Delight Uthukuli and Rasipuram ghee">
+        <PageBanner
+          variant="inner"
+          image="/images/promise-contact-banner.png"
+          alt="Bharath Delight Goodness of Tradition, Happiness for Every Family"
+          imageClassName="!object-right"
+        >
 <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
               {/* Tag line */}

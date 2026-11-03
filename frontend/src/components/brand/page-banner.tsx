@@ -7,11 +7,13 @@ export default function PageBanner({
   image,
   alt,
   variant = "inner",
+  imageClassName = "",
 }: {
   children: ReactNode;
   image: string;
   alt: string;
   variant?: "home" | "inner" | "about";
+  imageClassName?: string;
 }) {
   return (
     <section className={`reference-banner reference-banner--${variant}`}>
@@ -28,7 +30,7 @@ export default function PageBanner({
           priority
           sizes="(max-width: 767px) 100vw, 62vw"
           quality={95}
-          className="reference-banner__image"
+          className={`reference-banner__image ${imageClassName}`}
         />
         )}
       </div>
