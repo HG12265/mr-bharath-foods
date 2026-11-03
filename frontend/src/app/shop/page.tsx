@@ -1,6 +1,5 @@
 "use client";
 
-import PageBanner from "@/components/brand/page-banner";
 import React, { useState, useEffect, Suspense } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -380,53 +379,6 @@ function ShopContent() {
   return (
     <div className="bg-[#FAF9F6] text-indianInk min-h-screen font-sans selection:bg-deodharForest/10">
       
-      {/* ═══════════════════════════════════════════════════════
-          HERO SECTION — "Products Crafted for Every Home"
-          ═══════════════════════════════════════════════════════ */}
-      <PageBanner variant="inner" image="/images/promise-hero-jars.png" alt="Uthukuli and Rasipuram Bharath Delight cow ghee">
-<div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-          <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
-            {/* Tag */}
-            <div className="flex items-center gap-3 text-sm sm:text-base font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
-              <span>OUR PRODUCTS</span>
-              <div className="w-10 h-[1.5px] bg-[#C49A45]" />
-            </div>
-
-            <h1 className="font-serif text-[32px] sm:text-[50px] lg:text-[54px] font-bold text-deodharForest leading-[1.1] tracking-tight">
-              Products Crafted <br />for Every Home
-            </h1>
-
-            {/* Leaf divider */}
-            <div className="flex items-center gap-3 py-1 select-none text-[#C49A45]">
-              <div className="w-10 h-[1.5px] bg-[#C49A45]" />
-              <svg viewBox="18 8 64 42" fill="currentColor" xmlns="http://www.w3.org/2000/svg" style={{ height: '11px', width: 'auto' }}>
-                <path d="M48 34C36 38 24 30 18 18C28 22 40 30 48 34Z" />
-                <path d="M52 34C64 38 76 30 82 18C72 22 60 30 52 34Z" />
-                <path d="M50 8C55 22 52 38 50 50C48 38 45 22 50 8Z" />
-              </svg>
-              <div className="w-10 h-[1.5px] bg-[#C49A45]" />
-            </div>
-
-            <div className="space-y-2.5 font-sans text-sm sm:text-[16px] text-indianInk/90 leading-relaxed font-light max-w-[460px]">
-              <p>From traditional favourites to everyday essentials, every Bharath Delight product is selected with a commitment to quality, authenticity, and trust.</p>
-            </div>
-
-            {/* Trust badges below hero text */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              {["Authentic & Pure", "Quality Assured", "Made for Families"].map((badge) => (
-                <div key={badge} className="flex items-center gap-1.5">
-                  <div className="w-7 h-7 bg-deodharForest/10 rounded-full flex items-center justify-center">
-                    <svg className="w-3.5 h-3.5 text-deodharForest" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
-                    </svg>
-                  </div>
-                  <span className="font-sans text-[12px] font-medium text-deodharForest/80">{badge}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-        </PageBanner>
 
       {/* ═══════════════════════════════════════════════════════
           PRODUCT CATEGORIES — "Something for Every Kitchen"
