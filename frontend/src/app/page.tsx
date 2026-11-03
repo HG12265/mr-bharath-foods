@@ -65,8 +65,8 @@ function CrownDivider({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-2 py-0.5 select-none text-[#C49A45] ${className}`}>
       <div className="w-8 h-[1.5px] bg-[#C49A45]" />
-      <svg 
-        viewBox="18 8 64 42" 
+      <svg
+        viewBox="18 8 64 42"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
         style={{ height: '11px', width: 'auto' }}
@@ -139,7 +139,7 @@ export default function HomePage() {
             HERO SECTION — Matching Image 1 Reference Design
         ══════════════════════════════════════════════════ */}
         <PageBanner variant="home" image="/images/home-hero-desktop.png" alt="Family sharing a meal with Bharath Delight products">
-<div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex items-center py-14 sm:py-16 lg:py-20">
+          <div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex items-center py-14 sm:py-16 lg:py-20">
             <div className="max-w-[340px] sm:max-w-[400px] lg:max-w-[420px] xl:max-w-[440px] flex flex-col gap-4 sm:gap-5">
 
               {/* Heading — Exactly matching Image 1 */}
@@ -190,14 +190,14 @@ export default function HomePage() {
                   <span>OUR PROMISE</span>
                   <div className="w-10 h-[1.5px] bg-[#C49A45]" />
                 </div>
-                
+
                 <h2 className="font-serif text-3xl sm:text-4xl lg:text-[46px] font-bold text-deodharForest leading-[1.1] tracking-tight">
                   A Promise <br className="hidden sm:block" />
                   Built on Trust
                 </h2>
-                
+
                 <LeafDivider className="!justify-start my-1" />
-                
+
                 <div className="space-y-3 font-sans text-xs sm:text-[14.5px] text-indianInk/90 leading-relaxed font-light">
                   <p>
                     At Bharath Delight, trust is not just a value we speak about—it is a commitment we strive to uphold every single day.
@@ -412,19 +412,6 @@ export default function HomePage() {
                   </p>
                 </div>
               </div>
-
-              {/* Right: Ghee Bowl */}
-              <div className="w-[160px] sm:w-[200px] md:w-[280px] lg:w-[320px] shrink-0 self-center md:self-end md:-mb-10">
-                <Image
-                  src="/images/promise-ghee-bowl.png"
-                  alt="Ghee Bowl"
-                  width={320}
-                  height={150}
-                  quality={90}
-                  className="w-full h-auto object-contain object-bottom select-none pointer-events-none"
-                  priority
-                />
-              </div>
             </div>
           </div>
         </section>
@@ -468,7 +455,7 @@ export default function HomePage() {
 
                 {/* 4 Feature Badges Row with Vertical Dividers */}
                 <div className="grid grid-cols-2 sm:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-burnishedGold/30 pt-6 border-t border-burnishedGold/20 mt-6">
-                  
+
                   {/* Badge 1 */}
                   <div className="flex flex-col items-center sm:items-start text-center sm:text-left gap-2 px-2 sm:px-4 py-2 sm:py-0">
                     <Sprout className="w-6 h-6 text-[#C49A45] stroke-[1.5]" />
