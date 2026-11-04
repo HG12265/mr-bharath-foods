@@ -7,15 +7,15 @@ import { useSession, useLogout, useMe } from "@/hooks/use-auth";
 import { useCart } from "@/hooks/use-cart";
 import { siteConfig } from "@/config/site";
 import Image from "next/image";
-import { 
-  Menu, 
-  X, 
-  User, 
-  ShoppingCart, 
-  ShoppingBag, 
-  LogIn, 
-  LogOut, 
-  Package, 
+import {
+  Menu,
+  X,
+  User,
+  ShoppingCart,
+  ShoppingBag,
+  LogIn,
+  LogOut,
+  Package,
   ChevronDown,
   Heart,
   ShieldCheck
@@ -68,9 +68,8 @@ export const Header: React.FC = () => {
   return (
     <>
       <header
-        className={`brand-header sticky top-0 z-40 w-full bg-[#FAF7F0] transition-shadow duration-300 border-t border-[#F1E3CD]/80 border-b border-[#E6D4BA] ${
-          isScrolled ? "shadow-[0_2px_16px_rgba(180,140,70,0.12)]" : "shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
-        }`}
+        className={`brand-header sticky top-0 z-40 w-full bg-[#FAF7F0] transition-shadow duration-300 border-t border-[#F1E3CD]/80 border-b border-[#E6D4BA] ${isScrolled ? "shadow-[0_2px_16px_rgba(180,140,70,0.12)]" : "shadow-[0_1px_4px_rgba(0,0,0,0.03)]"
+          }`}
       >
         <div className="brand-header__inner w-full max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-10 h-[var(--header-height)] flex flex-nowrap items-center justify-between relative">
 
@@ -128,11 +127,10 @@ export const Header: React.FC = () => {
                 <Link
                   key={item.title}
                   href={item.href}
-                  className={`relative font-sans text-[14.5px] tracking-normal transition-colors duration-150 py-1 ${
-                    isActive
+                  className={`relative font-sans text-[14.5px] tracking-normal transition-colors duration-150 py-1 ${isActive
                       ? "text-[#16382B] font-semibold after:absolute after:bottom-0 after:left-0 after:right-0 after:h-[2.5px] after:bg-[#C49A45] after:rounded-full"
                       : "text-[#2C3E33] hover:text-[#C49A45] font-medium"
-                  }`}
+                    }`}
                 >
                   {item.title}
                 </Link>
