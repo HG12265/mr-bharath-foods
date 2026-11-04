@@ -459,17 +459,20 @@ export default function OrderDetailsPage() {
                         {/* Help Text / CTA */}
                         <div className="space-y-3 flex-grow text-center sm:text-left">
                           <h4 className="font-serif text-base font-bold text-deodharForest flex items-center justify-center sm:justify-start gap-1.5">
-                            <QrCode className="w-4.5 h-4.5 text-burnishedGold" /> Scan or Tap to Pay
+                            <QrCode className="w-4.5 h-4.5 text-burnishedGold" /> Scan to Pay
                           </h4>
                           <p className="text-xs text-indianInk/60 font-sans leading-relaxed">
-                            Scan the QR code using any UPI app (Google Pay, PhonePe, Paytm, BHIM) to transfer, or use the direct app transfer link below.
+                            Scan the QR code using any UPI app (Google Pay, PhonePe, Paytm, BHIM) to complete the payment.
                           </p>
+                          {/* Pay via UPI App button temporarily hidden as requested. Uncomment to re-enable anytime */}
+                          {/*
                           <a
                             href={paymentInfo.upi_link}
                             className="inline-flex items-center gap-2 px-4 py-2.5 bg-deodharForest text-richCream rounded font-sans text-xs font-bold tracking-widest uppercase hover:border-gheeGold border border-transparent shadow-sm transition-all duration-200 mt-1 hover:translate-y-[-1px]"
                           >
                             Pay via UPI App <ExternalLink className="w-3 h-3" />
                           </a>
+                          */}
                         </div>
                       </div>
 
