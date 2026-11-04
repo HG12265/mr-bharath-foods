@@ -219,7 +219,7 @@ export const CartDrawer: React.FC = () => {
             </div>
             
             <p className="text-[10px] text-indianInk/50 leading-relaxed font-sans">
-              Taxes (GST 5%) and shipping calculated at checkout.
+              Taxes and shipping calculated at checkout.
             </p>
 
             <button

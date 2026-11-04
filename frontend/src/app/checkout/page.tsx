@@ -7,6 +7,7 @@ import { useRouter } from "next/navigation";
 import PublicLayout from "@/components/layout/public-layout";
 import { useCart } from "@/hooks/use-cart";
 import { useMe } from "@/hooks/use-auth";
+import { usePublicSettings } from "@/hooks/use-settings";
 import { useInitiateCheckout, useCompleteCheckout } from "@/hooks/use-checkout";
 import { useCreateOrderFromCheckout } from "@/hooks/use-orders";
 import { formatINR } from "@/lib/utils";
@@ -25,9 +26,15 @@ export default function CheckoutPage() {
   const items = cart?.items || [];
   const summary = cart?.summary;
 
+  const { data: settingsData } = usePublicSettings();
+  const publicSettings = settingsData?.data;
+
   const subtotal = parseFloat(String(summary?.subtotal ?? 0)) || 0;
-  const taxTotal = Math.round(subtotal * 0.05); // 5% GST estimate
-  const shippingTotal = subtotal > 0 && subtotal < 1000 ? 50 : 0; // Free shipping above 1000
+  const taxRate = publicSettings?.tax_percentage !== undefined ? parseFloat(String(publicSettings.tax_percentage)) : 0;
+  const standardShipping = publicSettings?.shipping_fee !== undefined ? parseFloat(String(publicSettings.shipping_fee)) : 0;
+
+  const taxTotal = subtotal > 0 ? Math.round((subtotal * taxRate) / 100) : 0;
+  const shippingTotal = subtotal > 0 ? standardShipping : 0;
   const grandTotal = subtotal + taxTotal + shippingTotal;
 
   // Form fields
@@ -570,7 +577,7 @@ export default function CheckoutPage() {
                     </div>
 
                     <div className="flex justify-between items-center text-indianInk/70">
-                      <span>Estimated GST (5%)</span>
+                      <span>{taxRate > 0 ? `Estimated GST (${taxRate}%)` : "Estimated GST"}</span>
                       <span className="font-semibold">{formatINR(taxTotal)}</span>
                     </div>
 

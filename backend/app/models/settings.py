@@ -10,7 +10,7 @@ class Settings(MongoBaseModel):
     upi_id: str
     tax_percentage: Decimal
     shipping_fee: Decimal
-    free_shipping_threshold: Decimal
+    free_shipping_threshold: Decimal | None = None
     support_contact: str
     fssai_number: str | None = None
     gst_number: str | None = None

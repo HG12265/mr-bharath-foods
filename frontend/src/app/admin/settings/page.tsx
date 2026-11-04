@@ -173,7 +173,7 @@ export default function AdminSettingsPage() {
         upi_id: form.upi_id.trim(),
         tax_percentage: Number(form.tax_percentage),
         shipping_fee: Number(form.shipping_fee),
-        free_shipping_threshold: Number(form.free_shipping_threshold),
+        free_shipping_threshold: 0,
         support_contact: form.support_email.trim() || form.support_contact.trim() || "support@bharathdelightfoods.in",
         fssai_number: form.fssai_number.trim() || null,
         gst_number: form.gst_number.trim().toUpperCase() || null,
@@ -468,7 +468,7 @@ export default function AdminSettingsPage() {
               </div>
             </div>
             <div className="p-6 space-y-4 flex-grow">
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1">
                   <label className="text-[10px] font-bold uppercase tracking-wider text-indianInk/70">
                     GST Tax Rate (%)
@@ -480,7 +480,7 @@ export default function AdminSettingsPage() {
                     max="100"
                     value={form.tax_percentage}
                     onChange={(e) => handleChange("tax_percentage", e.target.value)}
-                    placeholder="e.g. 5.00"
+                    placeholder="e.g. 0.00"
                     className={`w-full text-xs border rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk ${
                       validationErrors.tax_percentage ? "border-red-500 focus:border-red-600" : "border-burnishedGold/30 focus:border-burnishedGold"
                     }`}
@@ -501,7 +501,7 @@ export default function AdminSettingsPage() {
                     min="0"
                     value={form.shipping_fee}
                     onChange={(e) => handleChange("shipping_fee", e.target.value)}
-                    placeholder="e.g. 50.00"
+                    placeholder="e.g. 0.00"
                     className={`w-full text-xs border rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk ${
                       validationErrors.shipping_fee ? "border-red-500 focus:border-red-600" : "border-burnishedGold/30 focus:border-burnishedGold"
                     }`}
@@ -509,27 +509,6 @@ export default function AdminSettingsPage() {
                   />
                   {validationErrors.shipping_fee && (
                     <p className="text-[9px] font-medium text-red-600 mt-1">{validationErrors.shipping_fee}</p>
-                  )}
-                </div>
-
-                <div className="space-y-1">
-                  <label className="text-[10px] font-bold uppercase tracking-wider text-indianInk/70">
-                    Free Shipping Threshold (₹)
-                  </label>
-                  <input
-                    type="number"
-                    step="0.01"
-                    min="0"
-                    value={form.free_shipping_threshold}
-                    onChange={(e) => handleChange("free_shipping_threshold", e.target.value)}
-                    placeholder="e.g. 500.00"
-                    className={`w-full text-xs border rounded-md p-2.5 focus:outline-none transition-colors bg-white text-indianInk ${
-                      validationErrors.free_shipping_threshold ? "border-red-500 focus:border-red-600" : "border-burnishedGold/30 focus:border-burnishedGold"
-                    }`}
-                    required
-                  />
-                  {validationErrors.free_shipping_threshold && (
-                    <p className="text-[9px] font-medium text-red-600 mt-1">{validationErrors.free_shipping_threshold}</p>
                   )}
                 </div>
               </div>
@@ -540,7 +519,12 @@ export default function AdminSettingsPage() {
                   Storefront Pricing Rule Info
                 </h4>
                 <p className="text-[10px] text-amber-800/90">
-                  Customers are charged ₹{Number(form.shipping_fee).toFixed(2)} for shipping on any order below ₹{Number(form.free_shipping_threshold).toFixed(2)}. Tax of {Number(form.tax_percentage).toFixed(2)}% applies to item prices directly during checkout calculations.
+                  {Number(form.shipping_fee) === 0
+                    ? "Free shipping is enabled on all orders."
+                    : `Customers are charged ₹${Number(form.shipping_fee).toFixed(2)} flat shipping fee per order.`}
+                  {Number(form.tax_percentage) > 0
+                    ? ` GST Tax of ${Number(form.tax_percentage).toFixed(2)}% applies to item prices.`
+                    : " Tax rate is set to 0% (Tax-free / GST inclusive)."}
                 </p>
               </div>
             </div>

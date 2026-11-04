@@ -6,7 +6,7 @@ from pydantic import BaseModel, Field
 class SettingsPublicResponse(BaseModel):
     tax_percentage: Decimal = Field(..., description="Tax percentage rate (e.g. 5.00 for 5%)")
     shipping_fee: Decimal = Field(..., description="Flat shipping fee amount")
-    free_shipping_threshold: Decimal = Field(..., description="Free shipping order subtotal threshold")
+    free_shipping_threshold: Decimal | None = Field(default=None, description="Free shipping order subtotal threshold")
     support_contact: str = Field(..., description="Customer support contact info")
     fssai_number: str | None = Field(default=None, description="FSSAI registration number")
     gst_number: str | None = Field(default=None, description="GST registration number")
@@ -24,7 +24,7 @@ class SettingsAdminResponse(BaseModel):
     upi_id: str = Field(..., description="Merchant UPI ID deep link routing parameter")
     tax_percentage: Decimal
     shipping_fee: Decimal
-    free_shipping_threshold: Decimal
+    free_shipping_threshold: Decimal | None = None
     support_contact: str
     fssai_number: str | None
     gst_number: str | None
