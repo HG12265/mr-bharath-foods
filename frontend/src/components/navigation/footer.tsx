@@ -155,7 +155,6 @@ export const Footer: React.FC = () => {
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-[#C49A45] shrink-0 mt-0.5 stroke-[1.8]" />
                 <div className="flex flex-col gap-1">
-                  <a href="tel:+919150012345" className="hover:text-[#C49A45] transition-colors">+91 91500 12345</a>
                   <a href="tel:+919150141007" className="hover:text-[#C49A45] transition-colors">+91 91501 41007</a>
                 </div>
               </li>

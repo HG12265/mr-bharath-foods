@@ -118,12 +118,24 @@ class CheckoutService(BaseService[CheckoutSession]):
                     status_code=400,
                 )
 
-            # Check variant status
+            # Check variant status (resilient matching by variant_id or sku fallback)
             variant = None
             for var in product.variants:
                 if var.variant_id == item.variant_id:
                     variant = var
                     break
+
+            if not variant and item.sku:
+                for var in product.variants:
+                    if var.sku == item.sku:
+                        variant = var
+                        item.variant_id = var.variant_id
+                        break
+
+            if not variant and len(product.variants) == 1:
+                variant = product.variants[0]
+                item.variant_id = variant.variant_id
+                item.sku = variant.sku
 
             if not variant:
                 raise BaseAppException(

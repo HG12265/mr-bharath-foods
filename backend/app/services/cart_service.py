@@ -417,6 +417,19 @@ class CartService(BaseService[Cart]):
                     variant = var
                     break
 
+            # Resilient SKU fallback
+            if not variant and item.sku:
+                for var in product.variants:
+                    if var.sku == item.sku:
+                        variant = var
+                        item.variant_id = var.variant_id
+                        break
+
+            if not variant and len(product.variants) == 1:
+                variant = product.variants[0]
+                item.variant_id = variant.variant_id
+                item.sku = variant.sku
+
             if not variant or not variant.is_active:
                 continue
 

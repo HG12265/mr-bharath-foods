@@ -22,8 +22,8 @@ function CrownDivider({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-2 py-0.5 select-none text-[#C49A45] ${className}`}>
       <div className="w-8 h-[1.5px] bg-[#C49A45]" />
-      <svg 
-        viewBox="18 8 64 42" 
+      <svg
+        viewBox="18 8 64 42"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
         style={{ height: '11px', width: 'auto' }}
@@ -39,12 +39,10 @@ function CrownDivider({ className = "" }: { className?: string }) {
 
 /* Shared Input Style */
 const inputCls = (hasError: boolean) =>
-  `w-full px-4 py-2.5 bg-white text-[#222222] border rounded-xl font-sans text-xs sm:text-sm transition-all duration-200 focus:outline-none focus:border-[#0F3D2E] focus:ring-1 focus:ring-[#0F3D2E] ${
-    hasError ? "border-red-400 focus:border-red-400 focus:ring-red-400" : "border-burnishedGold/25"
+  `w-full px-4 py-2.5 bg-white text-[#222222] border rounded-xl font-sans text-xs sm:text-sm transition-all duration-200 focus:outline-none focus:border-[#0F3D2E] focus:ring-1 focus:ring-[#0F3D2E] ${hasError ? "border-red-400 focus:border-red-400 focus:ring-red-400" : "border-burnishedGold/25"
   }`;
 
 export default function ContactPage() {
-  const supportPhone = "+91 91500 12345";
   const supportPhone2 = "+91 91501 41007";
   const supportEmail = "bharathdelightfoods@gmail.com";
   const businessEmail = "bharathdelightfoods@gmail.com";
@@ -64,18 +62,18 @@ export default function ContactPage() {
     const errors: Record<string, string> = {};
     if (!fullName.trim()) errors.fullName = "Full name is required";
     else if (fullName.trim().length < 2) errors.fullName = "Name must be at least 2 characters";
-    
+
     const cleanEmail = email.trim();
     if (!cleanEmail) errors.email = "Email address is required";
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(cleanEmail)) errors.email = "Please enter a valid email address";
-    
+
     const cleanPhone = phoneVal.trim().replace(/\s+/g, "");
     if (!cleanPhone) errors.phone = "Phone number is required";
     else if (!(/^[6-9]\d{9}$/.test(cleanPhone) || /^\+91[6-9]\d{9}$/.test(cleanPhone))) errors.phone = "Please enter a valid 10-digit Indian phone number";
-    
+
     if (!message.trim()) errors.message = "Message cannot be empty";
     else if (message.trim().length < 10) errors.message = "Message must be at least 10 characters";
-    
+
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
@@ -170,7 +168,7 @@ export default function ContactPage() {
                 <div className="space-y-2 text-xs text-indianInk/85 font-light text-left w-full pt-1">
                   <div>
                     <span className="font-bold text-deodharForest block text-[11px]">Phone</span>
-                    <a href="tel:+919150012345" className="hover:text-[#C49A45] transition-colors block">{supportPhone}</a>
+
                     <a href="tel:+919150141007" className="hover:text-[#C49A45] transition-colors block">{supportPhone2}</a>
                   </div>
                   <div>
@@ -380,7 +378,7 @@ export default function ContactPage() {
                     priority
                   />
                   {/* Gentle top fade to keep text ultra crisp */}
-                  <div 
+                  <div
                     className="absolute inset-0 z-10 pointer-events-none"
                     style={{
                       background: "linear-gradient(180deg, rgba(246, 242, 233, 0.4) 0%, rgba(246, 242, 233, 0.1) 40%, rgba(246, 242, 233, 0) 100%)"
@@ -401,29 +399,37 @@ export default function ContactPage() {
                   {/* Social icons row */}
                   <div className="flex justify-center gap-4 sm:gap-5 pt-2">
                     {[
-                      { label: "Instagram", icon: (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
-                          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
-                          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
-                        </svg>
-                      )},
-                      { label: "Facebook", icon: (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.6 13.78 5.6c1.1 0 2.25.2 2.25.2v2.47h-1.27c-1.23 0-1.62.77-1.62 1.56V12h2.77l-.44 3h-2.33v6.8c4.56-.93 8-4.96 8-9.8z"/>
-                        </svg>
-                      )},
-                      { label: "LinkedIn", icon: (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                          <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
-                          <circle cx="4" cy="4" r="2" />
-                        </svg>
-                      )},
-                      { label: "YouTube", icon: (
-                        <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
-                        </svg>
-                      )},
+                      {
+                        label: "Instagram", icon: (
+                          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="2" y="2" width="20" height="20" rx="5" ry="5" />
+                            <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z" />
+                            <line x1="17.5" y1="6.5" x2="17.51" y2="6.5" />
+                          </svg>
+                        )
+                      },
+                      {
+                        label: "Facebook", icon: (
+                          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M22 12c0-5.52-4.48-10-10-10S2 6.48 2 12c0 4.84 3.44 8.87 8 9.8V15H7.5v-3H10V9.5C10 7.01 11.49 5.6 13.78 5.6c1.1 0 2.25.2 2.25.2v2.47h-1.27c-1.23 0-1.62.77-1.62 1.56V12h2.77l-.44 3h-2.33v6.8c4.56-.93 8-4.96 8-9.8z" />
+                          </svg>
+                        )
+                      },
+                      {
+                        label: "LinkedIn", icon: (
+                          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z" />
+                            <circle cx="4" cy="4" r="2" />
+                          </svg>
+                        )
+                      },
+                      {
+                        label: "YouTube", icon: (
+                          <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                          </svg>
+                        )
+                      },
                     ].map((s) => (
                       <div key={s.label} className="flex flex-col items-center gap-1">
                         <Link
@@ -451,7 +457,7 @@ export default function ContactPage() {
         <section className="py-8 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl p-6 lg:p-8 shadow-sm relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-5 lg:gap-8">
-              
+
               {/* Left Side: Icon & Title */}
               <div className="flex items-center gap-4 text-left min-w-[280px]">
                 <div className="w-14 h-14 sm:w-16 sm:h-16 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center shrink-0 shadow-sm border border-burnishedGold/20">

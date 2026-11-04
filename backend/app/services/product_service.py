@@ -318,6 +318,8 @@ class ProductService(BaseService[Product]):
         if request.variants is not None:
             skus_seen = set()
             variants_to_update = []
+            # Map existing variant_ids by SKU to prevent ID mutation on update
+            existing_variant_map = {v.sku: v.variant_id for v in existing_product.variants}
             for variant in request.variants:
                 sanitized_sku = validate_sku(variant.sku)
                 if sanitized_sku in skus_seen:
@@ -337,9 +339,10 @@ class ProductService(BaseService[Product]):
                         status_code=400
                     )
 
+                preserved_id = existing_variant_map.get(sanitized_sku) or str(uuid.uuid4())
                 variants_to_update.append(
                     {
-                        "variant_id": str(uuid.uuid4()),
+                        "variant_id": preserved_id,
                         "sku": sanitized_sku,
                         "title": variant.title.strip(),
                         "volume_weight": variant.volume_weight.strip(),

@@ -295,7 +295,7 @@ export default function AboutPage() {
               {/* Left Column: Founder Portrait */}
               <div className="relative w-full h-[360px] sm:h-[420px] lg:h-full min-h-[480px] overflow-hidden shrink-0 rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl border-b lg:border-b-0 lg:border-r border-burnishedGold/15">
                 <Image
-                  src="/images/about-founder.png"
+                  src="/images/about-founder.jpeg"
                   alt="Bharath T - Founder of Bharath Delight"
                   fill
                   unoptimized
