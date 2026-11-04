@@ -62,7 +62,7 @@ async def list_all_inventories(
     Lists all inventory records enriched with product name, variant name, and first image.
     Accessible by WAREHOUSE and ADMIN.
     """
-    inventories = await service.inventory_repository.find({})
+    inventories = await service.inventory_repository.find({"is_deleted": {"$ne": True}})
     results: list[InventoryDetailsResponse] = []
 
     for inv in inventories:
@@ -75,7 +75,7 @@ async def list_all_inventories(
 
         if product:
             for v in product.variants:
-                if v.variant_id == inv.variant_id:
+                if v.variant_id == inv.variant_id or v.sku == inv.sku:
                     variant_name = f"{v.title} ({v.volume_weight})"
                     break
             product_image = product.media_ids[0] if product.media_ids else None
@@ -130,7 +130,7 @@ async def export_inventory_csv(
     Streams live inventory data as a CSV download. ADMIN only.
     Enterprise-safe: uses StreamingResponse so it handles large catalogs without hanging.
     """
-    inventories = await service.inventory_repository.find({})
+    inventories = await service.inventory_repository.find({"is_deleted": {"$ne": True}})
 
     output = io.StringIO()
     writer = csv.writer(output)
@@ -152,7 +152,7 @@ async def export_inventory_csv(
         variant_name = ""
         if product:
             for v in product.variants:
-                if v.variant_id == inv.variant_id:
+                if v.variant_id == inv.variant_id or v.sku == inv.sku:
                     variant_name = f"{v.title} ({v.volume_weight})"
                     break
 

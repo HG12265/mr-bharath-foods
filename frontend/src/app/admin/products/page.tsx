@@ -163,9 +163,9 @@ export default function AdminProductsPage() {
     setFormVariants(prev => {
       let changed = false;
       const updated = prev.map(v => {
-        if (!v.variant_id) {
+        if (!v.sku) {
           const expectedSku = generateSku(formName, v.volume_weight);
-          if (v.sku !== expectedSku) {
+          if (expectedSku) {
             changed = true;
             return { ...v, sku: expectedSku };
           }
@@ -264,9 +264,18 @@ export default function AdminProductsPage() {
   const handleVariantChange = (index: number, field: keyof VariantInput, value: any) => {
     setFormVariants(prev => {
       const updated = [...prev];
+      const current = updated[index];
+      let newSku = current.sku;
+      if (field === "volume_weight") {
+        const oldExpected = generateSku(formName, current.volume_weight);
+        if (!current.sku || current.sku === oldExpected) {
+          newSku = generateSku(formName, value);
+        }
+      }
       updated[index] = {
-        ...updated[index],
-        [field]: value
+        ...current,
+        [field]: value,
+        ...(field === "volume_weight" ? { sku: newSku } : {})
       };
       return updated;
     });
@@ -1011,13 +1020,26 @@ export default function AdminProductsPage() {
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
                         <div className="space-y-1">
-                          <label className="text-[9px] font-bold uppercase tracking-widest text-indianInk/60">SKU Code *</label>
+                          <div className="flex items-center justify-between">
+                            <label className="text-[9px] font-bold uppercase tracking-widest text-indianInk/60">SKU Code *</label>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                const auto = generateSku(formName, v.volume_weight);
+                                if (auto) handleVariantChange(idx, "sku", auto);
+                              }}
+                              className="text-[9px] text-deodharForest hover:underline font-bold uppercase tracking-wider"
+                              title="Auto-generate SKU from name and volume"
+                            >
+                              Auto
+                            </button>
+                          </div>
                           <input
                             type="text"
                             value={v.sku}
-                            readOnly
-                            placeholder="Auto-generated SKU"
-                            className="w-full text-xs border border-burnishedGold/20 bg-richCream/10 rounded p-1.5 focus:outline-none cursor-not-allowed uppercase font-mono text-indianInk/60"
+                            onChange={(e) => handleVariantChange(idx, "sku", e.target.value.toUpperCase())}
+                            placeholder="e.g. MBF-RASIPURAM-425ML"
+                            className={`w-full text-xs border rounded p-1.5 focus:outline-none focus:border-burnishedGold uppercase font-mono ${formErrors[`variant_${idx}_sku`] ? "border-red-500 bg-red-50/10" : "border-burnishedGold/30"}`}
                           />
                           {formErrors[`variant_${idx}_sku`] && <p className="text-[9px] font-semibold text-red-600">{formErrors[`variant_${idx}_sku`]}</p>}
                         </div>

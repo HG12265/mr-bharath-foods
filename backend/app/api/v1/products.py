@@ -262,13 +262,20 @@ async def update_product(
         ip_address=ip
     )
 
-    # Auto-create inventory records for any new variants
+    # Auto-create inventory records for any new variants & cleanup removed ones
     from app.repositories.inventory_repository import InventoryRepository
     from app.schemas.inventory import InventoryCreate, WarehouseStockSchema
     from app.services.inventory_service import InventoryService
 
     inv_repo = InventoryRepository(db)
     inv_service = InventoryService(inv_repo, service.product_repository, service.audit_service, None)
+
+    active_skus = {v.sku for v in product.variants}
+    # Soft delete orphan inventories for this product if variants were removed
+    prod_invs = await inv_repo.find({"product_id": product.id, "is_deleted": {"$ne": True}})
+    for old_inv in prod_invs:
+        if old_inv.sku not in active_skus:
+            await inv_repo.update(old_inv.id or "", {"is_deleted": True})
 
     for variant in product.variants:
         existing = await inv_repo.get_by_sku(variant.sku)
@@ -284,6 +291,9 @@ async def update_product(
                 await inv_service.create_inventory(inv_payload, ip_address=ip)
             except Exception:
                 pass
+        else:
+            if existing.variant_id != variant.variant_id:
+                await inv_repo.update(existing.id or "", {"variant_id": variant.variant_id})
 
     mapped_product = await map_product_response(product, service.media_repository)
     return Envelope(
