@@ -11,22 +11,22 @@ export default function AboutPage() {
   return (
     <PublicLayout hideFooter>
       <div className="bg-[#FAF9F6] text-indianInk min-h-screen font-sans selection:bg-deodharForest/10">
-        
+
         {/* HEADER SECTION - A Brand Built for Families */}
         <PageBanner variant="about" image="/images/deserves-best-family.png" alt="The Bharath Delight family at the table">
-<div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
               {/* Tag */}
               <div className="flex items-center gap-3 text-sm sm:text-base font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
                 <span>ABOUT US</span>
                 <div className="w-10 h-[1.5px] bg-[#C49A45]" />
               </div>
-              
+
               <h1 className="font-serif text-[32px] sm:text-[50px] lg:text-[54px] font-bold text-deodharForest leading-[1.1] tracking-tight">
                 A Brand Built <br />
                 for Families
               </h1>
-              
+
               {/* Balanced line-leaves-line divider */}
               <div className="flex items-center gap-3 py-1 select-none text-[#C49A45]">
                 <div className="w-10 h-[1.5px] bg-[#C49A45]" />
@@ -37,7 +37,7 @@ export default function AboutPage() {
                 </svg>
                 <div className="w-10 h-[1.5px] bg-[#C49A45]" />
               </div>
-              
+
               <div className="space-y-2.5 font-sans text-sm sm:text-[16px] text-indianInk/90 leading-relaxed font-light max-w-[460px]">
                 <p>
                   Bharath Delight was created with a simple belief—that every family deserves access to products they can trust, every single day.
@@ -49,6 +49,46 @@ export default function AboutPage() {
             </div>
           </div>
         </PageBanner>
+
+        {/* VISION & MISSION SECTION - INTEGRATED CARD LAYOUT */}
+        <section className="py-12 bg-[#FAF9F6] border-b border-burnishedGold/15">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
+            <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl shadow-sm p-6 lg:p-8 flex flex-col md:flex-row items-stretch gap-6 md:gap-0 relative">
+
+              {/* Our Vision Column */}
+              <div className="flex-1 flex items-start gap-5 text-left md:pr-8 md:border-r md:border-burnishedGold/25">
+                <div className="w-16 h-16 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center shrink-0 border border-burnishedGold/20 shadow-sm">
+                  <Eye className="w-8 h-8 text-warmIvory stroke-[1.5]" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-serif text-xl font-bold text-deodharForest">
+                    Our Vision
+                  </h3>
+                  <p className="font-sans text-xs sm:text-sm text-indianInk/85 leading-relaxed font-light">
+                    To become one of India&apos;s most trusted food brands by consistently delivering products that families can rely on with confidence.
+                  </p>
+                </div>
+              </div>
+
+              {/* Our Mission Column */}
+              <div className="flex-1 flex items-start gap-5 text-left md:pl-8 pt-6 md:pt-0">
+                <div className="w-16 h-16 bg-[#C49A45] text-white rounded-full flex items-center justify-center shrink-0 border border-burnishedGold/20 shadow-sm">
+                  <Target className="w-8 h-8 text-white stroke-[1.5]" />
+                </div>
+                <div className="space-y-1.5">
+                  <h3 className="font-serif text-xl font-bold text-[#C49A45]">
+                    Our Mission
+                  </h3>
+                  <p className="font-sans text-xs sm:text-sm text-indianInk/85 leading-relaxed font-light">
+                    To provide authentic, high-quality products that bring together trust, value, and everyday reliability for families across India.
+                  </p>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </section>
+
 
         {/* OUR STORY SECTION */}
         <section className="py-16 md:py-24 bg-[#FAF9F6] border-b border-burnishedGold/15 relative overflow-hidden">
@@ -62,10 +102,10 @@ export default function AboutPage() {
 
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 lg:gap-12 items-start">
-              
+
               {/* Left Column: Icon, Header, and Paragraphs */}
               <div className="space-y-6">
-                
+
                 {/* Heading and Book/Leaf circular icon */}
                 <div className="flex items-center gap-4">
                   <div className="w-14 h-14 bg-deodharForest rounded-full flex items-center justify-center text-[#C49A45] shrink-0 shadow-sm border border-burnishedGold/30">
@@ -125,7 +165,7 @@ export default function AboutPage() {
         <section className="py-12 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="relative bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl shadow-[0_2px_16px_rgba(15,61,46,0.03)] overflow-hidden min-h-[200px]">
-              
+
               {/* Background Image */}
               <div className="absolute inset-0 z-0">
                 <Image
@@ -144,7 +184,7 @@ export default function AboutPage() {
 
               {/* Main Content Row */}
               <div className="w-full p-6 lg:py-8 lg:px-8 flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8 relative z-20">
-                
+
                 {/* Group Icon & Section Titles */}
                 <div className="flex items-center gap-4 text-left min-w-[270px]">
                   <div className="w-16 h-16 bg-[#0F3D2E] rounded-full flex items-center justify-center text-white shrink-0 shadow-md border border-[#C49A45]/30">
@@ -185,7 +225,7 @@ export default function AboutPage() {
         {/* WHAT WE BELIEVE SECTION */}
         <section className="py-12 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            
+
             <div className="text-center max-w-xl mx-auto mb-10 space-y-1">
               <div className="flex items-center justify-center gap-3 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
                 <span>WHAT WE BELIEVE</span>
@@ -197,7 +237,7 @@ export default function AboutPage() {
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8">
-              
+
               {/* Trust Before Everything */}
               <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl p-6 lg:p-8 flex items-start gap-5 shadow-sm transition-all duration-300 hover:shadow-md">
                 <div className="w-16 h-16 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center shrink-0 border border-burnishedGold/20 shadow-sm">
@@ -251,7 +291,7 @@ export default function AboutPage() {
         <section className="py-12 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl overflow-hidden shadow-sm relative grid grid-cols-1 lg:grid-cols-[42%_58%] items-stretch">
-              
+
               {/* Left Column: Founder Portrait */}
               <div className="relative w-full h-[360px] sm:h-[420px] lg:h-full min-h-[480px] overflow-hidden shrink-0 rounded-t-2xl lg:rounded-tr-none lg:rounded-l-2xl border-b lg:border-b-0 lg:border-r border-burnishedGold/15">
                 <Image
@@ -278,7 +318,7 @@ export default function AboutPage() {
                     </h3>
                     <div className="w-12 h-[1.5px] bg-[#C49A45]" />
                   </div>
-                  
+
                   <div className="space-y-3 font-sans text-xs sm:text-[13.5px] lg:text-sm text-indianInk/85 leading-relaxed font-light">
                     <p className="font-serif italic text-deodharForest text-sm sm:text-base font-medium">
                       Hello, I&apos;m Bharath T, the founder of Bharath Delight.
@@ -326,44 +366,6 @@ export default function AboutPage() {
           </div>
         </section>
 
-        {/* VISION & MISSION SECTION - INTEGRATED CARD LAYOUT */}
-        <section className="py-12 bg-[#FAF9F6] border-b border-burnishedGold/15">
-          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl shadow-sm p-6 lg:p-8 flex flex-col md:flex-row items-stretch gap-6 md:gap-0 relative">
-              
-              {/* Our Vision Column */}
-              <div className="flex-1 flex items-start gap-5 text-left md:pr-8 md:border-r md:border-burnishedGold/25">
-                <div className="w-16 h-16 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center shrink-0 border border-burnishedGold/20 shadow-sm">
-                  <Eye className="w-8 h-8 text-warmIvory stroke-[1.5]" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="font-serif text-xl font-bold text-deodharForest">
-                    Our Vision
-                  </h3>
-                  <p className="font-sans text-xs sm:text-sm text-indianInk/85 leading-relaxed font-light">
-                    To become one of India&apos;s most trusted food brands by consistently delivering products that families can rely on with confidence.
-                  </p>
-                </div>
-              </div>
-
-              {/* Our Mission Column */}
-              <div className="flex-1 flex items-start gap-5 text-left md:pl-8 pt-6 md:pt-0">
-                <div className="w-16 h-16 bg-[#C49A45] text-white rounded-full flex items-center justify-center shrink-0 border border-burnishedGold/20 shadow-sm">
-                  <Target className="w-8 h-8 text-white stroke-[1.5]" />
-                </div>
-                <div className="space-y-1.5">
-                  <h3 className="font-serif text-xl font-bold text-[#C49A45]">
-                    Our Mission
-                  </h3>
-                  <p className="font-sans text-xs sm:text-sm text-indianInk/85 leading-relaxed font-light">
-                    To provide authentic, high-quality products that bring together trust, value, and everyday reliability for families across India.
-                  </p>
-                </div>
-              </div>
-
-            </div>
-          </div>
-        </section>
 
         {/* BOTTOM GREEN BANNER - GROWING WITH EVERY FAMILY WE SERVE */}
         <section className="bg-deodharForest text-richCream py-12 md:py-16 relative overflow-hidden border-t border-burnishedGold/20">
@@ -371,7 +373,7 @@ export default function AboutPage() {
           <div className="absolute left-1 sm:left-4 lg:left-8 top-1/2 -translate-y-1/2 opacity-85 pointer-events-none select-none hidden sm:block">
             <Image src="/images/values-leaf-left.png?v=3" alt="Leaf Left Decor" width={160} height={220} unoptimized className="w-[120px] lg:w-[165px] h-auto object-contain" />
           </div>
-          
+
           {/* Right Leaf branch decoration */}
           <div className="absolute right-1 sm:right-4 lg:right-8 top-1/2 -translate-y-1/2 opacity-85 pointer-events-none select-none hidden sm:block">
             <Image src="/images/values-leaf-right.png?v=3" alt="Leaf Right Decor" width={160} height={220} unoptimized className="w-[120px] lg:w-[165px] h-auto object-contain" />
@@ -381,7 +383,7 @@ export default function AboutPage() {
             <h2 className="font-serif text-2xl sm:text-3xl font-bold text-white tracking-wide">
               Growing with Every Family We Serve
             </h2>
-            
+
             {/* Small leaves divider */}
             <div className="flex items-center justify-center gap-1 opacity-70">
               <div className="w-8 h-px bg-gheeGold" />

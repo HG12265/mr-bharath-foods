@@ -188,7 +188,8 @@ function ShopContent() {
   const searchParams = useSearchParams();
 
   // Read URL values
-  const urlCategory = searchParams.get("category") || "";
+  const rawCategory = searchParams.get("category") || "";
+  const urlCategory = rawCategory === "ghee" ? "pure-ghee" : rawCategory;
   const urlSearch = searchParams.get("search") || "";
   const urlSort = searchParams.get("sort") || "featured";
   const urlPage = parseInt(searchParams.get("page") || "1", 10);
@@ -329,9 +330,21 @@ function ShopContent() {
     };
 
     doScroll();
-    setTimeout(doScroll, 80);
-    setTimeout(doScroll, 250);
+    setTimeout(doScroll, 100);
+    setTimeout(doScroll, 300);
   };
+
+  // Auto-scroll to catalog if category param or hash is present on mount or URL change
+  useEffect(() => {
+    if (urlCategory || (typeof window !== "undefined" && window.location.hash === "#product-catalog")) {
+      const timer1 = setTimeout(() => scrollToCatalog(), 250);
+      const timer2 = setTimeout(() => scrollToCatalog(), 600);
+      return () => {
+        clearTimeout(timer1);
+        clearTimeout(timer2);
+      };
+    }
+  }, [urlCategory]);
 
   const handleCategorySelect = (slug: string) => {
     setMobileFilterOpen(false);

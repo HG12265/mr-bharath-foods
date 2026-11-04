@@ -46,9 +46,10 @@ const inputCls = (hasError: boolean) =>
 
 export default function ContactPage() {
   const supportPhone = "+91 91500 12345";
-  const supportEmail = "hello@bharathdelight.com";
-  const businessEmail = "business@bharathdelight.com";
-  const supportHelpEmail = "support@bharathdelight.com";
+  const supportPhone2 = "+91 91501 41007";
+  const supportEmail = "bharathdelightfoods@gmail.com";
+  const businessEmail = "bharathdelightfoods@gmail.com";
+  const supportHelpEmail = "bharathdelightfoods@gmail.com";
 
   const [fullName, setFullName] = useState("");
   const [phoneVal, setPhoneVal] = useState("");
@@ -171,7 +172,8 @@ export default function ContactPage() {
                 <div className="space-y-2 text-xs text-indianInk/85 font-light text-left w-full pt-1">
                   <div>
                     <span className="font-bold text-deodharForest block text-[11px]">Phone</span>
-                    <span>{supportPhone}</span>
+                    <a href="tel:+919150012345" className="hover:text-[#C49A45] transition-colors block">{supportPhone}</a>
+                    <a href="tel:+919150141007" className="hover:text-[#C49A45] transition-colors block">{supportPhone2}</a>
                   </div>
                   <div>
                     <span className="font-bold text-deodharForest block text-[11px]">Email</span>
@@ -179,7 +181,7 @@ export default function ContactPage() {
                   </div>
                   <div>
                     <span className="font-bold text-deodharForest block text-[11px]">Address</span>
-                    <span>Bharath Delight<br />Tiruvannamalai,<br />Tamil Nadu, India</span>
+                    <span className="leading-relaxed">Bharath Delight Foods,<br />Adiannamalai, Tiruvannamalai,<br />606604, Tamil Nadu, India</span>
                   </div>
                 </div>
               </div>

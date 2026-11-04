@@ -154,15 +154,22 @@ export const Footer: React.FC = () => {
             <ul className="space-y-3 text-xs font-light text-white/80">
               <li className="flex items-start gap-3">
                 <Phone className="w-4 h-4 text-[#C49A45] shrink-0 mt-0.5 stroke-[1.8]" />
-                <span>+91 91500 12345</span>
+                <div className="flex flex-col gap-1">
+                  <a href="tel:+919150012345" className="hover:text-[#C49A45] transition-colors">+91 91500 12345</a>
+                  <a href="tel:+919150141007" className="hover:text-[#C49A45] transition-colors">+91 91501 41007</a>
+                </div>
               </li>
               <li className="flex items-start gap-3">
                 <Mail className="w-4 h-4 text-[#C49A45] shrink-0 mt-0.5 stroke-[1.8]" />
-                <span className="break-all">hello@bharathdelight.com</span>
+                <a href="mailto:bharathdelightfoods@gmail.com" className="break-all hover:text-[#C49A45] transition-colors">
+                  bharathdelightfoods@gmail.com
+                </a>
               </li>
               <li className="flex items-start gap-3">
                 <MapPin className="w-4 h-4 text-[#C49A45] shrink-0 mt-0.5 stroke-[1.8]" />
-                <span>Bharath Delight, Tiruvannamalai, Tamil Nadu, India</span>
+                <span className="leading-relaxed">
+                  Bharath Delight Foods, Adiannamalai, Tiruvannamalai, 606604, Tamil Nadu, India
+                </span>
               </li>
             </ul>
           </div>

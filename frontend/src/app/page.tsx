@@ -178,55 +178,162 @@ export default function HomePage() {
         </PageBanner>
 
         {/* ══════════════════════════════════════════════════
-            TRUST / BRAND PROMISE SECTION
+            OUR PRODUCTS — EVERYDAY ESSENTIALS
         ══════════════════════════════════════════════════ */}
-        <section className="py-5 md:py-6 bg-[#FAF8F3] border-b border-[#C49A45]/15">
-          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            <div className="bg-[#FFF7E8] border border-burnishedGold/25 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center">
+        <section className="py-8 md:py-12 bg-white border-b border-[#C49A45]/15">
+          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-start">
 
-              {/* Left: Text content */}
-              <div className="lg:col-span-6 space-y-4 text-left">
-                <div className="flex items-center gap-3 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
-                  <span>OUR PROMISE</span>
-                  <div className="w-10 h-[1.5px] bg-[#C49A45]" />
-                </div>
-
-                <h2 className="font-serif text-3xl sm:text-4xl lg:text-[46px] font-bold text-deodharForest leading-[1.1] tracking-tight">
-                  A Promise <br className="hidden sm:block" />
-                  Built on Trust
+              {/* Left: Heading */}
+              <div className="lg:col-span-4 space-y-4 lg:sticky lg:top-28">
+                <SectionLabel text="Our Products" />
+                <h2 className="font-serif text-[32px] sm:text-[40px] font-bold text-[#1E352F] leading-tight">
+                  Everyday Essentials<br />for Every Home
                 </h2>
-
-                <LeafDivider className="!justify-start my-1" />
-
-                <div className="space-y-3 font-sans text-xs sm:text-[14.5px] text-indianInk/90 leading-relaxed font-light">
-                  <p>
-                    At Bharath Delight, trust is not just a value we speak about—it is a commitment we strive to uphold every single day.
-                  </p>
-                  <p>
-                    Everything we do is guided by a simple belief: families deserve pure, authentic products they can choose with complete confidence.
-                  </p>
-                </div>
-
+                <div className="w-12 h-0.5 bg-[#C49A45]" />
+                <p className="font-sans text-[14px] text-[#666666] leading-relaxed">
+                  From traditional favourites to everyday kitchen essentials, our products are thoughtfully selected to support the needs of modern families while preserving the values they cherish.
+                </p>
                 <div className="pt-2">
                   <Link
-                    href="/trust"
-                    className="inline-flex items-center gap-2.5 px-6 py-3 bg-[#1E352F] text-white rounded-full font-sans text-xs sm:text-sm font-semibold hover:bg-[#355E3B] hover:shadow-md transition-all duration-300 group"
+                    href="/shop#product-catalog"
+                    className="inline-flex items-center gap-2 text-[#1E352F] font-sans text-[13px] font-semibold hover:text-[#C49A45] transition-colors group"
                   >
-                    <span>Learn About Our Promise</span>
-                    <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                    View All Products
+                    <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
                   </Link>
                 </div>
               </div>
 
-              {/* Right: Product Image Card */}
-              <div className="lg:col-span-6 relative w-full aspect-[4/3] lg:aspect-[16/11] rounded-2xl overflow-hidden shadow-md border border-burnishedGold/20">
-                <Image
-                  src="/images/promise-landscape.png"
-                  alt="Bharath Delight Pure Ghee & Spices"
-                  fill
-                  quality={90}
-                  className="object-cover object-center"
-                />
+              {/* Right: Category cards */}
+              <div className="lg:col-span-8 overflow-x-auto pb-4 scrollbar-thin">
+                <div className="flex gap-5 min-w-max">
+
+                  {/* 1. Ghee — Available */}
+                  <Link
+                    href="/shop?category=pure-ghee#product-catalog"
+                    className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border-2 border-[#C49A45]/40 hover:border-[#C49A45] shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer relative"
+                  >
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                      <Image
+                        src="/images/category-ghee.png"
+                        alt="Pure Ghee"
+                        fill
+                        quality={90}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/90 backdrop-blur-sm text-[#93C572] border border-[#93C572]/40 text-[9.5px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm">
+                        <span className="w-1.5 h-1.5 rounded-full bg-[#93C572] animate-pulse" />
+                        Available
+                      </span>
+                    </div>
+                    <div className="py-3 px-3 text-center border-t border-[#EAEAEA] bg-white group-hover:bg-[#FFFDF9] transition-colors">
+                      <span className="font-serif text-[14px] font-bold text-[#1E352F] group-hover:text-[#C49A45] transition-colors block">
+                        Pure Ghee
+                      </span>
+                      <span className="text-[11px] font-sans font-semibold text-[#2E7D32] mt-0.5 inline-flex items-center gap-0.5">
+                        Explore Now &rarr;
+                      </span>
+                    </div>
+                  </Link>
+
+                  {/* 2. Jaggery — Coming Soon */}
+                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                      <Image
+                        src="/images/category-jaggery.png"
+                        alt="Jaggery"
+                        fill
+                        quality={90}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div className="py-3 px-3 text-center border-t border-[#EAEAEA] bg-[#FAF9F6]">
+                      <span className="font-serif text-[14px] font-bold text-[#1E352F] block">
+                        Jaggery
+                      </span>
+                      <span className="text-[11px] font-sans font-medium text-[#C49A45] mt-0.5 block">
+                        Coming Soon
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 3. Spices — Coming Soon */}
+                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                      <Image
+                        src="/images/category-spices.png"
+                        alt="Spices"
+                        fill
+                        quality={90}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div className="py-3 px-3 text-center border-t border-[#EAEAEA] bg-[#FAF9F6]">
+                      <span className="font-serif text-[14px] font-bold text-[#1E352F] block">
+                        Spices
+                      </span>
+                      <span className="text-[11px] font-sans font-medium text-[#C49A45] mt-0.5 block">
+                        Coming Soon
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 4. Oils — Coming Soon */}
+                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                      <Image
+                        src="/images/category-oils.png"
+                        alt="Oils"
+                        fill
+                        quality={90}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div className="py-3 px-3 text-center border-t border-[#EAEAEA] bg-[#FAF9F6]">
+                      <span className="font-serif text-[14px] font-bold text-[#1E352F] block">
+                        Oils
+                      </span>
+                      <span className="text-[11px] font-sans font-medium text-[#C49A45] mt-0.5 block">
+                        Coming Soon
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* 5. More Coming Soon */}
+                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                      <Image
+                        src="/images/category-more.png"
+                        alt="More Coming Soon"
+                        fill
+                        quality={90}
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                      <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
+                        Coming Soon
+                      </span>
+                    </div>
+                    <div className="py-3 px-3 text-center border-t border-[#EAEAEA] bg-[#FAF9F6]">
+                      <span className="font-serif text-[14px] font-bold text-[#1E352F] block">
+                        More Delights
+                      </span>
+                      <span className="text-[11px] font-sans font-medium text-[#C49A45] mt-0.5 block">
+                        Coming Soon
+                      </span>
+                    </div>
+                  </div>
+
+                </div>
               </div>
 
             </div>
@@ -293,86 +400,60 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* ══════════════════════════════════════════════════
-            EVERYDAY ESSENTIALS / PRODUCTS SECTION
-        ══════════════════════════════════════════════════ */}
-        <section className="py-6 md:py-8 bg-white border-b border-[#C49A45]/10">
-          <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 items-start">
 
-              {/* Left: Heading */}
-              <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
-                <SectionLabel text="Our Products" />
-                <h2 className="font-serif text-[32px] sm:text-[40px] font-bold text-[#1E352F] leading-tight">
-                  Everyday Essentials<br />for Every Home
-                </h2>
-                <div className="w-12 h-0.5 bg-[#C49A45]" />
-                <p className="font-sans text-[14px] text-[#666666] leading-relaxed">
-                  From traditional favourites to everyday kitchen essentials, our products are thoughtfully selected to support the needs of modern families while preserving the values they cherish.
-                </p>
-                <Link
-                  href="/shop"
-                  className="inline-flex items-center gap-2 text-[#1E352F] font-sans text-[13px] font-semibold hover:text-[#C49A45] transition-colors group"
-                >
-                  View All Products
-                  <ChevronRight className="w-4 h-4 transition-transform group-hover:translate-x-0.5" />
-                </Link>
+        {/* ══════════════════════════════════════════════════
+            OUR PROMISE — A Promise Built on Trust
+        ══════════════════════════════════════════════════ */}
+        <section className="py-10 md:py-14 bg-[#FAF8F3] border-b border-[#C49A45]/15 relative overflow-hidden">
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div className="bg-[#FFFDF9] border border-[#C49A45]/30 rounded-3xl p-8 sm:p-12 lg:p-14 shadow-sm text-center relative overflow-hidden">
+              {/* Subtle gold decorative top bar */}
+              <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-1 bg-gradient-to-r from-transparent via-[#C49A45] to-transparent" />
+
+              {/* Tag line */}
+              <div className="inline-flex items-center justify-center gap-3 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-[#C49A45] select-none mb-3">
+                <div className="w-8 sm:w-12 h-px bg-[#C49A45]/60" />
+                <span>OUR PROMISE</span>
+                <div className="w-8 sm:w-12 h-px bg-[#C49A45]/60" />
               </div>
 
-              {/* Right: Category cards */}
-              <div className="lg:col-span-8 overflow-x-auto pb-4 scrollbar-thin">
-                <div className="flex gap-5 min-w-max">
-                  {[
-                    { label: "Ghee", href: "/shop?category=ghee", img: "/images/category-ghee.png" },
-                    { label: "Jaggery", href: "/shop?category=jaggery", img: "/images/category-jaggery.png" },
-                    { label: "Spices", href: "/shop?category=spices", img: "/images/category-spices.png" },
-                    { label: "Oils", href: "/shop?category=oils", img: "/images/category-oils.png" },
-                  ].map((cat) => (
-                    <Link
-                      key={cat.label}
-                      href={cat.href}
-                      className="group block w-[160px] sm:w-[185px] bg-white rounded-xl overflow-hidden border border-[#EAEAEA] hover:border-[#C49A45]/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1.5"
-                    >
-                      <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
-                        <Image
-                          src={cat.img}
-                          alt={cat.label}
-                          fill
-                          quality={90}
-                          className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                        />
-                      </div>
-                      <div className="py-3.5 text-center border-t border-[#EAEAEA]">
-                        <span className="font-serif text-[13px] font-bold text-[#1E352F] group-hover:text-[#C49A45] transition-colors">
-                          {cat.label}
-                        </span>
-                      </div>
-                    </Link>
-                  ))}
+              {/* Main Heading */}
+              <h2 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-deodharForest leading-tight tracking-tight mb-4">
+                A Promise Built on Trust
+              </h2>
 
-                  {/* More Coming Soon */}
-                  <div className="group block w-[160px] sm:w-[185px] bg-white rounded-xl overflow-hidden border border-[#EAEAEA] hover:border-[#C49A45]/50 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-1.5">
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
-                      <Image
-                        src="/images/category-more.png"
-                        alt="More Coming Soon"
-                        fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-[1.06]"
-                      />
-                    </div>
-                    <div className="py-3.5 text-center border-t border-[#EAEAEA]">
-                      <span className="font-serif text-[13px] font-bold text-[#1E352F] group-hover:text-[#C49A45] transition-colors">
-                        More Coming Soon
-                      </span>
-                    </div>
-                  </div>
-                </div>
+              <LeafDivider className="my-2" />
+
+              {/* Lead narrative */}
+              <div className="max-w-2xl mx-auto space-y-4 font-sans text-sm sm:text-base text-indianInk/85 leading-relaxed font-light mt-4 mb-8">
+                <p>
+                  At Bharath Delight, trust is not just a value we speak about—it is a commitment we strive to uphold every single day.
+                </p>
+                <p>
+                  Everything we do is guided by a simple belief: families deserve pure, authentic products they can choose with complete confidence.
+                </p>
+              </div>
+
+              {/* Trust quote block */}
+              <div className="max-w-xl mx-auto p-4 rounded-xl bg-[#FAF8F3] border border-[#C49A45]/20 mb-8 text-[#1E352F] text-xs sm:text-sm font-serif italic">
+                &ldquo;Pure ingredients, honest preparation, and timeless taste for the people who matter most.&rdquo;
+              </div>
+
+              {/* Action Button */}
+              <div>
+                <Link
+                  href="/trust"
+                  className="inline-flex items-center gap-2.5 px-8 py-3.5 bg-[#1E352F] text-white rounded-full font-sans text-xs sm:text-sm font-semibold hover:bg-[#355E3B] hover:shadow-lg transition-all duration-300 group"
+                >
+                  <span>Learn About Our Promise</span>
+                  <ArrowRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1" />
+                </Link>
               </div>
 
             </div>
           </div>
         </section>
+
 
         {/* ══════════════════════════════════════════════════
             OUR PROMISE BANNER — dark green full-width
