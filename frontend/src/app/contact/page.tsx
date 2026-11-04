@@ -1,6 +1,5 @@
 "use client";
 
-import PageBanner from "@/components/brand/page-banner";
 import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -119,41 +118,40 @@ export default function ContactPage() {
       <div className="bg-[#FAF9F6] text-indianInk min-h-screen font-sans selection:bg-deodharForest/10">
 
         {/* ══════════════════════════════════════════════════
-            HERO SECTION — 2-col: Text Left, Product Image Right
+            HERO SECTION — Contact Us (No Image)
         ══════════════════════════════════════════════════ */}
-        <PageBanner
-          variant="inner"
-          image="/images/promise-contact-banner.png"
-          alt="Bharath Delight Goodness of Tradition, Happiness for Every Family"
-          imageClassName="!object-right"
-        >
-<div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
-            <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
-              {/* Tag line */}
-              <div className="flex items-center gap-3 text-xs sm:text-sm font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none">
-                <span>CONTACT US</span>
-                <div className="w-10 h-[1.5px] bg-[#C49A45]" />
-              </div>
-              
-              <h1 className="font-serif text-3xl sm:text-4xl lg:text-[46px] font-bold text-deodharForest leading-[1.1] tracking-tight">
-                We&apos;d Love to <br />
-                Hear From You
-              </h1>
-              
-              {/* Crown Divider */}
-              <CrownDivider className="!justify-start my-1" />
-              
-              <div className="space-y-2 font-sans text-xs sm:text-sm text-indianInk/90 leading-relaxed font-light max-w-[460px]">
-                <p>
-                  Whether you have a question, feedback, partnership enquiry, or simply want to learn more about Bharath Delight, we&apos;re here to help.
-                </p>
-                <p>
-                  Our team will be happy to assist you.
-                </p>
-              </div>
+        <section className="relative w-full py-14 sm:py-18 lg:py-20 bg-gradient-to-b from-[#FFFDF9] via-[#FAF7F0] to-[#FAF8F3] border-b border-[#C49A45]/20 overflow-hidden text-center">
+          {/* Subtle gold top bar accent */}
+          <div className="absolute top-0 left-1/2 -translate-x-1/2 w-48 sm:w-64 h-1 bg-gradient-to-r from-transparent via-[#C49A45] to-transparent pointer-events-none" />
+
+          {/* Subtle ambient luxury radial glow */}
+          <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_rgba(196,154,69,0.06)_0%,_transparent_70%)] pointer-events-none" />
+
+          <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-3">
+            {/* Tag line */}
+            <div className="inline-flex items-center justify-center gap-3 text-xs sm:text-sm font-bold tracking-[0.25em] uppercase text-[#C49A45] select-none">
+              <div className="w-8 sm:w-12 h-[1.5px] bg-[#C49A45]/60" />
+              <span>CONTACT US</span>
+              <div className="w-8 sm:w-12 h-[1.5px] bg-[#C49A45]/60" />
+            </div>
+
+            <h1 className="font-serif text-3xl sm:text-4xl lg:text-5xl font-bold text-deodharForest leading-tight tracking-tight">
+              We&apos;d Love to Hear From You
+            </h1>
+
+            {/* Crown Divider */}
+            <CrownDivider className="my-1.5" />
+
+            <div className="space-y-2 font-sans text-xs sm:text-sm lg:text-[15px] text-indianInk/85 leading-relaxed font-light max-w-2xl mx-auto">
+              <p>
+                Whether you have a question, feedback, partnership enquiry, or simply want to learn more about Bharath Delight, we&apos;re here to help.
+              </p>
+              <p>
+                Our team will be happy to assist you and your family.
+              </p>
             </div>
           </div>
-        </PageBanner>
+        </section>
 
         {/* ══════════════════════════════════════════════════
             4 INFO CARDS SECTION — Reduced Spacing & Compact Layout
