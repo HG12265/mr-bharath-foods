@@ -8,7 +8,7 @@ from app.models.base import MongoBaseModel
 
 class CustomerAuth(BaseModel):
     email: str | None = None
-    phone: str
+    phone: str | None = None
     password_hash: str | None = None
     status: str = "active"
     refresh_token_hash: str | None = None

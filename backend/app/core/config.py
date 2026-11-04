@@ -52,6 +52,7 @@ class Settings(BaseSettings):
     # Admin contact for notifications (e.g. contact form inquiries)
     ADMIN_EMAIL: str = "bharathdelightfoods@gmail.com"
     MEDIA_FOLDER_PREFIX: str = "bharath-delight-foods"
+    GOOGLE_CLIENT_ID: str | None = None
 
     @property
     def cors_origins_list(self) -> list[str]:

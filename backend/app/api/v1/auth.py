@@ -7,6 +7,7 @@ from app.core.exceptions import AuthenticationException
 from app.core.rate_limit import check_rate_limit
 from app.repositories.customer_repository import CustomerRepository
 from app.schemas.auth import (
+    GoogleLoginRequest,
     LoginRequest,
     OTPRequest,
     OTPVerify,
@@ -214,6 +215,40 @@ async def logout(
     return Envelope(
         success=True,
         message="Session logged out successfully."
+    )
+
+@router.post("/google", response_model=Envelope[Token])
+async def google_login(
+    request: Request,
+    response: Response,
+    payload: GoogleLoginRequest,
+    service: AuthService = Depends(get_auth_service)
+) -> Envelope[Token]:
+    # Rate limit google login requests
+    await check_rate_limit(request, key_prefix="rate_google_login", limit=10, window_seconds=300)
+
+    customer = await service.authenticate_google(payload.credential)
+    access_token, refresh_token = service.create_tokens(customer)
+
+    await service.save_refresh_token_hash(customer, refresh_token)
+
+    response.set_cookie(
+        key="refresh_token",
+        value=refresh_token,
+        httponly=True,
+        secure=True,
+        samesite="strict",
+        max_age=30 * 24 * 60 * 60,
+    )
+
+    token_data = Token(
+        access_token=access_token,
+        role=customer.auth.role
+    )
+    return Envelope(
+        success=True,
+        message="Google sign-in completed successfully.",
+        data=token_data
     )
 
 @router.get("/session", response_model=Envelope[SessionResponse])

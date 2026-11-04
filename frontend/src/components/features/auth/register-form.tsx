@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useRegister, useLogin } from "../../../hooks/use-auth";
 import PasswordField from "./password-field";
+import GoogleSignInButton from "./google-sign-in-button";
 
 export const RegisterForm: React.FC = () => {
   const router = useRouter();
@@ -300,6 +301,18 @@ export const RegisterForm: React.FC = () => {
           <span>Register Account</span>
         )}
       </button>
+
+      {/* Or Divider */}
+      <div className="flex items-center gap-3 my-1">
+        <div className="flex-1 h-px bg-indianInk/15" />
+        <span className="text-[11px] font-sans uppercase tracking-widest text-indianInk/50 font-semibold">
+          Or continue with
+        </span>
+        <div className="flex-1 h-px bg-indianInk/15" />
+      </div>
+
+      {/* Google Sign Up */}
+      <GoogleSignInButton mode="signup" />
     </form>
   );
 };

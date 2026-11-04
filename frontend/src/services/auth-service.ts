@@ -13,6 +13,12 @@ export const authService = {
     return response.data;
   },
 
+  async googleLogin(credential: string): Promise<Envelope<Token>> {
+    const response = await apiClient.post<Envelope<Token>>("/api/v1/auth/google", { credential });
+    setAccessToken(response.data.data.access_token);
+    return response.data;
+  },
+
   async requestOtp(payload: any): Promise<Envelope<null>> {
     const response = await apiClient.post<Envelope<null>>("/api/v1/auth/otp/request", payload);
     return response.data;

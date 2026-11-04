@@ -29,6 +29,22 @@ export const useLogin = () => {
   });
 };
 
+export const useGoogleLogin = () => {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (credential: string) => authService.googleLogin(credential),
+    onSuccess: () => {
+      if (typeof window !== "undefined") {
+        localStorage.setItem("was_logged_in", "true");
+      }
+      setSessionAuthenticated(true);
+      setRefreshFailed(false);
+      queryClient.invalidateQueries({ queryKey: ["session"] });
+      queryClient.invalidateQueries({ queryKey: ["me"] });
+    },
+  });
+};
+
 export const useRequestOtp = () => {
   return useMutation({
     mutationFn: (payload: any) => authService.requestOtp(payload),

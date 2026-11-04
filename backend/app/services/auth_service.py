@@ -175,3 +175,81 @@ class AuthService:
             id_str=customer.id or "",
             update_data={"auth.refresh_token_hash": None, "updated_at": datetime.now(UTC)}
         )
+
+    async def authenticate_google(self, credential: str) -> Customer:
+        import httpx
+        from app.core.config import settings
+
+        try:
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                res = await client.get(
+                    "https://oauth2.googleapis.com/tokeninfo",
+                    params={"id_token": credential}
+                )
+        except Exception as e:
+            raise AuthenticationException(f"Failed to connect to Google authentication service: {str(e)}")
+
+        if res.status_code != 200:
+            raise AuthenticationException("Invalid or expired Google token.")
+
+        token_info = res.json()
+
+        google_client_id = getattr(settings, "GOOGLE_CLIENT_ID", None)
+        if google_client_id and token_info.get("aud") != google_client_id:
+            raise AuthenticationException("Google token audience mismatch.")
+
+        email = token_info.get("email")
+        if not email:
+            raise AuthenticationException("Google account has no associated email address.")
+
+        email_verified = token_info.get("email_verified")
+        if email_verified not in [True, "true", "True", 1, "1"]:
+            raise AuthenticationException("Google email address is not verified.")
+
+        # Check if customer already exists by email
+        customer = await self.repository.get_by_email(email)
+        if customer:
+            if customer.auth.status != "active":
+                raise AuthenticationException("User account is inactive or suspended.")
+
+            updated = False
+            picture = token_info.get("picture")
+            given_name = token_info.get("given_name")
+            family_name = token_info.get("family_name")
+
+            if picture and not customer.personal_details.avatar_url:
+                customer.personal_details.avatar_url = picture
+                updated = True
+            if given_name and not customer.personal_details.first_name:
+                customer.personal_details.first_name = given_name
+                updated = True
+            if family_name and not customer.personal_details.last_name:
+                customer.personal_details.last_name = family_name
+                updated = True
+
+            if updated:
+                await self.repository.update(customer.id, customer)
+
+            return customer
+
+        # New user: auto-register from Google profile
+        given_name = token_info.get("given_name") or token_info.get("name", "Google User")
+        family_name = token_info.get("family_name") or ""
+        picture = token_info.get("picture")
+
+        new_customer = Customer(
+            auth=CustomerAuth(
+                email=email,
+                phone=None,
+                password_hash=None,
+                status="active",
+                role=UserRole.CUSTOMER,
+            ),
+            personal_details=PersonalDetails(
+                first_name=given_name,
+                last_name=family_name,
+                avatar_url=picture,
+            )
+        )
+
+        return await self.repository.insert(new_customer)

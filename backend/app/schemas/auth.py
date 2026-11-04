@@ -40,7 +40,7 @@ class PersonalDetailsResponse(BaseModel):
 class UserResponse(BaseModel):
     id: str
     email: str | None = None
-    phone: str
+    phone: str | None = None
     role: UserRole
     personal_details: PersonalDetailsResponse
 
@@ -50,3 +50,7 @@ class SessionResponse(BaseModel):
     user: UserResponse | None = None
 
 
+
+
+class GoogleLoginRequest(BaseModel):
+    credential: str = Field(..., description="Google ID Token issued by Google Identity Services")
