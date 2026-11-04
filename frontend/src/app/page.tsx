@@ -160,6 +160,7 @@ export default function HomePage() {
                 style={{ fontFamily: "'Dancing Script', cursive" }}
               >
                 Authenticity in Every Delight.
+
               </div>
 
               {/* CTA Button — Rounded rectangle (rounded-lg) matching Image 1 */}
@@ -212,15 +213,16 @@ export default function HomePage() {
                   {/* 1. Ghee — Available */}
                   <Link
                     href="/shop?category=pure-ghee#product-catalog"
-                    className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border-2 border-[#C49A45]/40 hover:border-[#C49A45] shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer relative"
+                    className="group block w-[170px] sm:w-[200px] bg-white rounded-2xl overflow-hidden border-2 border-[#C49A45]/40 hover:border-[#C49A45] shadow-sm hover:shadow-xl transition-all duration-300 hover:-translate-y-1.5 cursor-pointer relative"
                   >
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#FAF8F3]">
                       <Image
-                        src="/images/category-ghee.png"
+                        src="/images/category-ghee.png?v=3"
                         alt="Pure Ghee"
                         fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                        sizes="(max-width: 640px) 170px, 200px"
+                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                       <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/90 backdrop-blur-sm text-[#93C572] border border-[#93C572]/40 text-[9.5px] font-bold tracking-wider uppercase px-2.5 py-0.5 rounded-full flex items-center gap-1.5 shadow-sm">
                         <span className="w-1.5 h-1.5 rounded-full bg-[#93C572] animate-pulse" />
@@ -238,14 +240,15 @@ export default function HomePage() {
                   </Link>
 
                   {/* 2. Jaggery — Coming Soon */}
-                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                  <div className="group block w-[170px] sm:w-[200px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#FAF8F3]">
                       <Image
-                        src="/images/category-jaggery.png"
+                        src="/images/category-jaggery.png?v=3"
                         alt="Jaggery"
                         fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                        sizes="(max-width: 640px) 170px, 200px"
+                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                       <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
                         Coming Soon
@@ -262,14 +265,15 @@ export default function HomePage() {
                   </div>
 
                   {/* 3. Spices — Coming Soon */}
-                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                  <div className="group block w-[170px] sm:w-[200px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#FAF8F3]">
                       <Image
-                        src="/images/category-spices.png"
+                        src="/images/category-spices.png?v=3"
                         alt="Spices"
                         fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                        sizes="(max-width: 640px) 170px, 200px"
+                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                       <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
                         Coming Soon
@@ -286,14 +290,15 @@ export default function HomePage() {
                   </div>
 
                   {/* 4. Oils — Coming Soon */}
-                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                  <div className="group block w-[170px] sm:w-[200px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#FAF8F3]">
                       <Image
-                        src="/images/category-oils.png"
+                        src="/images/category-oils.png?v=3"
                         alt="Oils"
                         fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                        sizes="(max-width: 640px) 170px, 200px"
+                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                       <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
                         Coming Soon
@@ -310,14 +315,15 @@ export default function HomePage() {
                   </div>
 
                   {/* 5. More Coming Soon */}
-                  <div className="group block w-[165px] sm:w-[190px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
-                    <div className="relative w-full aspect-[4/5] overflow-hidden bg-[#FAF8F3]">
+                  <div className="group block w-[170px] sm:w-[200px] bg-white rounded-2xl overflow-hidden border border-[#EAEAEA] shadow-sm relative opacity-95">
+                    <div className="relative w-full aspect-square overflow-hidden bg-[#FAF8F3]">
                       <Image
-                        src="/images/category-more.png"
+                        src="/images/category-more.png?v=3"
                         alt="More Coming Soon"
                         fill
-                        quality={90}
-                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                        unoptimized
+                        sizes="(max-width: 640px) 170px, 200px"
+                        className="object-cover object-center transition-transform duration-500 group-hover:scale-105"
                       />
                       <span className="absolute top-2.5 right-2.5 bg-[#1E352F]/85 backdrop-blur-sm text-[#D9A441] border border-[#D9A441]/40 text-[9.5px] font-semibold tracking-wider uppercase px-2.5 py-0.5 rounded-full shadow-sm">
                         Coming Soon

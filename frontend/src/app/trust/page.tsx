@@ -20,8 +20,8 @@ function CrownDivider({ className = "" }: { className?: string }) {
   return (
     <div className={`flex items-center justify-center gap-2 py-0.5 select-none text-[#C49A45] ${className}`}>
       <div className="w-8 h-[1.5px] bg-[#C49A45]" />
-      <svg 
-        viewBox="18 8 64 42" 
+      <svg
+        viewBox="18 8 64 42"
         fill="currentColor"
         xmlns="http://www.w3.org/2000/svg"
         style={{ height: '11px', width: 'auto' }}
@@ -49,7 +49,7 @@ export default function TrustPage() {
           alt="Bharath Delight Goodness of Tradition, Happiness for Every Family"
           imageClassName="!object-right"
         >
-<div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
+          <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             {/* Left text content area */}
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
               {/* Tag line */}
@@ -57,15 +57,15 @@ export default function TrustPage() {
                 <span>OUR PROMISE</span>
                 <div className="w-10 h-[1.5px] bg-[#C49A45]" />
               </div>
-              
+
               <h1 className="font-serif text-3xl sm:text-4xl lg:text-[46px] font-bold text-deodharForest leading-[1.1] tracking-tight">
                 A Promise <br />
                 Built on Trust
               </h1>
-              
+
               {/* Crown Divider */}
               <CrownDivider className="!justify-start my-1" />
-              
+
               <div className="space-y-2 font-sans text-xs sm:text-sm text-indianInk/90 leading-relaxed font-light max-w-[460px]">
                 <p>
                   At Bharath Delight, trust is not just a value we speak about—it is a commitment we strive to uphold every day.
@@ -83,7 +83,7 @@ export default function TrustPage() {
         ══════════════════════════════════════════════════ */}
         <section className="py-10 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
-            
+
             {/* Centered Header */}
             <div className="text-center mb-8">
               <div className="flex items-center justify-center gap-3 text-xs font-bold tracking-[0.2em] uppercase text-[#C49A45] select-none mb-1">
@@ -143,7 +143,7 @@ export default function TrustPage() {
         <section className="py-10 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="relative bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl overflow-hidden shadow-sm">
-              
+
               {/* Background Image */}
               <div className="absolute inset-0 z-0">
                 <Image
@@ -161,7 +161,7 @@ export default function TrustPage() {
 
               {/* 3 Commitment Columns */}
               <div className="relative z-20 p-6 sm:p-8 lg:p-10 grid grid-cols-1 md:grid-cols-3 gap-6 md:gap-0 divide-y md:divide-y-0 md:divide-x divide-burnishedGold/30 items-start">
-                
+
                 {/* Column 1 */}
                 <div className="space-y-3 text-left md:pr-6 lg:pr-8 pt-4 md:pt-0">
                   <div className="flex items-center gap-3">
@@ -224,7 +224,7 @@ export default function TrustPage() {
         <section className="py-10 bg-[#FAF9F6] border-b border-burnishedGold/15">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10">
             <div className="bg-[#F6F2E9] border border-burnishedGold/20 rounded-2xl p-6 sm:p-8 lg:p-10 shadow-sm relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-6 lg:gap-8">
-              
+
               {/* Left Side: Icon & Title */}
               <div className="flex items-center gap-4 text-left min-w-[280px]">
                 <div className="w-16 h-16 bg-[#0F3D2E] text-white rounded-full flex items-center justify-center shrink-0 shadow-sm border border-burnishedGold/20">
@@ -264,7 +264,7 @@ export default function TrustPage() {
             BOTTOM GREEN BANNER — Authenticity in Every Delight
         ══════════════════════════════════════════════════ */}
         <section className="bg-deodharForest text-richCream relative overflow-hidden border-t border-burnishedGold/20">
-          
+
           {/* Top Misty Forest Section */}
           <div className="py-14 sm:py-16 relative overflow-hidden">
             {/* Background Forest Photo Overlay */}
@@ -276,7 +276,7 @@ export default function TrustPage() {
                 quality={90}
                 className="object-cover object-center"
               />
-              <div 
+              <div
                 className="absolute inset-0 z-10 pointer-events-none"
                 style={{
                   background: "linear-gradient(180deg, rgba(15, 61, 46, 0.35) 0%, rgba(15, 61, 46, 0.55) 100%)"
@@ -286,9 +286,9 @@ export default function TrustPage() {
 
             <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-20 text-center space-y-3.5">
               <h2 className="font-serif text-3xl sm:text-4xl lg:text-[44px] font-bold text-white tracking-wide">
-                Authenticity in Every Delight
+                Authenticity in Every Delight.
               </h2>
-              
+
               <CrownDivider className="my-2" />
 
               <p className="font-sans text-xs sm:text-sm text-warmIvory/90 leading-relaxed font-light max-w-xl mx-auto">
@@ -300,7 +300,7 @@ export default function TrustPage() {
           {/* Bottom Solid Dark Green Bar with 4 Feature Columns & Vertical Dividers */}
           <div className="bg-[#07241B] border-t border-burnishedGold/25 py-5 relative z-20">
             <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 divide-y sm:divide-y-0 sm:divide-x divide-burnishedGold/25">
-              
+
               {/* Item 1 */}
               <div className="flex items-center gap-3.5 px-3 sm:px-4 py-3 sm:py-1">
                 <Sprout className="w-7 h-7 text-[#C49A45] shrink-0 stroke-[1.5]" />
