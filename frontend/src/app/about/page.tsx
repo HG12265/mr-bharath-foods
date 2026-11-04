@@ -13,7 +13,7 @@ export default function AboutPage() {
       <div className="bg-[#FAF9F6] text-indianInk min-h-screen font-sans selection:bg-deodharForest/10">
 
         {/* HEADER SECTION - A Brand Built for Families */}
-        <PageBanner variant="about" image="/images/deserves-best-family.png" alt="The Bharath Delight family at the table">
+        <PageBanner variant="about" image="/images/home-and-about-page-panner.png" alt="The Bharath Delight family at the table">
           <div className="w-full max-w-[1400px] mx-auto px-4 sm:px-6 lg:px-10 relative z-10">
             <div className="w-full md:w-[48%] text-left space-y-3 py-8 md:py-0">
               {/* Tag */}

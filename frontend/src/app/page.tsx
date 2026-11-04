@@ -138,7 +138,7 @@ export default function HomePage() {
         {/* ══════════════════════════════════════════════════
             HERO SECTION — Matching Image 1 Reference Design
         ══════════════════════════════════════════════════ */}
-        <PageBanner variant="home" image="/images/home-hero-desktop.png" alt="Family sharing a meal with Bharath Delight products">
+        <PageBanner variant="home" image="/images/home-and-about-page-panner.png" alt="Family sharing a meal with Bharath Delight products">
           <div className="relative z-20 w-full max-w-[1440px] mx-auto px-6 sm:px-12 lg:px-20 xl:px-24 flex items-center py-14 sm:py-16 lg:py-20">
             <div className="max-w-[340px] sm:max-w-[400px] lg:max-w-[420px] xl:max-w-[440px] flex flex-col gap-4 sm:gap-5">
 
